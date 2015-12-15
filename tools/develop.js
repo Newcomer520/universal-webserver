@@ -45,7 +45,7 @@ async function develop() {
         }),
 
         // bundler should be the same as above
-        // webpackHotMiddleware(bundler),
+        webpackHotMiddleware(bundler)
       ],
     },
 
