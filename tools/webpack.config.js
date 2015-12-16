@@ -12,13 +12,14 @@ import webpack from 'webpack'
 import AssetsPlugin from 'assets-webpack-plugin'
 import fs from 'fs'
 import merge from 'lodash.merge'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import WebpackIsomorphicToolsPlugin from 'webpack-isomorphic-tools/plugin'
 const webpackIsomorphicToolsPlugin = new WebpackIsomorphicToolsPlugin(require('./webpack-isomorphic-tools-configuration'))
 
 // const DEBUG = !process.argv.includes('--release')
 const DEBUG = process.env.NODE_ENV === 'development'
 const VERBOSE = process.argv.includes('--verbose')
-const WATCH = global.WATCH === undefined ? false : global.WATCH
+const WATCH = DEBUG //global.WATCH === undefined ? false : global.WATCH
 
 const AUTOPREFIXER_BROWSERS = [
   'Android 2.3',
@@ -102,6 +103,7 @@ const config = {
       //   ],
       }, {
         test: /\.less$/,
+        // loader: `style!css?${DEBUG? 'sourceMap': 'minimize'}!postcss!less?outputStyle=expanded&sourceMap`
         loaders: [
           'style-loader',
           'css-loader?' + (DEBUG ? 'sourceMap&' : 'minimize&') +
@@ -109,6 +111,8 @@ const config = {
           'postcss-loader',
           'less-loader?outputStyle=expanded&sourceMap'
         ],
+        // 'css?modules&sourceMap!postcss!less?outputStyle=expanded&sourceMap'
+//{ test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=2&sourceMap!autoprefixer?browsers=last 2 version!less?outputStyle=expanded&sourceMap=true&sourceMapContents=true') },        
       }, {
         test: /\.json$/,
         loader: 'json-loader',
@@ -148,7 +152,7 @@ const appConfig = merge({}, config, {
     ],
   },
   output: {
-    path: path.join(__dirname, '../build/public/develop'),
+    path: path.join(__dirname, DEBUG? '../build/public/develop': '../build/public/'),
     // filename: DEBUG ? '[name].js?[hash]' : '[name].[hash].js',
     filename: '[name].[hash].js'
   },
@@ -170,17 +174,19 @@ const appConfig = merge({}, config, {
         },
       }),
       new webpack.optimize.AggressiveMergingPlugin(),
+      new ExtractTextPlugin('[name]-[chunkhash].css', {allChunks: true})
     ] : []),
     ...(WATCH ? [
       new webpack.HotModuleReplacementPlugin(),
-      new webpack.NoErrorsPlugin(),
+      new webpack.NoErrorsPlugin(),      
     ] : []),
-    webpackIsomorphicToolsPlugin.development(DEBUG)
+    DEBUG? webpackIsomorphicToolsPlugin.development(): webpackIsomorphicToolsPlugin
   ]
 })
 
 // Enable React Transform in the "watch" mode
-appConfig.module.loaders
+if (DEBUG) {
+  appConfig.module.loaders
   .filter(x => WATCH && x.loader === 'babel-loader')
   .forEach(x => x.query = {
     // Wraps all React components into arbitrary transforms
@@ -200,7 +206,16 @@ appConfig.module.loaders
         ]
       }
     }
-  })
+  })  
+} else {
+  appConfig.module.loaders =
+    appConfig.module.loaders.map(x => {
+      if (x.test.test('.less') !== true) {
+        return x
+      }
+      return { test: x.test, loader: ExtractTextPlugin.extract(x.loaders[0], x.loaders.slice(1).join('!')) }
+    })
+}
 
 //
 // Configuration for the server-side bundle (server.js)
@@ -240,6 +255,5 @@ const serverConfig = merge({}, config, {
       { raw: true, entryOnly: false })
   ]
 })
-
 // export default [appConfig, serverConfig]
 export default [appConfig]
