@@ -10,7 +10,6 @@ export default function(req, res, next) {
 	if (__DEV__) {
 		webpackIsomorphicTools.refresh()
 	}
-
 	res.send('<!doctype html>\n' +
 		ReactDOM.renderToString(<Html component={<App />} assets={webpackIsomorphicTools.assets()} />))
 		// ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store}/>))

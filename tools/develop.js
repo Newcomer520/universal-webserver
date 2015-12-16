@@ -25,7 +25,6 @@ const bs = browserSync.create()
 async function develop() {
   await run(require('./build'))
   await run(require('./serve'))
-	console.log(`localhost:${config.port}`)  
   bs.init({
     proxy: {
 
