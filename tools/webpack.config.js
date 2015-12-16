@@ -148,7 +148,7 @@ const appConfig = merge({}, config, {
     ],
   },
   output: {
-    path: path.join(__dirname, '../build/public'),
+    path: path.join(__dirname, '../build/public/develop'),
     // filename: DEBUG ? '[name].js?[hash]' : '[name].[hash].js',
     filename: '[name].[hash].js'
   },

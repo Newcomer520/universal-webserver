@@ -23,7 +23,7 @@ const bs = browserSync.create()
  * synchronizing URLs, interactions and code changes across multiple devices.
  */
 async function develop() {
-  await run(require('./build'))
+  await run(require('./build'))  
   await run(require('./serve'))
   bs.init({
     proxy: {
@@ -60,25 +60,3 @@ async function develop() {
 }
 
 export default develop
-
-// import fs from 'fs'
-
-// function test() {
-	
-// 	const promise = new Promise((resolve, reject) => {
-// 		fs.readFile('./.babelrc', 'utf8', (err, data) => {
-// 			if (err) {
-// 				reject(err)
-// 				return
-// 			}
-// 			resolve(data)
-// 		})
-// 	})
-// 	return promise
-// }
-
-// async function printTest() {
-// 	const data = await test()
-// 	console.log(data)
-// }
-// printTest()
