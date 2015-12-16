@@ -16,13 +16,14 @@ export default class App extends Component {
 	}
 	render() {
 		const styles = require('./App.less')
+		const howMany = 5
 		return (
 			<div>
 				<div className={styles.test}>
 					total count: {this.state.count}
 				</div>
-				<button onClick={this.count.bind(this, 1)}>+1</button>
-				<button onClick={this.count.bind(this, -1)}>-1</button>
+				<button onClick={this.count.bind(this, howMany)}>+{howMany}</button>
+				<button onClick={this.count.bind(this, -howMany)}>-{howMany}</button>
 			</div>
 		)
 	}
