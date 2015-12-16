@@ -65,6 +65,7 @@
     "nodemon": "^1.8.1",
     "react-transform-catch-errors": "^1.0.0",
     "react-transform-hmr": "^1.0.1",
+    "redbox-react": "^1.2.0",
     "replace": "^0.3.0",
     "source-map-support": "^0.4.0",
     "webpack": "^1.12.9",
