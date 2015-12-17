@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "better-npm-run development",
     "build": "better-npm-run build",
+    "start-server": "better-npm-run start-server",
     "nodemon": "better-npm-run nodemon",
     "babel-node": "babel-node --stage 0",
     "dev3": "nodemon --exec babel-node -- src/server.js",
@@ -22,6 +23,12 @@
     },
     "build": {
       "command": "babel-node tools/run build",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "start-server": {
+      "command": "npm run build & node tools/server-preloader",
       "env": {
         "NODE_ENV": "production"
       }
