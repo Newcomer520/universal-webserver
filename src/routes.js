@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Route, IndexRoute } from 'react-router'
-import Home from './components/Home'
-import App from './components/App'
-import About from './components/About'
-import Contact from './components/Contact'
+import Home from 'components/Home'
+import App from 'components/App'
+import About from 'components/About'
+import Contact from 'components/Contact'
 
 export default (store) => {
 	const requireLogin = (nextState, replaceState, cb) => {

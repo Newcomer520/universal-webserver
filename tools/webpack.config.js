@@ -47,6 +47,9 @@ fs.readdirSync('node_modules')
 		nodeModules[mod] = 'commonjs ' + mod
 	})
 
+const babelrc = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'))
+const alias = babelrc.extra["module-alias"].map(a => ({ [a.expose]: path.join(__dirname, '..', a.src) }))
+
 //
 // Common configuration chunk to be used for both
 // client-side (app.js) and server-side (server.js) bundles
@@ -79,10 +82,11 @@ const config = {
 
 	resolve: {
 		extensions: ['', '.webpack.js', '.web.js', '.js', '.jsx', '.json'],
-		alias: {
-			components: path.join(__dirname, '..', './src/components'),
-			reducers: path.join(__dirname, '..', './src/reducers')
-		}
+		alias: alias
+		// alias: {
+		// 	components: path.join(__dirname, '..', './src/components'),
+		// 	reducers: path.join(__dirname, '..', './src/reducers')
+		// }
 	},
 
 	module: {
