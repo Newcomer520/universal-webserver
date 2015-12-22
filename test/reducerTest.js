@@ -1,14 +1,14 @@
-import reducer from './src/reducers/reducer.js'
-import chai,{expect} from 'chai'
+//import reducer from './src/reducers/reducer.js'
+import chai, { expect } from 'chai'
 import deepFreeze from 'deep-freeze'
 
 
-const demoTest = (state = {id:0}, action) => {
+const demoTest = (state = { }, action) => {
 		switch(action.type){
 			case 'INC_ID':
 				return {
 					...state,
-					id: id++
+					id: state.id+1
 				}
 			default:
 				return state;
@@ -28,6 +28,15 @@ const testAddId = () => {
 
 	deepFreeze(stateBefore)
 
-	expect( demoTest(stateBefore, action) ).to.deep.equal( stateAfter)
+	expect(demoTest(stateBefore, action)).to.deep.equal(stateAfter)
 
 }
+
+var assert = require('assert');
+describe('Array', function() {
+  describe('#indexOf()', function () {
+    it('should return -1 when the value is not present', function () {
+      testAddId()
+    });
+  });
+});
