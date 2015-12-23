@@ -11,7 +11,8 @@
     "babel-node": "babel-node --stage 0",
     "dev3": "nodemon --exec babel-node -- src/server.js",
     "eslint": "better-npm-run eslint",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --compilers js:babel/register ./test/demo-testing.js",
+    "test-cover": "babel-node ./node_modules/isparta/bin/isparta cover --report lcov --report text --report html ./node_modules/mocha/bin/_mocha -- ./test/demo-testing.js"
   },
   "betterScripts": {
     "development": {
@@ -66,8 +67,10 @@
     "bluebird": "^3.0.6",
     "body-parser": "^1.14.2",
     "browser-sync": "^2.10.0",
+    "chai": "^3.4.1",
     "cookie-parser": "^1.4.0",
     "css-loader": "^0.23.0",
+    "deep-freeze": "0.0.1",
     "del": "^2.2.0",
     "eslint": "^1.10.3",
     "eslint-config-airbnb": "^2.0.0",
@@ -77,12 +80,14 @@
     "gaze": "^0.5.2",
     "gulp": "^3.9.0",
     "gulp-nodemon": "^2.0.4",
+    "isparta": "^4.0.0",
     "json-loader": "^0.5.4",
     "jsonwebtoken": "^5.4.1",
     "less": "^2.5.3",
     "less-loader": "^2.2.2",
     "lodash.merge": "^3.3.2",
     "mkdirp": "^0.5.1",
+    "mocha": "^2.3.4",
     "ncp": "^2.0.0",
     "nodemon": "^1.8.1",
     "postcss-loader": "^0.8.0",
