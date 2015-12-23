@@ -1,4 +1,4 @@
-import demoTest from '../src/reducers/testTargetReducer.js'
+import demoTest from 'reducers/demo-testing-reducer.js'
 import { expect } from 'chai'
 import deepFreeze from 'deep-freeze'
 
