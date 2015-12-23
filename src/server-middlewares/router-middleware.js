@@ -8,7 +8,12 @@ import createStore from '../create-store'
 import { Provider } from 'react-redux'
 
 
+
 export default function(req, res, next) {
+	global.config.universal === true? universalRender(req, res, next): nonUniversalRender(req, res, next)
+}
+
+function universalRender(req, res, next) {
 	const history = createHistory()
 	const store = createStore(history)
 	const routes = getRoutes(store)
@@ -30,4 +35,15 @@ export default function(req, res, next) {
 			res.status(404).send('Not found')
 		}
 	})
+}
+
+function nonUniversalRender(req, res, next) {
+	const validUrls = /^\/$|^\/index\.html$/i
+	if (!validUrls.test(req.url)) {
+		res.status(404).send('Page not found')
+	} else {
+		res.send('<!doctype html>' +
+			ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} />)
+		)
+	}
 }

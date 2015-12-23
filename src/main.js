@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import createHistory from 'history/lib/createBrowserHistory'
 import getRoutes from './routes'
 import createStore from './create-store'
 import { Provider } from 'react-redux'
 import Router from 'react-router'
+const createHistory = UNIVERSAL === false? require('history/lib/createHashHistory'): require('history/lib/createBrowserHistory')
 
 const history = createHistory()
 const store = createStore(history)

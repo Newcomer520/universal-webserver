@@ -54,7 +54,7 @@ async function develop() {
       'build/public/**/*.css',
       'build/public/**/*.html',
       'build/content/**/*.*',
-      'build/templates/**/*.*',
+      'build/templates/**/*.*'
     ]
   })
 }
