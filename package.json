@@ -11,8 +11,8 @@
     "babel-node": "babel-node --stage 0",
     "dev3": "nodemon --exec babel-node -- src/server.js",
     "eslint": "better-npm-run eslint",
-    "test": "./node_modules/mocha/bin/mocha --compilers js:babel/register ./test/demo-testing.js",
-    "test-cover": "./node_modules/babel/bin/babel-node.js ./node_modules/isparta/bin/isparta cover ./node_modules/mocha/bin/_mocha  --compilers js:babel/register ./test/demo-testing.js"
+    "test": "mocha --compilers js:babel/register ./test/demo-testing.js",
+    "test-cover": "babel-node ./node_modules/isparta/bin/isparta cover --report text --report html ./node_modules/mocha/bin/_mocha -- ./test/demo-testing.js"
   },
   "betterScripts": {
     "development": {
