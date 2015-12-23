@@ -12,7 +12,7 @@ import webpack from 'webpack'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import run from './run'
-import config from './config'
+import config from '../config'
 
 global.WATCH = true
 const webpackConfig = require('./webpack.config')[0] // Client-side bundle configuration
@@ -23,7 +23,7 @@ const bs = browserSync.create()
  * synchronizing URLs, interactions and code changes across multiple devices.
  */
 async function develop() {
-  await run(require('./build'))  
+  await run(require('./build'))
   await run(require('./serve'))
   bs.init({
     proxy: {

@@ -7,6 +7,7 @@ import getRoutes from '../routes'
 import createStore from '../create-store'
 import { Provider } from 'react-redux'
 
+
 export default function(req, res, next) {
 	const history = createHistory()
 	const store = createStore(history)
@@ -25,13 +26,8 @@ export default function(req, res, next) {
 			res.send('<!doctype html>' +
 				ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store} />)
 			)
-			// res.status(200).send(renderToString(<RouterContext {...renderProps} />))
 		} else {
 			res.status(404).send('Not found')
 		}
 	})
-	// res.send('<!doctype html>\n' +
-	// 	ReactDOM.renderToString(<Html component={<App />} assets={webpackIsomorphicTools.assets()} />))
-		// ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store}/>))
-	// next()
 }
