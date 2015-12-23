@@ -17,7 +17,7 @@ import watch from './lib/watch'
 function serve() {
   return new Promise((resolve, reject) => {
     function start() {
-      // if env === development, it will cause babel using react-transform in server code. 
+      // if env === development, it will cause babel using react-transform in server code.
       // so we need to prevent from this
       const NODE_ENV = process.env.NODE_ENV === 'development'? 'development/server': process.env.NODE_ENV
       const server = cp.spawn(

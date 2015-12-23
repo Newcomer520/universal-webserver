@@ -13,6 +13,7 @@ import AssetsPlugin from 'assets-webpack-plugin'
 import fs from 'fs'
 import merge from 'lodash.merge'
 import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import config from '../config'
 import WebpackIsomorphicToolsPlugin from 'webpack-isomorphic-tools/plugin'
 const webpackIsomorphicToolsPlugin = new WebpackIsomorphicToolsPlugin(require('./webpack-isomorphic-tools-configuration'))
 
@@ -36,6 +37,7 @@ const GLOBALS = {
 	'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
 	'process.env.port': process.env.port,
 	__DEV__: DEBUG,
+	UNIVERSAL: config.universal
 }
 
 const nodeModules = {}
@@ -55,7 +57,7 @@ const alias = babelrc.extra["module-alias"].map(a => ({ [a.expose]: path.join(__
 // client-side (app.js) and server-side (server.js) bundles
 // -----------------------------------------------------------------------------
 
-const config = {
+const defaultConfig = {
 	output: {
 		publicPath: '/static/',
 		sourcePrefix: '  '
@@ -78,6 +80,7 @@ const config = {
 
 	plugins: [
 		new webpack.optimize.OccurenceOrderPlugin(),
+		new webpack.DefinePlugin(GLOBALS)
 	],
 
 	resolve: {
@@ -147,7 +150,7 @@ const config = {
 // Configuration for the client-side bundle (app.js)
 // -----------------------------------------------------------------------------
 
-const appConfig = merge({}, config, {
+const appConfig = merge({}, defaultConfig, {
 	context: path.join(__dirname, '../'),
 	entry: {
 		// main: './src/main.js'
@@ -227,7 +230,7 @@ if (DEBUG) {
 // Configuration for the server-side bundle (server.js)
 // -----------------------------------------------------------------------------
 
-const serverConfig = merge({}, config, {
+const serverConfig = merge({}, defaultConfig, {
 	// entry: './src/server.js',
 	entry: './tools/server-preloader.js',
 	output: {
