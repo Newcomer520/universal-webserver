@@ -2,8 +2,8 @@ import { Router } from 'express'
 import crypto from 'crypto'
 import bodyParser from 'body-parser'
 import jwt from 'jsonwebtoken'
-const es = require('../helpers/elasticsearch')(ip, port)
 const { elIp: ip, elPort: port, elTokenDuration: duration, secret  } = global.config
+const es = require('../helpers/elasticsearch')(ip, port)
 const loginRouter = new Router()
 
 loginRouter.use(bodyParser.json(), (err, req, res, next) => {
