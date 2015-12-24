@@ -37,7 +37,8 @@ const GLOBALS = {
 	'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
 	'process.env.port': process.env.port,
 	__DEV__: DEBUG,
-	UNIVERSAL: config.universal
+	__CLIENT__: true,
+	__UNIVERSAL__: config.universal
 }
 
 const nodeModules = {}

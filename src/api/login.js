@@ -2,6 +2,8 @@ import { Router } from 'express'
 import crypto from 'crypto'
 import bodyParser from 'body-parser'
 import jwt from 'jsonwebtoken'
+import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
+
 const { elIp: ip, elPort: port, elTokenDuration: duration, secret  } = global.config
 const es = require('../helpers/elasticsearch')(ip, port)
 const loginRouter = new Router()
@@ -22,17 +24,14 @@ loginRouter.post('/', async (req, res) => {
 	} else {
 		try {
 			const result = await es.authenticate(req.body.username, req.body.password)
-			const jwtAuth = {
-				user: req.body.username,
-				secret: result.secret
-			}
-			const token = jwt.sign(jwtAuth, secret, { expiresIn: '2 days' })
 			const ttl = 10 * 60 * 1000
-			res.cookie('auth-token', token , { httpOnly: true, maxAge: ttl })
-			res.status(result.statusCode).send(JSON.stringify({
+			const token = authHelper.jwtSign(req.body.username, result.secret, `${ttl} ms`)
+
+			res.cookie(COOKIE_AUTH_TOKEN, token , { httpOnly: true, maxAge: ttl })
+			res.status(result.statusCode).json({
 				username: req.body.username,
-				 expiresIn: new Date(Date.now() + ttl).valueOf()
-			}))
+				expiresIn: new Date(Date.now() + ttl).valueOf()
+			})
 		} catch (err) {
 			res.status(err.statusCode).send(err.message)
 		}

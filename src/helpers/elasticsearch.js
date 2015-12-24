@@ -1,11 +1,8 @@
 /**
  * authentication related helper
  */
-import crypto from 'crypto'
 import request from 'request'
-import config from '../../config'
-
-const algorithm = 'aes-256-ctr'
+import authHelper from './server-auth-helper'
 
 const elUrl = Symbol('elasticsearch-url')
 const elPort = Symbol('elasticsearch-port')
@@ -14,18 +11,6 @@ class Elasticsearch {
 	constructor(url, port) {
 		this[elUrl] = url
 		this[elPort] = port
-	}
-	encrypt(text) {
-		const cipher = crypto.createCipher(algorithm, config.secret)
-		let crypted = cipher.update(text, 'utf8', 'hex')
-		crypted += cipher.final('hex')
-		return crypted
-	}
-	decrypt(text) {
-		const decipher = crypto.createDecipher(algorithm, config.secret)
-		let dec = decipher.update(text, 'hex', 'utf8')
-		dec += decipher.final('utf8')
-		return dec
 	}
 	authenticate(username, password) {
 		return new Promise((resolve, reject) => {
@@ -42,10 +27,9 @@ class Elasticsearch {
 				} else if (response.statusCode != 200) {
 					reject({ statusCode: response.statusCode, message: JSON.parse(body).error })
 				} else {
-					resolve({ statusCode: 200, mesage: body, secret: this.encrypt(password) })
+					resolve({ statusCode: 200, mesage: body, secret: authHelper.encrypt(password) })
 				}
 			})
-			// request.get(`http://${this[elUrl]}:this[elPort]`).auth(username, password)
 		})
 	}
 	getApi(api, username, password) {
