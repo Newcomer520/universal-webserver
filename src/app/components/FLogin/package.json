@@ -1,0 +1,6 @@
+{
+  "name": "FLogin",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./FLogin.js"
+}

@@ -9,5 +9,7 @@ module.exports = {
 	universal: true,
 	elIp: process.env["el-ip"] || 'localhost',
 	elPort: process.env["el-port"] || '9200',
-	elTokenDuration: 60 * 1000
+	elTokenDuration: 60 * 1000,
+	redisIp: process.env["redisip"],
+	redisPort: process.env["redisport"]
 }

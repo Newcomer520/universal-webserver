@@ -19,9 +19,12 @@
   ],
   "extra": {
   	"module-alias": [
-  		{ "src": "./src/actions", "expose": "actions" },
-  		{ "src": "./src/reducers", "expose": "reducers" },
-  		{ "src": "./src/components", "expose": "components" }
+  		{ "src": "./src/server", "expose": "server" },
+  		{ "src": "./src/app", "expose": "app" },
+  		{ "src": "./src/app/actions", "expose": "actions" },
+  		{ "src": "./src/app/reducers", "expose": "reducers" },
+  		{ "src": "./src/app/components", "expose": "components" },
+  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" }
   	]
   }
 }

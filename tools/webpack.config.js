@@ -157,7 +157,7 @@ const appConfig = merge({}, defaultConfig, {
 		// main: './src/main.js'
 		main: [
 			...(WATCH ? ['webpack/hot/dev-server', 'webpack-hot-middleware/client'] : []),
-			'./src/main.js',
+			'./src/app/main.js',
 		],
 	},
 	output: {

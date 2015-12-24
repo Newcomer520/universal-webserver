@@ -1,0 +1,19 @@
+.test {
+	font-size: 52px;
+	color: orange;
+}
+
+.header {
+	&-nav {
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+
+		&-item {
+			display: inline;
+			&:not(last-child) {
+				margin-right: 10px;
+			}
+		}
+	}
+}

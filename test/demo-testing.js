@@ -64,6 +64,5 @@ describe('Array', () => {
 		it('should return id: 0 when action not known', () => {
 			testOtherAction()
 		})
-
 	})
 })

@@ -20,8 +20,8 @@ async function copy() {
   const ncp = Promise.promisify(require('ncp'));
 
   await Promise.all([
-    ncp('src/public', 'build/public'),
-    ncp('src/content', 'build/content'),
+    ncp('src/app/public', 'build/public'),
+    ncp('src/app/content', 'build/content'),
     ncp('package.json', 'build/package.json'),
   ]);
 
@@ -33,13 +33,13 @@ async function copy() {
     silent: false,
   });
 
-  if (global.WATCH) {
-    const watcher = await watch('src/content/**/*.*');
-    watcher.on('changed', async (file) => {
-      const relPath = file.substr(path.join(__dirname, '../src/content/').length);
-      await ncp(`src/content/${relPath}`, `build/content/${relPath}`);
-    });
-  }
+  // if (global.WATCH) {
+  //   const watcher = await watch('src/app/content/**/*.*');
+  //   watcher.on('changed', async (file) => {
+  //     const relPath = file.substr(path.join(__dirname, '../src/content/').length);
+  //     await ncp(`src/content/${relPath}`, `build/content/${relPath}`);
+  //   });
+  // }
 }
 
 export default copy;
