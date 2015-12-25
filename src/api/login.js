@@ -33,7 +33,7 @@ loginRouter.post('/', async (req, res) => {
 				expiresIn: new Date(Date.now() + ttl).valueOf()
 			})
 		} catch (err) {
-			res.status(err.statusCode).send(err.message)
+			res.status(err.statusCode).json(err)
 		}
 	}
 

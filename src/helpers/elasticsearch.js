@@ -23,7 +23,7 @@ class Elasticsearch {
 			}
 			request(options, (err, response, body) => {
 				if (err) {
-					reject({ stausCode: 500, message: err })
+					reject({ statusCode: 500, message: err.toString() })
 				} else if (response.statusCode != 200) {
 					reject({ statusCode: response.statusCode, message: JSON.parse(body).error })
 				} else {
