@@ -12,8 +12,8 @@ const client = redis.createClient({ host: redisIp, port: redisPort, max_attempts
 // client.on('connect', log('connect'))
 // client.on('ready', log('ready'))
 // client.on('reconnecting', log('reconnecting'))
-client.on('error', log('error'))
-client.on('end', log('end'))
+client.on('error', () => console.log(`failed to connect redis server: ${redisIp}:${redisPort}`))
+client.on('end', () => console.log('redis end'))
 process.on('exit', code => {
 	console.log('redis exit....')
 	client.end()
