@@ -18,7 +18,8 @@ export default function(initState) {
 		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem('refresh-token') } })
 	}
 	const finalCreateStore = compose(
-		applyMiddleware(fetchMiddleware, promiseMiddleware)
+		applyMiddleware(fetchMiddleware, promiseMiddleware),
+		__DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
 	)(createStore)
 	const store = finalCreateStore(reducer, initState)
 	if (__DEV__ && module.hot) {
