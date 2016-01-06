@@ -1,3 +1,4 @@
+var path = require('path')
 /**
  * default server setting
  */
@@ -11,5 +12,6 @@ module.exports = {
 	elPort: process.env["el-port"] || '9200',
 	elTokenDuration: 60 * 1000,
 	redisIp: process.env["redisip"],
-	redisPort: process.env["redisport"]
+	redisPort: process.env["redisport"],
+	logFolder: process.env["logfolder"] || path.join(__dirname, './logs/')
 }

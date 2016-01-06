@@ -6,10 +6,11 @@ import routerMiddleware from './middlewares/router-middleware'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import apiRouter from './api/index'
+import logger from './middlewares/logger'
 
 const app = new express()
-// const elasticsearch = require('../helpers/elasticsearch')('url-of-elasticsearch-server')
 
+app.use(logger)
 app.use(cookieParser())
 // app.use(bodyParser.urlencoded({ extended: true }))
 // app.use(bodyParser.json())
