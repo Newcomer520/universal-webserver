@@ -14,9 +14,14 @@ import run from './run';
  * format and copies it to the output (build) folder.
  */
 async function build() {
-  await run(require('./clean'));
-  await run(require('./copy'));
-  await run(require('./bundle'));
+  await run(require('./clean'))
+  await run(require('./copy'))
+  await run(require('./bundle'))
 }
 
-export default build;
+export default build
+
+export async function copyStaticFilesOnly() {
+  await run(require('./clean'))
+  await run(require('./copy'))
+}

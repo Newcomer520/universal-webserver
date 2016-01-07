@@ -23,7 +23,8 @@ const bs = browserSync.create()
  * synchronizing URLs, interactions and code changes across multiple devices.
  */
 async function develop() {
-  await run(require('./build'))
+	const devMiddleware = webpackDevMiddleware(bundler, { publicPath: webpackConfig.output.publicPath, stats: webpackConfig.stats })
+  await run(require('./build').copyStaticFilesOnly)
   await run(require('./serve'))
   bs.init({
     proxy: {
@@ -31,18 +32,7 @@ async function develop() {
       target: `localhost:${config.port}`,
 
       middleware: [
-        webpackDevMiddleware(bundler, {
-          // IMPORTANT: dev middleware can't access config, so we should
-          // provide publicPath by ourselves
-          publicPath: webpackConfig.output.publicPath,
-
-          // Pretty colored output
-          stats: webpackConfig.stats,
-
-          // For other settings see
-          // http://webpack.github.io/docs/webpack-dev-middleware.html
-        }),
-
+      	devMiddleware,
         // bundler should be the same as above
         webpackHotMiddleware(bundler)
       ],

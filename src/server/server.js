@@ -27,11 +27,6 @@ app.use(webpackIsomorhpicMiddleware)
 // router setting
 app.use('*', routerMiddleware)
 
-
-// app.get('/', (req, res) => {
-// 	res.send('hello world')
-// })
-
 const server = app.listen(global.config.port, () => {
 	const host = server.address().address
 	const port = server.address().port
