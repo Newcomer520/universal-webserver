@@ -100,4 +100,9 @@ export default class authHelper {
 		dec += decipher.final('utf8')
 		return dec
 	}
+	static async logout(token = '') {
+		let decoded = authHelper.jwtDecode(token)
+		await redisClient.del(decoded.jti)
+		console.log('delete jti: ', decoded.jti)
+	}
 }
