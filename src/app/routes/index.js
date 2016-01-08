@@ -1,17 +1,16 @@
 import React, { Component } from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 import { replacePath, pushPath } from 'redux-simple-router'
-import Home from 'components/Home'
-import App from 'components/App'
-import About from 'components/About'
-import Contact from 'components/Contact'
-import DLogin from 'components/DLogin'
-import DFetch from 'components/DFetch'
+// components
+import Root from 'components/Root'
+import FetchStatus from 'components/FetchStatus'
+import Login from 'components/Login'
+
 import { setFetched } from 'actions/fetch-action'
 import getDummy from 'actions/dummy-action'
-import FLogin from 'components/FLogin'
 import AuthViewRoute from './auth-view-route'
 import { canUseDOM } from '../utils/fetch'
+
 /**
  * for rendering at server side, we might pass the information of token in order to fetch data
  * @param  {object} store redux store
@@ -19,24 +18,10 @@ import { canUseDOM } from '../utils/fetch'
  * @return {object} a react-router structure
  */
 export default (store) => {
-
 	return (
-		<Route path="/">
-			<Route component={App}>
-				<IndexRoute component={Home}/>
-				<Route path="about" component={About} />
-				<Route>
-					<Route path="dfetch" component={DFetch} onEnter={requireFetch(getDummy, { store, reduxState: 'dummy' })} />
-				</Route>
-				{/*<Route onEnter={requireLogin}> */}
-				<Route onEnter={requireLogin(store)}>
-					<Route path="contact" component={Contact} />
-				</Route>
-				{AuthViewRoute(store)}
-			</Route>
-			<Route path="flogin" component={FLogin} />
-			<Route path="dlogin" component={DLogin} />
-			{/*<Route path="login"></Route>*/}
+		<Route path="/" component={ Root }>
+			<IndexRoute component={ FetchStatus } onEnter={ requireLogin(store) } />
+			<Route path="login" component={ Login } />
 		</Route>
 	)
 }
@@ -44,12 +29,11 @@ export default (store) => {
 export const requireLogin = store => (nextState, replaceState, cb) => {
 	const { auth } = store.getState()
 	if (auth.tokenValid === true && auth.tokenExpired === true) {
-		// rendering view but not fetching data
-		console.log('token expired but still render view')
+		replaceState(null, 'login', { to: nextState.location.pathname })
 		cb()
 	} else if (auth.isAuthenticated !== true) {
 		// oops, not logged in, so can't be here!
-		replaceState(null, 'dlogin', { to: nextState.location.pathname })
+		replaceState(null, 'login', { to: nextState.location.pathname })
 		cb()
 	} else {
 		cb()
@@ -65,7 +49,7 @@ export const requireFetch = (fetchMethod, { authRequired = false, store, reduxSt
 				return cb()
 			} else if (auth.isAuthenticated === false) {
 				// not authenticated nor token valid
-				replaceState(null, 'dlogin', { to: nextState.location.pathname })
+				replaceState(null, 'login', { to: nextState.location.pathname })
 			} else if (store.getState().fetched === true) {
 				return cb()
 			}
@@ -94,6 +78,4 @@ export const requireFetch = (fetchMethod, { authRequired = false, store, reduxSt
 
 	}
 }
-// export const AuthRequired = function() {
-// 	return WrappedRoute => <Route onEnter={requireLogin}>{WrappedRoute}</Route>
-// }
+

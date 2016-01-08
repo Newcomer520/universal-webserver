@@ -16,17 +16,6 @@ export function dummyApi() {
 			'Content-Type': 'application/json'
 		}
 	})
-	// return new Promise((resolve, reject) => {
-	// 	request.get('/api/dummy')
-	// 		.set('Content-Type', 'application/json')
-	// 		.end((err, res) => {
-	// 			if (err) {
-	// 				reject(err)
-	// 			} else {
-	// 				resolve(res)
-	// 			}
-	// 		})
-	// })
 }
 
 export default function getDummy() {

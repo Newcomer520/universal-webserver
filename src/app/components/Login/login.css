@@ -1,0 +1,27 @@
+/* @component: block
+ @descendent : element
+ @modifier : modifier */
+
+.Login {
+	width: 50%;
+	margin: auto;
+
+	&__form {
+		color: #1234;
+		text-align: center;
+	}
+
+	&__inputs {
+		display: block;
+		width: 80%;
+	}
+
+	&__buttons {
+		margin-bottom: 20px;
+
+		& > div {
+			margin-right: 30px;
+		}
+	}
+
+}

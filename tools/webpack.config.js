@@ -122,7 +122,17 @@ const defaultConfig = {
 				],
 				// 'css?modules&sourceMap!postcss!less?outputStyle=expanded&sourceMap'
 //{ test: /\.less$/, loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=2&sourceMap!autoprefixer?browsers=last 2 version!less?outputStyle=expanded&sourceMap=true&sourceMapContents=true') },
-			}, {
+			},
+			{
+			test:   /\.css$/,
+			//loaders: ["style-loader","css-loader","postcss-loader"]
+			loaders: [
+			     'style-loader',
+			     'css-loader?' + 'modules&localIdentName=[local]_[hash:base64:3]-[name]',
+			     'postcss-loader'
+			    ],
+			},
+			{
 				test: /\.json$/,
 				loader: 'json-loader',
 			}, {
@@ -142,7 +152,11 @@ const defaultConfig = {
 		return [
 			// require('postcss-import')({ addDependencyTo: bundler }), // postcss-import是提供方法可以解析@import
 			// require('precss')(), // precss是讓css可以寫類似sass的語法
-			require('autoprefixer')({ browsers: AUTOPREFIXER_BROWSERS })
+			require('autoprefixer')({ browsers: AUTOPREFIXER_BROWSERS }),
+			require('precss'),
+			require("postcss-cssnext")(),
+			//require('postcss-bem')({ style: 'bem' }),
+			require('postcss-nested')
 		]
 	}
 }
