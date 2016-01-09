@@ -31,6 +31,7 @@ export default function(state = initState, action) {
 				status: action.type
 			}
 		case LOGIN_FAILED:
+			console.log(action)
 			return { ...state, tokenExpired: null, tokenValid: false, isAuthenticated: false, status: action.type }
 		case UPDATE_PATH:
 			return { ...state, status: null }

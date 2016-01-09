@@ -13,5 +13,6 @@ module.exports = {
 	elTokenDuration: 60 * 1000,
 	redisIp: process.env["redisip"],
 	redisPort: process.env["redisport"],
-	logFolder: process.env["logfolder"] || path.join(__dirname, './logs/')
+	logFolder: process.env["logfolder"] || path.join(__dirname, './logs/'),
+	recaptchaSecret: '6LcSzRQTAAAAAOMCnSZ_xx41-nCUBS2eLHQ7ga6x'
 }

@@ -40,7 +40,7 @@ export default function(store) {
 						)
 				} else {
 					console.log('request failed and no doing refresh token', err.response)
-					throw err
+					return err.response.json().then(json => { throw json })
 				}
 			}
 		)

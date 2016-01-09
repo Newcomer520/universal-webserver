@@ -9,9 +9,9 @@ export const canUseDOM = !!(
   window.document && window.document.createElement)
 )
 
-export function login(username, password) {
+export function login(username, password, gRecaptchaResponse) {
 	const url = '/api/login'
-	const options = { method: 'post', body: JSON.stringify({ username: username, password: password })}
+	const options = { method: 'post', body: JSON.stringify({ username, password, gRecaptchaResponse })}
 	return fetchingObject(url, options, false)
 }
 

@@ -14,7 +14,7 @@ apiRouter.use('/adata', aDataRouter)
 apiRouter.use('/refreshtoken', refreshTokenRouter)
 apiRouter.use('/status', statusRouter)
 apiRouter.use((err, req, res, next) => {
-		res.status(err.statusCode || 500).send(err.message || 'Something goes wrong')
+		res.status(err.statusCode || 500).json(err.message || 'Something goes wrong')
 })
 apiRouter.all('*', (req, res) => {
 	res.status(404).send('Not founnnnnnnnnnnnnnnd')
