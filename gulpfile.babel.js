@@ -115,7 +115,7 @@ gulp.task('dev-server', cb => {
 	})
 })
 
-gulp.task('apidoc', (done) => {
+gulp.task('apidoc', done => {
 	apidoc({
 		src: 'src/server/api',
 		dest: 'apidoc/',
@@ -124,3 +124,21 @@ gulp.task('apidoc', (done) => {
 })
 
 gulp.task('watch-apidoc', ['apidoc'], () => gulp.watch('src/server/api/**/*.js', ['apidoc']))
+
+gulp.task('build', ['copy', 'apidoc'], cb => {
+	env({
+		vars: {
+			NODE_ENV: 'production'
+		}
+	})
+	const webpackConfig = require('./tools/webpack.config')[0]
+	webpack(webpackConfig, (err, stats) => {
+		if (err) {
+			throw new gutil.PluginError("webpack", err)
+		}
+		gutil.log("[webpack]", stats.toString({
+			// output options
+		}))
+		cb()
+	})
+})

@@ -1,0 +1,7 @@
+.dockerignore
+docker/scripts
+Dockerfile
+node_modules
+test
+logs
+.git

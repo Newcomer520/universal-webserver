@@ -128,7 +128,7 @@ const defaultConfig = {
 			//loaders: ["style-loader","css-loader","postcss-loader"]
 			loaders: [
 			     'style-loader',
-			     'css-loader?' + 'modules&localIdentName=[local]_[hash:base64:3]-[name]',
+			     'css-loader?' + (DEBUG ? 'sourceMap&' : 'minimize&') + 'modules&localIdentName=[local]_[hash:base64:3]-[name]',
 			     'postcss-loader'
 			    ],
 			},
@@ -234,7 +234,7 @@ if (DEBUG) {
 } else {
 	appConfig.module.loaders =
 		appConfig.module.loaders.map(x => {
-			if (x.test.test('.less') !== true) {
+			if (x.test.test('.less') !== true && x.test.test('.css') !== true) {
 				return x
 			}
 			return { test: x.test, loader: ExtractTextPlugin.extract(x.loaders[0], x.loaders.slice(1).join('!')) }
@@ -251,11 +251,11 @@ const serverConfig = merge({}, defaultConfig, {
 	output: {
 		path: './build',
 		filename: 'server.js',
-		libraryTarget: 'commonjs2',
+		// libraryTarget: 'commonjs2',
 	},
 	target: 'node',
 	externals: [
-		/^\.\/assets\.json$/,
+		// /^\.\/assets\.json$/,
 		nodeModules
 		//,
 	//   function filter(context, request, cb) {

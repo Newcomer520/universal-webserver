@@ -7,7 +7,7 @@ export const TYPES = {
 
 export function login(username, password) {
 	// const promise = apiLogin(username, password)
-	const fetch = loginApi(username, password)
+	const fetch = loginApi(username, password, gRecaptchaResponse)
 	const types = Object.keys(TYPES).map(k => TYPES[k])
 	return { fetch, types }
 }
