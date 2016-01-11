@@ -125,7 +125,7 @@
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-redux": "^4.0.4",
-    "react-router": "^1.0.2",
+    "react-router": "1.0.2",
     "redux": "^3.0.5",
     "redux-form": "^4.0.5",
     "redux-router": "^0.1.0",
