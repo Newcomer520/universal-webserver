@@ -7,9 +7,10 @@ import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import apiRouter from './api/index'
 import logger from './middlewares/logger'
+import helmet from 'helmet'
 
 const app = new express()
-
+app.use(helmet())
 app.use(logger)
 app.use(cookieParser())
 // app.use(bodyParser.urlencoded({ extended: true }))
