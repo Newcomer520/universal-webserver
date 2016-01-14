@@ -90,6 +90,7 @@
     "gaze": "^0.5.2",
     "gulp": "^3.9.0",
     "gulp-nodemon": "^2.0.4",
+    "helmet": "^1.0.2",
     "isomorphic-fetch": "^2.2.0",
     "isparta": "^4.0.0",
     "json-loader": "^0.5.4",
