@@ -63,6 +63,7 @@
   "author": "I-Lun Chen",
   "license": "ISC",
   "devDependencies": {
+    "apidoc": "^0.14.0",
     "assets-webpack-plugin": "^3.2.0",
     "autoprefixer": "^6.1.2",
     "babel": "^5.8.34",
@@ -89,6 +90,7 @@
     "file-stream-rotator": "0.0.6",
     "gaze": "^0.5.2",
     "gulp": "^3.9.0",
+    "gulp-apidoc": "^0.2.2",
     "gulp-nodemon": "^2.0.4",
     "helmet": "^1.0.2",
     "isomorphic-fetch": "^2.2.0",
@@ -133,5 +135,9 @@
     "redux-simple-router": "^1.0.0",
     "serialize-javascript": "^1.1.2",
     "superagent": "^1.6.1"
+  },
+  "apidoc": {
+    "title": "APIs of Elasticsearch Status",
+    "url": "/api"
   }
 }

@@ -2,6 +2,41 @@ import { Router } from 'express'
 import authenticator from '../middlewares/authenticator'
 const { elIp: ip, elPort: port, elTokenDuration: duration, secret  } = global.config
 const es = require('../helpers/elasticsearch')(ip, port)
+
+/**
+ * @apiDefine Admin Accessed only by administrator.
+ *
+ */
+
+/**
+ * @api {get} /status Status
+ * @apiGroup Elasticsearch
+ * @apiName GetStatus
+ *
+ * @apiPermission Admin
+ * @apiSuccessExample {json} Response
+ * {
+ * 	"cluster_name" : "security-el",
+ * 	"status" : "green",
+ * 	"timed_out" : false,
+ * 	"number_of_nodes" : 1,
+ * 	"number_of_data_nodes" : 1,
+ * 	"active_primary_shards" : 0,
+ * 	"active_shards" : 0,
+ * 	"relocating_shards" : 0,
+ * 	"initializing_shards" : 0,
+ * 	"unassigned_shards" : 0,
+ * 	"delayed_unassigned_shards" : 0,
+ * 	"number_of_pending_tasks" : 0,
+ * 	"number_of_in_flight_fetch" : 0
+ * }
+ *
+ * @apiError (Error 400) Unauthorized User has no permission to access the resource
+ * @apiErrorExample {json} Unauthorized
+ * HTTP/1.1 401 Unauthorized
+ * "Unauthenticated"
+ *
+ */
 const router = new Router()
 
 router.use(authenticator)

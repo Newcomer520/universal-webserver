@@ -20,6 +20,9 @@ app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, '../..', 'build/public')))
 
 // apis
+
+// api documents
+app.use('/apidoc/', express.static(path.join(__dirname, '../..', 'apidoc')))
 app.use('/api', apiRouter)
 
 // enhance webpack-isomorphic-middleware

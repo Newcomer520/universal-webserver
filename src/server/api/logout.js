@@ -2,6 +2,18 @@ import { Router } from 'express'
 import authenticator from '../middlewares/authenticator'
 import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
 
+/**
+ * @api {post} /logout User Logout
+ * @apiGroup Authentication
+ * @apiName Logout
+ *
+ * @apiSuccess Response log out successfully
+ * @apiSuccessExample {json} Response
+ * "log out successfully"
+ *
+ * @apiError (Error 500) InternalServerError UnexpectedError
+ */
+
 const router = new Router()
 
 router.use(authenticator)

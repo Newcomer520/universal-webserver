@@ -1,15 +1,16 @@
 import gulp from 'gulp'
 import nodemon from 'gulp-nodemon'
-import config from './tools/config'
+import config from './config'
 import webpackDevMiddleware from 'webpack-dev-middleware'
 import webpackHotMiddleware from 'webpack-hot-middleware'
 import { exec } from 'child_process'
+import apidoc from 'gulp-apidoc'
 const browserSync = require('browser-sync').create()
 
 const BROWSER_SYNC_RELOAD_DELAY = 500
 
 gulp.task('default', () => {
-	
+
 })
 
 gulp.task('dev', ['dev-server', 'browser-sync'], () => {
@@ -35,7 +36,7 @@ gulp.task('dev-server', () => {
 	// .on('restart', function onRestart() {
 	// 	// reload connected browsers after a slight delay
 	// 	setTimeout(
-	// 		() => console.log('resttart'),//browserSync.reload({ stream: false }), 
+	// 		() => console.log('resttart'),//browserSync.reload({ stream: false }),
 	// 		BROWSER_SYNC_RELOAD_DELAY
 	// 	)
 	// })
@@ -44,3 +45,13 @@ gulp.task('dev-server', () => {
 gulp.task('browser-sync', () => {
 
 })
+
+gulp.task('apidoc', (done) => {
+	apidoc({
+		src: 'src/server/api',
+		dest: 'apidoc/',
+		silent: false
+	}, done)
+})
+
+gulp.task('watch-apidoc', ['apidoc'], () => gulp.watch('src/server/api/**/*.js', ['apidoc']))
