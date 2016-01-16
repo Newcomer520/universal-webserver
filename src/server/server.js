@@ -13,8 +13,6 @@ const app = new express()
 app.use(helmet())
 app.use(logger)
 app.use(cookieParser())
-// app.use(bodyParser.urlencoded({ extended: true }))
-// app.use(bodyParser.json())
 
 // assets
 app.use('/static', express.static(path.join(__dirname, '../..', 'build/public')))
