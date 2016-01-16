@@ -14,7 +14,7 @@ if (!config.redisIp || !config.redisPort) {
 	throw new Error("Redis IP and port should be assigned.")
 }
 global.webpackIsomorphicTools = new WebpackIsomorphicTools(require('./webpack-isomorphic-tools-configuration'))
-	.development(process.env.NODE_ENV === 'development/server')
+	.development(__DEV__)
 	.server(path.join(__dirname, '..'), () => {
 		require('../src/server/server')
 	})

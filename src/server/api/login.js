@@ -6,6 +6,36 @@ import fetch from 'isomorphic-fetch'
 
 const { elIp: ip, elPort: port, elTokenDuration: duration, secret, recaptchaSecret } = global.config
 const es = require('../helpers/elasticsearch')(ip, port)
+/**
+ * @api {post} /login User Login
+ * @apiName Login
+ * @apiGroup Authentication
+ *
+ * @apiParam {String} username Username
+ * @apiParam {String} password Password
+ * @apiParam {String} gRecaptchaResponse Response of google recaptcha
+ *
+ * @apiSuccess {String} username
+ * @apiSuccess {String} refreshToken Refresh token
+ * @apiSuccess {number} expiresIn When the access token is expired. In other words, one should use refreshToken to get the new ones
+ *
+ * @apiSuccessExample {json} Response
+ * {
+ * 	"username": "user02",
+ * 	"refreshToken": "9c507d8d-9c6c-4ba9-87ce-c6af2afd88c6",
+ * 	"expiresIn": "2016-01-14T03:18:03.157Z"
+ * }
+ *
+ * @apiError (Error 400) MissingParams The <code>username</code> or <code>password</code> of the User was not provided.
+ * @apiErrorExample {json} MissingParams
+ * HTTP/1.1 400 Bad Request
+ * "username or password should be provided."
+ *
+ * @apiError (Error 400) InvalidRecaptcha <code>gRecaptchaResponse</code> is either not valid or missed.
+ * @apiErrorExample {json} InvalidRecaptcha
+ * HTTP/1.1 400 Bad Request
+ * "invalid recaptcha response"
+ */
 const loginRouter = new Router()
 
 loginRouter.use(bodyParser.json(), (err, req, res, next) => {
