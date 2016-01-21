@@ -18,9 +18,6 @@ import ResetButton from 'material-ui/lib/raised-button'
 //Recaptcha
 import Recaptcha from 'components/Recaptcha'
 
-// react testing
-import ReactTestUtils from 'react-addons-test-utils';
-
 const hideAutoFillColorStyle = {
   WebkitBoxShadow: '0 0 0 1000px white inset'
 }
@@ -88,7 +85,7 @@ export default class Login extends Component {
 
 		return (
 			<div className={styles['Login']} >
-				<form className={styles['Login__form']} onSubmit={ this.handleSubmit }>
+				<form className={styles['Login__form']} onSubmit={this.handleSubmit}>
 					<LoginCard>
 						<CardMedia overlay={<CardTitle title="Login" subtitle="Please authenticate your account first."/>}>
 							<img src="http://lorempixel.com/600/337/nature/"/>

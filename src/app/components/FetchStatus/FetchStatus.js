@@ -4,7 +4,6 @@ import { reducer as formReducer, reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { logout } from 'actions/logout-action'
-import { fetchStatus } from 'actions/fetch-status-action'
 
 // import comonents from material-ui
 import FetchCard from 'material-ui/lib/card/card'
@@ -26,7 +25,7 @@ const { FETCH_STATUS_REQUESTING, FETCH_STATUS_SUCCESS, FETCH_STATUS_FAILED } = F
 const mapStateToProps = (state) => {
 	return { fetch_status: state.fetchStatus }
 }
-@connect(mapStateToProps, dispatch => ({ actions: bindActionCreators({ logout, fetchStatus }, dispatch) }))
+@connect(mapStateToProps, dispatch => ({ actions: bindActionCreators({ logout }, dispatch) }))
 export default class FetchStatus extends Component {
 	static propTypes = {
 		actions: React.PropTypes.object
@@ -35,10 +34,6 @@ export default class FetchStatus extends Component {
 		// useing boundAction to trigger middlewares
 		const { logout } = this.props.actions
 		logout()
-	}
-	componentDidMount(){
-		const { fetchStatus } = this.props.actions
-		fetchStatus()
 	}
 	render() {
 		const { data, status } = this.props.fetch_status
@@ -69,17 +64,17 @@ export default class FetchStatus extends Component {
 		}
 		return (
 			<div key={'fetchPage'}>
-			<FetchCard className={styles['FetchStatus']}>
-				<CardTitle title="FetchStatus" subtitle="fetch demo"/>
-				<List subheader="Response data from '/api/status' ">
-					{
-						renderComponent
-					}
-				</List>
-			<div className={styles['FetchStatus__buttonsWrapper']}>
-				<LogoutButton label="Logout" primary={true} onClick={this.requestLogout} />
-			</div>
-			</FetchCard>
+				<FetchCard className={styles['FetchStatus']}>
+					<CardTitle title="FetchStatus" subtitle="fetch demo"/>
+					<List subheader="Response data from '/api/status' ">
+						{
+							renderComponent
+						}
+					</List>
+					<div className={styles['FetchStatus__buttonsWrapper']}>
+						<LogoutButton label="Logout" primary={true} onClick={this.requestLogout} />
+					</div>
+				</FetchCard>
 			</div>
 		)
 	}

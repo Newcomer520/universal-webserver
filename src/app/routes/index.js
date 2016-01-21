@@ -10,6 +10,7 @@ import { setFetched } from 'actions/fetch-action'
 import getDummy from 'actions/dummy-action'
 import AuthViewRoute from './auth-view-route'
 import { canUseDOM } from '../utils/fetch'
+import { fetchStatus } from 'actions/fetch-status-action'
 
 /**
  * for rendering at server side, we might pass the information of token in order to fetch data
@@ -20,7 +21,7 @@ import { canUseDOM } from '../utils/fetch'
 export default (store) => {
 	return (
 		<Route path="/" component={ Root }>
-			<IndexRoute component={ FetchStatus } onEnter={ requireLogin(store) } />
+			<IndexRoute component={FetchStatus} onEnter={requireFetch(fetchStatus, { authRequired: true, store, reduxState: 'fetchStatus', status: 'status' })} />
 			<Route path="login" component={ Login } />
 		</Route>
 	)
@@ -61,21 +62,26 @@ export const requireFetch = (fetchMethod, { authRequired = false, store, reduxSt
 				cb()
 			}
 		}
-		const result = fetchMethod(...args)
-		store.dispatch(result)
-		store.dispatch(setFetched(true))
-		const { types: [ REQUESTING, REQ_SUCCESS, REQ_FAILED ] } = result
-		const unsubscribe = store.subscribe(() => {
-			if (store.getState()[reduxState][status] === REQ_SUCCESS
-				|| store.getState()[reduxState][status] === REQ_FAILED) {
-				unsubscribe()
-				if (!canUseDOM) {
-					console.log('server side fetching data')
-					cb()
-				}
-			}
-		})
 
+		// the hacked way to ensure that status of sture is consistent in client / server
+		// @todo: need a better way to solve the fetching flow
+		// maybe a fetching decorator?
+		setTimeout(() => {
+			const result = fetchMethod(...args)
+			store.dispatch(result)
+			store.dispatch(setFetched(true))
+			const { types: [ REQUESTING, REQ_SUCCESS, REQ_FAILED ] } = result
+			const unsubscribe = store.subscribe(() => {
+				if (store.getState()[reduxState][status] === REQ_SUCCESS
+					|| store.getState()[reduxState][status] === REQ_FAILED) {
+					unsubscribe()
+					if (!canUseDOM) {
+						console.log('server side fetching data')
+						cb()
+					}
+				}
+			})
+		}, 1)
 	}
 }
 

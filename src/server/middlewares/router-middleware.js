@@ -44,6 +44,7 @@ function universalRender(store) {
 			} else if (redirectLocation) {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
+				global.navigator = { userAgent: req.headers['user-agent'] }
 				// prevent the token from going to front-end
 				store.dispatch(clearToken())
 				const component = (
@@ -52,7 +53,7 @@ function universalRender(store) {
 					</Provider>
 				)
 				res.send('<!doctype html>' +
-					ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store} />)
+					ReactDOM.renderToStaticMarkup(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store} />)
 				)
 			} else {
 				res.status(404).send('Not found')

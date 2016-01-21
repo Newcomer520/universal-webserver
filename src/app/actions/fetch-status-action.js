@@ -1,9 +1,9 @@
 import { fetchStatus as fetchStatusApi } from '../utils/fetch'
 
 export const TYPES = {
-	FETCH_STATUS_REQUESTING: Symbol('request fetch status'),
-	FETCH_STATUS_SUCCESS: Symbol('fetch status success'),
-	FETCH_STATUS_FAILED: Symbol('fetch status failed')
+	FETCH_STATUS_REQUESTING: `Symbol('request fetch status')`,
+	FETCH_STATUS_SUCCESS: `Symbol('fetch status success')`,
+	FETCH_STATUS_FAILED: `Symbol('fetch status failed')`
 }
 
 export const fetchStatus = () => {
