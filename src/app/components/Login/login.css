@@ -6,6 +6,12 @@
 	width: 50%;
 	margin: auto;
 
+	&__banner {
+		display: block;
+		height: 30vh;
+		background: #1976d2;
+	}
+
 	&__form {
 		color: #1234;
 		text-align: center;

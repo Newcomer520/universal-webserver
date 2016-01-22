@@ -127,7 +127,7 @@ export default class Login extends Component {
 				<form className={styles['Login__form']} onSubmit={this.handleSubmit}>
 					<LoginCard>
 						<CardMedia overlay={<CardTitle title="Login" subtitle="Please authenticate your account first."/>}>
-							<img src="http://lorempixel.com/600/337/nature/"/>
+							<div className={styles['Login__banner']}></div>
 						</CardMedia>
 						<NameInputbox
 							errorText={username_error_text}
