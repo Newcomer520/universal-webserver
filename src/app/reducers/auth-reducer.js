@@ -17,7 +17,8 @@ export const initState = {
 	token: null, // access-token
 	refreshToken: null,
 	recaptcha_id: null,
-	recaptcha_response: null
+	recaptcha_response: null,
+	is_login_btn_disable: false
 }
 export default function(state = initState, action) {
 	switch (action.type) {
@@ -29,7 +30,7 @@ export default function(state = initState, action) {
 		case GET_RECAPTCHA_RESPONSE_FAILED:
 			return { ...state, recaptcha_response: null }
 		case LOGIN_REQUESTING:
-			return { ...state, status: action.type }
+			return { ...state, status: action.type, is_login_btn_disable: true }
 		case LOGIN_SUCCESS:
 			return {
 				...state,
@@ -39,11 +40,18 @@ export default function(state = initState, action) {
 				username: action.result.username,
 				expiresIn: action.result.expiresIn,
 				refreshToken: action.result.refreshToken,
-				status: action.type
+				status: action.type,
+				is_login_btn_disable: false
 			}
 		case LOGIN_FAILED:
-			console.log(action)
-			return { ...state, tokenExpired: null, tokenValid: false, isAuthenticated: false, status: action.type }
+			return {
+				...state,
+				tokenExpired: null,
+				tokenValid: false,
+				isAuthenticated: false,
+				status: action.type,
+				is_login_btn_disable: false
+			}
 		case UPDATE_PATH:
 			return { ...state, status: null }
 		case FETCH_SET_TOKEN:
