@@ -24,6 +24,9 @@ export default class Recaptcha extends Component {
 	}
 	componentDidMount() {
 		const { id, callbackName, siteKey } = this.props
+		const { set_recaptcha_id, get_recaptcha_response_failed } = this.props.actions
+		let recaptcha_id;
+
 		const options = {
 			sitekey: siteKey,
 			// callback: (this.props.verifyCallback) ? this.props.verifyCallback : undefined,
@@ -35,8 +38,6 @@ export default class Recaptcha extends Component {
 			'expired-callback': this.expiredCallback
 		}
 
-		const { set_recaptcha_id } = this.props.actions
-		let recaptcha_id;
 		if (!window.grecaptcha) {
 			window[callbackName] = () => {
 				recaptcha_id = grecaptcha.render(id, options)
@@ -47,6 +48,8 @@ export default class Recaptcha extends Component {
 			set_recaptcha_id(recaptcha_id)
 		}
 
+		// remove the previous response
+		get_recaptcha_response_failed()
 	}
 	expiredCallback = () => {
 		const { get_recaptcha_response_failed } = this.props.actions

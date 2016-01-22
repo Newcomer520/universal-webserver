@@ -19,18 +19,18 @@ import ResetButton from 'material-ui/lib/raised-button'
 import Recaptcha from 'components/Recaptcha'
 
 const hideAutoFillColorStyle = {
-  WebkitBoxShadow: '0 0 0 1000px white inset'
+	WebkitBoxShadow: '0 0 0 1000px white inset'
 }
 
 const validate = (values, props) => {
 	const errors = {}
 
-	if (!values.userName && props.form.userName) {
-		errors.userName = 'Required'
+	if (!values.userName) {
+		errors.userName = 'Username is required'
 	}
 
-	if (!values.password && props.form.password) {
-		errors.password = 'Required'
+	if (!values.password) {
+		errors.password = 'Password is required'
 	}
 	return errors;
 };
@@ -56,32 +56,70 @@ export default class Login extends Component {
 		fields: PropTypes.object.isRequired,
 		actions: PropTypes.object
 	}
+
+	constructor(props) {
+		super(props)
+		this.state = {
+			is_login_click: false
+		}
+	}
+
 	resetForm = (event) => {
 		event.preventDefault()
+		this.setState({ is_login_click: false })
 		this.props.actions.reset('login')
 	}
+
 	// babel will auto bind this into array function
 	handleSubmit = (event) => {
-		const { actions: { login }, recaptcha_response, fields } = this.props
+		const { actions: { login, login_btn_click }, recaptcha_response, fields: { userName, password } } = this.props
 		event.preventDefault()
-		let id = this.id.getValue(),
-				pw = this.pw.getValue()
 
-		login(id, pw, recaptcha_response)
+		this.setState({ is_login_click: true })
+		// workaround for material-ui conflict with chrome's autofill
+		this.id.focus()
+		this.id.blur()
+		this.pw.focus()
+		this.pw.blur()
+
+		// useing !! trun error to true and false, then NOT the error means valid
+		const is_username_valid = !!!userName.error
+		const is_password_valid = !!!password.error
+		const is_get_recaptcha_response = !!this.is_get_recaptcha_response()
+
+		if(is_username_valid && is_password_valid && is_get_recaptcha_response){
+			login(this.id.getValue(), this.pw.getValue(), recaptcha_response)
+		}
+
 		return false
 	}
-	verify_button_disable = () => {
-		const { fields: { userName, password }, recaptcha_response } = this.props
-		const is_input_not_ready = (!userName.visited || !password.visited || !!!recaptcha_response )
-		const is_error_exist = !(!userName.error && !password.error)
-		const is_login_button_disable = is_input_not_ready || is_error_exist
 
-		return is_login_button_disable
+	is_get_recaptcha_response = () => {
+		const { recaptcha_response } = this.props
+		const get_response = !!recaptcha_response
+		return get_response
 	}
+
 	render() {
 		const { fields: { userName, password }, recaptcha_response } = this.props
 		const styles = require('./login.css')
-		const is_login_button_disable = this.verify_button_disable()
+		const is_errors_display = this.state.is_login_click
+		let underline_style, recaptcha_error_txt_style, username_error_text, password_error_text
+
+		// error message style for recaptcha
+		if( !this.is_get_recaptcha_response() && is_errors_display ){
+			underline_style = styles['Login__red-underline']
+			recaptcha_error_txt_style = styles['Login__error-text']
+		} else {
+			underline_style = styles['Login__red-underline--hide']
+			recaptcha_error_txt_style = styles['Login__error-text--hide']
+		}
+
+		// error message for username and password
+		if( is_errors_display ){
+			username_error_text = userName.error
+			password_error_text = password.error
+		}
 
 		return (
 			<div className={styles['Login']} >
@@ -91,7 +129,7 @@ export default class Login extends Component {
 							<img src="http://lorempixel.com/600/337/nature/"/>
 						</CardMedia>
 						<NameInputbox
-							errorText={userName.error}
+							errorText={username_error_text}
 							inputStyle={hideAutoFillColorStyle}
 							className={styles['Login__inputs']}
 							{ ...userName }
@@ -100,7 +138,7 @@ export default class Login extends Component {
 							floatingLabelText="User name" />
 						<br/>
 						<PasswordInputbox
-							errorText={password.error}
+							errorText={password_error_text}
 							inputStyle={hideAutoFillColorStyle}
 							className={styles['Login__inputs']}
 							{ ...password }
@@ -109,14 +147,21 @@ export default class Login extends Component {
 							hintText="Input your user password"
 							floatingLabelText="Password" />
 						<br/>
-
-						<Recaptcha className={styles['Login__recaptcha']} id="recaptcha00" siteKey="6LcSzRQTAAAAAClegBn5RBTiiRyDrYrRHvpwpcHF" callbackName="recaptchCallback" />
-
+						<Recaptcha
+							className={styles['Login__recaptcha']}
+							id="recaptcha00"
+							siteKey="6LcSzRQTAAAAAClegBn5RBTiiRyDrYrRHvpwpcHF"
+							callbackName="recaptchCallback" />
+						<div className={styles['Login__box']}>
+							<hr className={styles['Login__gray-underline']}/>
+							<hr className={underline_style}/>
+						</div>
+						<div className={recaptcha_error_txt_style}>reCaptcha is required</div>
+						<br />
 						<div className={styles['Login__buttons']}>
-							<LoginButton disabled={is_login_button_disable} label="OK" primary={true} type="submit" />
+							<LoginButton label="OK" primary={true} type="submit" />
 							<ResetButton label="Reset" onClick={ this.resetForm } />
 						</div>
-
 					</LoginCard>
 				</form>
 			</div>
