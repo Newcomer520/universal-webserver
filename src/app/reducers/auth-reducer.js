@@ -18,7 +18,7 @@ export const initState = {
 	refreshToken: null,
 	recaptcha_id: null,
 	recaptcha_response: null,
-	is_login_btn_disable: false
+	is_btn_disable: false
 }
 export default function(state = initState, action) {
 	switch (action.type) {
@@ -30,7 +30,7 @@ export default function(state = initState, action) {
 		case GET_RECAPTCHA_RESPONSE_FAILED:
 			return { ...state, recaptcha_response: null }
 		case LOGIN_REQUESTING:
-			return { ...state, status: action.type, is_login_btn_disable: true }
+			return { ...state, status: action.type, is_btn_disable: true }
 		case LOGIN_SUCCESS:
 			return {
 				...state,
@@ -41,7 +41,7 @@ export default function(state = initState, action) {
 				expiresIn: action.result.expiresIn,
 				refreshToken: action.result.refreshToken,
 				status: action.type,
-				is_login_btn_disable: false
+				is_btn_disable: false
 			}
 		case LOGIN_FAILED:
 			return {
@@ -50,7 +50,7 @@ export default function(state = initState, action) {
 				tokenValid: false,
 				isAuthenticated: false,
 				status: action.type,
-				is_login_btn_disable: false
+				is_btn_disable: false
 			}
 		case UPDATE_PATH:
 			return { ...state, status: null }
