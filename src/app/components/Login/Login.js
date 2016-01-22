@@ -39,6 +39,7 @@ const mapStateToProps = (state) => {
 	return {
 		recaptcha_id: state.auth.recaptcha_id,
 		recaptcha_response: state.auth.recaptcha_response,
+		is_btn_disable: state.auth.is_btn_disable,
 		state : state.form
 	}
 }
@@ -159,8 +160,8 @@ export default class Login extends Component {
 						<div className={recaptcha_error_txt_style}>reCaptcha is required</div>
 						<br />
 						<div className={styles['Login__buttons']}>
-							<LoginButton label="OK" primary={true} type="submit" />
-							<ResetButton label="Reset" onClick={ this.resetForm } />
+							<LoginButton disabled={this.props.is_btn_disable} label="OK" primary={true} type="submit" />
+							<ResetButton disabled={this.props.is_btn_disable} label="Reset" onClick={ this.resetForm } />
 						</div>
 					</LoginCard>
 				</form>
