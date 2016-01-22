@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
 	return next => action => {
 		if (!action) {
 			return
@@ -7,7 +7,7 @@ export default function() {
 		if (!promise || !types) {
 			return next(action)
 		}
-		const [ REQUESTING, SUCCESS, FAILURE ] = types
+		const [REQUESTING, SUCCESS, FAILURE] = types
 		next({ ...rest, type: REQUESTING })
 		return promise.then(
 			result => next({ ...rest, result, type: SUCCESS }),

@@ -1,0 +1,15 @@
+{
+	"extends": "stylelint-config-standard",
+	"plugins": [
+		"stylelint-selector-bem-pattern"
+	],
+	"rules": {
+		"selector-bem-pattern": {
+			preset: 'bem',
+			componentName: 'cmpnt_[a-zA-Z]+',
+			ignoreSelectors: '\.no-.+'
+		},
+		"indentation": "tab",
+		"number-leading-zero": null
+	}
+}

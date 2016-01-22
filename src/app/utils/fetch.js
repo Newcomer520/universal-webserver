@@ -15,6 +15,18 @@ export function login(username, password, gRecaptchaResponse) {
 	return fetchingObject(url, options, false)
 }
 
+export function logout() {
+	const url = '/api/logout'
+	const options = { method: 'post' }
+	return fetchingObject(url, options, false)
+}
+
+export function fetchStatus() {
+	const url = '/api/status'
+	const options = { method: 'get' }
+	return fetchingObject(url, options, true)
+}
+
 /**
  * return a fetching object
  * @param  {string}    url             url to be visited, localhost limited

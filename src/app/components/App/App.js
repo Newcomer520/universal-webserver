@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router'
-import './App.less'
 
 export default class App extends Component {
 	constructor(props) {

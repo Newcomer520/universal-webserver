@@ -1,21 +1,13 @@
-//import request from 'superagent'
-import { CALL_API } from '../middlewares/api';
+import { login as loginApi } from '../utils/fetch'
+
 export const TYPES = {
-	LOGIN_REQUESTING: Symbol('request login'),
-	LOGIN_SUCCESS: Symbol('login success'),
-	LOGIN_FAILED: Symbol('login failed')
+	LOGIN_REQUESTING: 'request_login',
+	LOGIN_SUCCESS: 'login_success',
+	LOGIN_FAILED: 'login_failed'
 }
 
-export const login = (username, password) => {
-	return {
-		[CALL_API]: {
-			method: 'post',
-			path: '/api/login',
-			sendingType: TYPES.LOGIN_REQUESTING,
-			successType: TYPES.LOGIN_SUCCESS,
-			failureType: TYPES.LOGIN_FAILED,
-			set: ['Content-Type', 'application/json'],
-			send: { "username": username, "password": password }
-		}
-	}
+export const login = (username, password, gRecaptchaResponse) => {
+	const fetch = loginApi(username, password, gRecaptchaResponse)
+	const types = Object.keys(TYPES).map(k => TYPES[k])
+	return { fetch, types }
 }

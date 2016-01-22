@@ -5,13 +5,13 @@ import WebpackIsomorphicToolsPlugin from 'webpack-isomorphic-tools/plugin'
 // https://github.com/halt-hammerzeit/webpack-isomorphic-tools
 export default {
 
-  // when adding "js" extension to asset types 
+  // when adding "js" extension to asset types
   // and then enabling debug mode, it may cause a weird error:
   //
   // [0] npm run start-prod exited with code 1
   // Sending SIGTERM to other processes..
   //
-  // debug: true, 
+  // debug: true,
   webpack_assets_file_path: './build/webpack-assets.json',
   webpack_stats_file_path: './build/webpack-stats.json',
 
@@ -42,7 +42,7 @@ export default {
     // the only place it's used is the Html.js file
     // where a <style/> tag is created with the contents of the
     // './src/theme/bootstrap.config.js' file.
-    // (the aforementioned <style/> tag can reduce the white flash 
+    // (the aforementioned <style/> tag can reduce the white flash
     //  when refreshing page in development mode)
     //
     // hooking into 'js' extension require()s isn't the best solution
@@ -65,7 +65,7 @@ export default {
     //   parser: WebpackIsomorphicToolsPlugin.css_loader_parser
     // },
     style_modules: {
-      extensions: ['less','scss'],
+      extensions: ['less','scss', 'css'],
       filter: function(module, regex, options, log) {
         if (options.development) {
           // in development mode there's webpack "style-loader",
@@ -78,7 +78,7 @@ export default {
         }
       },
       // How to correctly transform kinda weird `module.name`
-      // of the `module` created by Webpack "css-loader" 
+      // of the `module` created by Webpack "css-loader"
       // into the correct asset path:
       // path: WebpackIsomorphicToolsPlugin.style_loader_path_extractor,
 

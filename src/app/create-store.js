@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux'
 import fetchMiddleware from './middlewares/fetch-middleware'
 import promiseMiddleware from './middlewares/promise-middleware'
+import authMiddleware from './middlewares/auth-middleware'
 import reducer from 'reducers/reducer'
 import { canUseDOM } from './utils/fetch'
 import merge from 'lodash.merge'
@@ -18,7 +19,7 @@ export default function(initState) {
 		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem('refresh-token') } })
 	}
 	const finalCreateStore = compose(
-		applyMiddleware(fetchMiddleware, promiseMiddleware),
+		applyMiddleware(fetchMiddleware, promiseMiddleware, authMiddleware),
 		__DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
 	)(createStore)
 	const store = finalCreateStore(reducer, initState)
