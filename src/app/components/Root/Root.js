@@ -5,7 +5,7 @@ import ReactCSSTransitionGroup  from 'react-addons-css-transition-group';
 
 export default class Root extends Component {
 	render(){
-		const styles = require('./root.css')
+		const styles = require('./Root.css')
 		return(
 			<div className={'root'}>
 				<ReactCSSTransitionGroup
