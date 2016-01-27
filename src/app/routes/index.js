@@ -7,10 +7,11 @@ import FetchStatus from 'components/FetchStatus'
 import Login from 'components/Login'
 
 import { setFetched } from 'actions/fetch-action'
-import getDummy from 'actions/dummy-action'
-import AuthViewRoute from './auth-view-route'
 import { canUseDOM } from '../utils/fetch'
 import { fetchStatus } from 'actions/fetch-status-action'
+
+import Rx from 'rx'
+import { observableFromStore } from 'redux-rx'
 
 /**
  * for rendering at server side, we might pass the information of token in order to fetch data
@@ -43,45 +44,27 @@ export const requireLogin = store => (nextState, replaceState, cb) => {
 
 export const requireFetch = (fetchMethod, { authRequired = false, store, reduxState, status = 'status' }, ...args) => {
 	return (nextState, replaceState, cb) => {
-		const { auth } = store.getState()
-		if (!canUseDOM && authRequired === true) {
-			if (auth.tokenValid && auth.tokenExpired) {
-				// at server side, if not authenticated, dont fetch the data
-				return cb()
-			} else if (auth.isAuthenticated === false) {
-				// not authenticated nor token valid
-				replaceState(null, 'login', { to: nextState.location.pathname })
-			} else if (store.getState().fetched === true) {
-				return cb()
-			}
-		} else if (canUseDOM){ //environment === browser
-			if (store.getState().fetched === true) { // fetched already
-				return cb()
-			} else {
-				console.log('render view without waiting for fetching data')
-				cb()
-			}
-		}
+		const state$ = observableFromStore(store).startWith(store.getState()).map(state => ({ canUseDOM, authRequired, reduxState, status, ...state })) // provide the other information
+		// unauthenticated => redirect to login
+		state$.filter(s => s.authRequired && !s.auth.tokenValid).first().subscribe(state => replaceState(null, 'login', { to: nextState.location.pathname }))
+		// when to render the view
+		state$.filter(s => s.fetched || s.canUseDOM || (s.auth.tokenValid && s.auth.tokenExpired)).first().subscribe(state => cb())
 
-		// the hacked way to ensure that status of sture is consistent in client / server
-		// @todo: need a better way to solve the fetching flow
-		// maybe a fetching decorator?
-		setTimeout(() => {
-			const result = fetchMethod(...args)
-			store.dispatch(result)
-			store.dispatch(setFetched(true))
-			const { types: [ REQUESTING, REQ_SUCCESS, REQ_FAILED ] } = result
-			const unsubscribe = store.subscribe(() => {
-				if (store.getState()[reduxState][status] === REQ_SUCCESS
-					|| store.getState()[reduxState][status] === REQ_FAILED) {
-					unsubscribe()
-					if (!canUseDOM) {
-						console.log('server side fetching data')
-						cb()
-					}
+		const needFetch$ = state$.filter(s => s.fetched? false: s.canUseDOM || s.auth.isAuthenticated).map(s => ({ fetchingObject: fetchMethod(...args), ...s })) //add the fetching object
+		needFetch$
+			.first()
+			.delay(1) //to ensure the consistence in client / server
+			.subscribe(state => store.dispatch(state.fetchingObject))
+		needFetch$
+			.distinctUntilChanged(s => s[reduxState][status])
+			.subscribe(state => {
+				const { types: [REQUESTING, REQ_SUCCESS, REQ_FAILED] } = state.fetchingObject
+				switch (state[reduxState][status]) {
+					case REQ_SUCCESS:
+						store.dispatch(setFetched(true))
+						break
 				}
 			})
-		}, 1)
 	}
 }
 
