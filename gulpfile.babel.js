@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import gulp from 'gulp'
 import nodemon from 'gulp-nodemon'
 import config from './config'
@@ -19,9 +20,9 @@ const BROWSER_SYNC_RELOAD_DELAY = 500
 let devMiddleware, bundler
 const devServerEnv = {
 	NODE_ENV: 'development/server',
-	elip: process.env['elip'] || '210.200.13.224',
-	elport: process.env['elport'] || '5500',
-	redisip: process.env['redisip'] || '210.200.13.224',
+	elip: process.env['elip'] || 'elk.openlab.tw',
+	elport: process.env['elport'] || '9200',
+	redisip: process.env['redisip'] || 'elk.openlab.tw',
 	redisport: process.env['redisport'] || '5501',
 	port: process.env['port'] || '8008'
 }
@@ -40,7 +41,7 @@ gulp.task('copy', ['clean'], cb => {
 		.pipe(gulp.dest('build'))
 })
 
-gulp.task('dev', ['copy', 'watch-apidoc'], () => {
+gulp.task('dev', ['copy'], () => {
 	runSequence('initWebpack', 'dev-server', 'browser-sync')
 })
 
@@ -66,7 +67,7 @@ gulp.task('browser-sync', async (cb) => {
 })
 
 gulp.task('initWebpack', (cb) => {
-	console.log('init webpack..')
+	gutil.log('init webpack..')
 	env({
 		vars: {
 			NODE_ENV: 'development'
@@ -77,7 +78,7 @@ gulp.task('initWebpack', (cb) => {
 		if (err) {
 			throw err
 		}
-		console.log('done')
+		gutil.log('webpack initialized done')
 		cb()
 	})
 	devMiddleware = webpackDevMiddleware(bundler, {
@@ -98,6 +99,7 @@ gulp.task('dev-server', cb => {
 		script: 'tools/server-preloader.js',
 		ext: 'js',
 		// watch core server file(s) that require server restart on change
+		watch: ["src/**/*.*", "tools/server-preloader.js"],
 		// watch: ['src/**/*.js'],
 		env: devServerEnv,
 		stdout: false // must be false so that we could catch the stdout/stderr to ensure when the server is ready
@@ -131,7 +133,7 @@ gulp.task('build', ['copy', 'apidoc'], cb => {
 			NODE_ENV: 'production'
 		}
 	})
-	const webpackConfig = require('./tools/webpack.config')[0]
+	const webpackConfig = require('./tools/webpack.config')
 	webpack(webpackConfig, (err, stats) => {
 		if (err) {
 			throw new gutil.PluginError("webpack", err)

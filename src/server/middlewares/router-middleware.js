@@ -11,9 +11,11 @@ import { replacePath, pushPath } from 'redux-simple-router'
 import { setFetched, clearToken } from 'actions/fetch-action'
 import { Router } from 'express'
 import authenticator from './authenticator'
+import fs from 'fs'
+
+const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
 
 const router = new Router()
-
 router.use(authenticator)
 router.get('*', routesHandler)
 export default router
@@ -44,6 +46,7 @@ function universalRender(store) {
 			} else if (redirectLocation) {
 				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
 			} else if (renderProps) {
+				// material ui use js inline style, need to mock a navigator
 				global.navigator = { userAgent: req.headers['user-agent'] }
 				// prevent the token from going to front-end
 				store.dispatch(clearToken())
@@ -53,7 +56,7 @@ function universalRender(store) {
 					</Provider>
 				)
 				res.send('<!doctype html>' +
-					ReactDOM.renderToStaticMarkup(<Html assets={webpackIsomorphicTools.assets()} component={component} store={store} />)
+					ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
 				)
 			} else {
 				res.status(404).send('Not found')
