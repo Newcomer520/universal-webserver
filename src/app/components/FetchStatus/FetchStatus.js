@@ -29,12 +29,12 @@ const mapStateToProps = (state) => {
 export default class FetchStatus extends Component {
 	static propTypes = {
 		actions: React.PropTypes.object
-	}
+	};
 	requestLogout = () => {
 		// useing boundAction to trigger middlewares
 		const { logout } = this.props.actions
 		logout()
-	}
+	};
 	render() {
 		const { data, status } = this.props.fetch_status
 		let objectLength = Object.keys(data).length

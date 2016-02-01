@@ -24,7 +24,7 @@ const bs = browserSync.create()
  */
 async function develop() {
 	const devMiddleware = webpackDevMiddleware(bundler, { publicPath: webpackConfig.output.publicPath, stats: webpackConfig.stats })
-  await run(require('./build').copyStaticFilesOnly)
+  await run(require('./clean-and-copy'))
   await run(require('./serve'))
   bs.init({
     proxy: {

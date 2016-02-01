@@ -20,8 +20,3 @@ async function build() {
 }
 
 export default build
-
-export async function copyStaticFilesOnly() {
-  await run(require('./clean'))
-  await run(require('./copy'))
-}

@@ -21,7 +21,7 @@ export default class Recaptcha extends Component {
 		id: PropTypes.string.isRequired,
 		callbackName: PropTypes.string.isRequired,
 		siteKey: PropTypes.string.isRequired
-	}
+	};
 	componentDidMount() {
 		const { id, callbackName, siteKey } = this.props
 		const { set_recaptcha_id, get_recaptcha_response_failed } = this.props.actions
@@ -58,7 +58,7 @@ export default class Recaptcha extends Component {
 		if (window.grecaptcha) {
 			// grecaptcha.reset(this.props.id)
 		}
-	}
+	};
 	responseSuccessfully = (token) => {
 		const { get_recaptcha_response_success } = this.props.actions
 		get_recaptcha_response_success(token)
@@ -66,7 +66,7 @@ export default class Recaptcha extends Component {
 			return
 		}
 		const e = { target: { target: token } }
-	}
+	};
 	render() {
 		const { siteKey } = this.props
 		const styles = require('./recaptcha.css')

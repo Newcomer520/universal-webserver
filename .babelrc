@@ -1,30 +1,21 @@
 {
-  "stage": 0,
+  "presets": ["react", "es2015", "stage-0"],
   "env": {
-  	"development": {
-  		"plugins": ["react-transform"],
-  		"extra": {
-  			"react-transform": {
-					"transforms": [{
-						"transform": "react-transform-hmr",
-						"imports": ["react"],
-						"locals": ["module"]
-					}]
-				}
-  		}
-  	}
+		"development": {
+			"presets": ["react-hmre"]
+		}
   },
   "plugins": [
-  	"babel-plugin-module-alias"
-  ],
-  "extra": {
-  	"module-alias": [
-  		{ "src": "./src/server", "expose": "server" },
-  		{ "src": "./src/app", "expose": "app" },
-  		{ "src": "./src/app/actions", "expose": "actions" },
-  		{ "src": "./src/app/reducers", "expose": "reducers" },
-  		{ "src": "./src/app/components", "expose": "components" },
-  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" }
-  	]
-  }
+  	["babel-plugin-module-alias", [
+	  		{ "src": "./src/server", "expose": "server" },
+	  		{ "src": "./src/app", "expose": "app" },
+	  		{ "src": "./src/app/actions", "expose": "actions" },
+	  		{ "src": "./src/app/reducers", "expose": "reducers" },
+	  		{ "src": "./src/app/components", "expose": "components" },
+	  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" }
+  		]
+  	],
+  	"add-module-exports",
+  	"transform-decorators-legacy"
+  ]
 }

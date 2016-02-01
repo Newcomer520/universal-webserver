@@ -56,7 +56,7 @@ export default class Login extends Component {
 	static propTypes = {
 		fields: PropTypes.object.isRequired,
 		actions: PropTypes.object
-	}
+	};
 
 	constructor(props) {
 		super(props)
@@ -69,7 +69,7 @@ export default class Login extends Component {
 		event.preventDefault()
 		this.setState({ is_login_click: false })
 		this.props.actions.reset('login')
-	}
+	};
 
 	// babel will auto bind this into array function
 	handleSubmit = (event) => {
@@ -93,13 +93,13 @@ export default class Login extends Component {
 		}
 
 		return false
-	}
+	};
 
 	is_get_recaptcha_response = () => {
 		const { recaptcha_response } = this.props
 		const get_response = !!recaptcha_response
 		return get_response
-	}
+	};
 
 	render() {
 		const { fields: { userName, password }, recaptcha_response } = this.props

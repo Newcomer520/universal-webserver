@@ -18,7 +18,7 @@ export default class Html extends Component {
 		component: PropTypes.node,
 		store: PropTypes.object,
 		reduxState: PropTypes.object
-	}
+	};
 
 	render() {
 		const { assets, component, store } = this.props
@@ -31,8 +31,8 @@ export default class Html extends Component {
 					<link rel="shortcut icon" href="/static/favicon1116.ico" />
 					<meta name="viewport" content="width=device-width, initial-scale=1" />
 					{/* styles (will be present only in production with webpack extract text plugin) */}
-					{Object.keys(assets.styles).map((style, key) =>
-						<link href={assets.styles[style]} key={key} media="screen, projection"
+					{Object.keys(assets).filter(a => !!assets[a].css).map((prop, key) =>
+						<link href={assets[prop].css} key={key} media="screen, projection"
 									rel="stylesheet" type="text/css" charSet="UTF-8"/>
 					)}
 					{/* (will be present only in development mode) */}
@@ -46,9 +46,9 @@ export default class Html extends Component {
 				<body>
 					<div id="react-container" dangerouslySetInnerHTML={{__html: content}}/>
 					{store? <script dangerouslySetInnerHTML={{__html: `window.__reduxState__=${serialize(store.getState())};`}} charSet="UTF-8"/> : null}
-					{<script src={assets.javascript.main} charSet="UTF-8"/>}
+					{<script src={assets.main.js} charSet="UTF-8"/>}
 				</body>
 			</html>
-		);
+		)
 	}
 }

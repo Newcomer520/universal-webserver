@@ -6,6 +6,39 @@ import fetch from 'isomorphic-fetch'
 
 const { elIp: ip, elPort: port, elTokenDuration: duration, secret, recaptchaSecret } = global.config
 const es = require('../helpers/elasticsearch')(ip, port)
+
+/**
+ * check if the recaptcha is valid
+ * @param  {[type]}   req  [description]
+ * @param  {[type]}   res  [description]
+ * @param  {Function} next [description]
+ * @return {[type]}        [description]
+ */
+async function recaptchaMiddleware(req, res, next) {
+	const { gRecaptchaResponse } = req.body
+	if (!gRecaptchaResponse) {
+		return next({ statusCode: 400, message: 'recaptcha response must be provided'})
+	}
+	try {
+		const body = JSON.stringify({ secret: recaptchaSecret, response: gRecaptchaResponse })
+		const options = { method: 'post' }
+		console.log(options)
+		await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${gRecaptchaResponse}`, options)
+		.then(response => response.json().then(json => {
+			if (!json.success) {
+				throw json
+			} else {
+				return json
+			}
+		}))
+		next()
+	} catch (err) {
+		console.log(err)
+		next({ statusCode: 400, message: 'invalid recaptcha response' })
+	}
+}
+
+
 /**
  * @api {post} /login User Login
  * @apiName Login
@@ -44,6 +77,7 @@ loginRouter.use(bodyParser.json(), (err, req, res, next) => {
 	}
 	next()
 })
+
 loginRouter.use(recaptchaMiddleware)
 loginRouter.post('/', async (req, res) => {
 	if (!req.body) {
@@ -65,35 +99,4 @@ loginRouter.post('/', async (req, res) => {
 		}
 	}
 })
-
-/**
- * check if the recaptcha is valid
- * @param  {[type]}   req  [description]
- * @param  {[type]}   res  [description]
- * @param  {Function} next [description]
- * @return {[type]}        [description]
- */
-async function recaptchaMiddleware(req, res, next) {
-	const { gRecaptchaResponse } = req.body
-	if (!gRecaptchaResponse) {
-		return next({ statusCode: 400, message: 'recaptcha response must be provided'})
-	}
-	try {
-		const body = JSON.stringify({ secret: recaptchaSecret, response: gRecaptchaResponse })
-		const options = { method: 'post' }
-		console.log(options)
-		await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${gRecaptchaResponse}`, options)
-		.then(response => response.json().then(json => {
-			if (!json.success) {
-				throw json
-			} else {
-				return json
-			}
-		}))
-		next()
-	} catch (err) {
-		console.log(err)
-		next({ statusCode: 400, message: 'invalid recaptcha response' })
-	}
-}
 export default loginRouter

@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { login } from 'actions/dlogin-action'
 import { pushPath } from 'redux-simple-router'
+import Recaptcha from 'components/Recaptcha'
+
 const { LOGIN_REQUESTING, LOGIN_SUCCESS, LOGIN_FAILED } = require('actions/dlogin-action').TYPES
 @connect(
 	state => ({
@@ -28,8 +30,8 @@ export default class DLogin extends Component {
 	handleSubmit(e) {
 		const { actions: { login } } = this.props
 		e.preventDefault()
-		console.log(this.refs.username.value, this.refs.password.value)
-		login(this.refs.username.value, this.refs.password.value)
+		// console.log(this.refs.username.value, this.refs.password.value, grecaptcha.getResponse())
+		login(this.refs.username.value, this.refs.password.value, grecaptcha.getResponse())
 		return false
 	}
 	render() {
@@ -46,6 +48,7 @@ export default class DLogin extends Component {
 						<label>password</label>
 						<input ref="password" type="password" name="password" />
 					</div>
+					<Recaptcha id="recaptcha00" siteKey="6LcSzRQTAAAAAClegBn5RBTiiRyDrYrRHvpwpcHF" callbackName="recaptchCallback" />
 					<div>
 						<button type="submit">submit</button>
 					</div>

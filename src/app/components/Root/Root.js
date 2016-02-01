@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 
 // animation
 import ReactCSSTransitionGroup  from 'react-addons-css-transition-group';
+import styles from './Root.css'
 
 export default class Root extends Component {
-	render(){
-		const styles = require('./Root.css')
+	render() {
 		return(
 			<div className={'root'}>
 				<ReactCSSTransitionGroup
