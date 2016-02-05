@@ -4,8 +4,7 @@ import bodyParser from 'body-parser'
 import authHelper, { COOKIE_AUTH_TOKEN, TTL } from '../helpers/server-auth-helper'
 import fetch from 'isomorphic-fetch'
 
-const { elIp: ip, elPort: port, elTokenDuration: duration, secret, recaptchaSecret } = global.config
-const es = require('../helpers/elasticsearch')(ip, port)
+const { secret, recaptchaSecret } = global.config
 
 /**
  * check if the recaptcha is valid
@@ -86,7 +85,7 @@ loginRouter.post('/', async (req, res) => {
 		res.status(400).json('username or password should be provided.')
 	} else {
 		try {
-			const result = await es.authenticate(req.body.username, req.body.password)
+			const result = await authenticate(req.body.username, req.body.password)
 			const { jwt, refreshToken } = await authHelper.jwtSign(req.body.username, result.secret, TTL)
 			res.cookie(COOKIE_AUTH_TOKEN, jwt, { httpOnly: true, maxAge: 8 * 24 * 60 * 60 * 1000 })
 			res.status(result.statusCode).json({
@@ -99,4 +98,21 @@ loginRouter.post('/', async (req, res) => {
 		}
 	}
 })
+
+/**
+ * pseudo authenticate
+ * @param  {[type]} username [description]
+ * @param  {[type]} password [description]
+ * @return {[type]}          [description]
+ */
+function authenticate(username, password) {
+	return new Promise((resolve, reject) => {
+		if ( username !== 'user02' || password !== '123') {
+			reject({ message: 'Incorrect username or password', statusCode: 401 })
+		} else {
+			resolve({ statusCode: 200, mesage: 'login successfully', secret: authHelper.encrypt(password) })
+		}
+	})
+}
+
 export default loginRouter

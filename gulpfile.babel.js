@@ -20,10 +20,8 @@ const BROWSER_SYNC_RELOAD_DELAY = 500
 let devMiddleware, bundler
 const devServerEnv = {
 	NODE_ENV: 'development/server',
-	elip: process.env['elip'] || 'elk.openlab.tw',
-	elport: process.env['elport'] || '9200',
-	redisip: process.env['redisip'] || 'elk.openlab.tw',
-	redisport: process.env['redisport'] || '5501',
+	redisip: process.env['redisip'] || 'pub-redis-12754.us-east-1-3.2.ec2.garantiadata.com',
+	redisport: process.env['redisport'] || '12754',
 	port: process.env['port'] || '8008'
 }
 

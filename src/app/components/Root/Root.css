@@ -1,6 +1,17 @@
+.root {
+	position: relative;
+
+	&__container {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+	}
+}
 .enter {
 	opacity: 0.01;
-	transition: opacity 1.5s ease-in;
+	transition: opacity 0.5s ease-in;
 }
 
 .enterActive {
@@ -9,7 +20,7 @@
 
 .leave {
 	opacity: 1;
-	transition: opacity 1.5s ease-in;
+	transition: opacity 0.3s ease-in;
 }
 
 .leaveActive {
