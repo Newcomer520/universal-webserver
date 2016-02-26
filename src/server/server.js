@@ -1,29 +1,38 @@
 import path from 'path'
-import express from 'express'
-import ReactDOM from 'react-dom/server'
-import routerMiddleware from './middlewares/router-middleware'
-import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
+import koa from 'koa'
+import logger from 'koa-logger'
+import bodyParser from 'koa-bodyparser'
+import helmet from 'koa-helmet'
+import mount from 'koa-mount'
+import serve from 'koa-static'
 import apiRouter from './api/index'
-import logger from './middlewares/logger'
-import helmet from 'helmet'
+import errorHandler from './middlewares/error-handler'
+import morganLogger from './middlewares/logger'
+import routerMiddleware from './middlewares/router-middleware'
 
-const app = new express()
+const app = koa()
+// error handling asap
+app.use(errorHandler)
+app.use(logger())
+app.use(morganLogger)
+app.use(bodyParser({
+	onerror: (err, ctx) => ctx.throw('body parse error', 422)
+}))
 app.use(helmet())
-app.use(logger)
-app.use(cookieParser())
 
-// assets
-app.use('/static', express.static(path.join(__dirname, '../..', 'build/public')))
+const apidoc = koa()
+apidoc.use(serve(path.join(__dirname, '../..', 'apidoc')))
 
-// apis
+const statics = koa()
+statics.use(serve(path.join(__dirname, '../..', 'build/public')))
+app.use(mount('/static', statics))
 
-// api documents
-app.use('/apidoc/', express.static(path.join(__dirname, '../..', 'apidoc')))
-app.use('/api', apiRouter)
+app.use(mount('/api', apiRouter))
+app.use(mount('/apidoc', apidoc))
 
-// router setting
-app.use('*', routerMiddleware)
+// mainly rendering
+app.use(mount(routerMiddleware))
+
 
 const server = app.listen(global.config.port, () => {
 	const host = server.address().address

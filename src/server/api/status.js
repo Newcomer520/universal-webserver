@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import router from 'koa-router'
 import authenticator from '../middlewares/authenticator'
 const { secret } = global.config
 
@@ -36,34 +36,31 @@ const { secret } = global.config
  * "Unauthenticated"
  *
  */
-const router = new Router()
+const statusRouter = router()
 
-router.use(authenticator)
-router.use((req, res, next) => {
-	// console.log('req midd', req.userInfo)
-	if (req.userInfo.isAuthenticated !== true) {
-		const err = new Error('Unauthenticated')
-		err.statusCode = 401
-		next(err)
-	} else {
-		next()
+statusRouter.use(authenticator)
+statusRouter.use(function *(next) {
+	if (this.state.userInfo.isAuthenticated !== true) {
+		this.throw('Unauthenticated', 401)
 	}
+	yield next
 })
-router.get('/', async (req, res) => {
+statusRouter.get('/', function *(next) {
 	try {
-		const { username, password } = req.userInfo
-		const healthInfo = await getStatus(username, password)
-		res.status(200).json(healthInfo)
+		const { state, response: res, request: req } = this
+		const { username, password } = state.userInfo
+		const healthInfo = yield getStatus(username, password)
+		res.body = healthInfo
 	}	catch (err) {
 		console.log(err)
-		throw err
+		this.throw(err.message, err.status)
 	}
 })
 
 function getStatus(username, password) {
 	return new Promise((resolve, reject) => {
 		if (username !== 'user02' || password !== '123') {
-			reject({ statusCode: 401, message: 'username or password is incorrect'})
+			reject({ status: 401, message: 'username or password is incorrect'})
 		} else {
 			resolve({
 				"cluster_name" : "security-el",
@@ -84,4 +81,4 @@ function getStatus(username, password) {
 	})
 }
 
-export default router
+export default statusRouter

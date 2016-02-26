@@ -83,6 +83,7 @@ export default class authHelper {
 		let value
 		try {
 			value = await redisClient.getAsync(jti)
+			console.log('await redis: ', value)
 		} catch (err) {
 			console.log(err)
 		}

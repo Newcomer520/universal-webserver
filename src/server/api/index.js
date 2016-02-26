@@ -1,22 +1,19 @@
-import { Router } from 'express'
+import koa from 'koa'
+import router from 'koa-router'
 import loginRouter from './login'
-import logoutRouter from './logout'
 import refreshTokenRouter from './refresh-token'
+import logoutRouter from './logout'
 import statusRouter from './status'
 
-const apiRouter = new Router()
-apiRouter.use('/login', loginRouter)
-apiRouter.use('/logout', logoutRouter)
-apiRouter.use('/refreshtoken', refreshTokenRouter)
-apiRouter.use('/status', statusRouter)
-apiRouter.use((err, req, res, next) => {
-	res.status(err.statusCode || 500).json(err.message || 'Something goes wrong')
-})
-apiRouter.all('*', (req, res) => {
-	res.status(404).send('Not founnnnnnnnnnnnnnnd')
-})
+const apis = koa()
+const apiRouter = router()
+
+apiRouter.use('/login', loginRouter.routes(), loginRouter.allowedMethods())
+apiRouter.use('/logout', logoutRouter.routes())
+apiRouter.use('/refreshtoken', refreshTokenRouter.routes())
+apiRouter.use('/status', statusRouter.routes(), statusRouter.allowedMethods())
+apis.use(apiRouter.routes(), apiRouter.allowedMethods())
 
 
 
-
-export default apiRouter
+export default apis
