@@ -72,7 +72,7 @@ function nonUniversalRender(store) {
 			res.status(404).send('Page not found')
 		} else {
 			res.send('<!doctype html>' +
-				ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} store={store} />)
+				ReactDOM.renderToString(<Html assets={assets} store={store} />)
 			)
 		}
 	}
