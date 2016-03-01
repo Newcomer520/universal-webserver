@@ -127,7 +127,7 @@
     "replace": "^0.3.0",
     "request": "^2.67.0",
     "rx": "^4.0.7",
-    "serialize-javascript": "^1.1.2",
+    "serialize-javascript": "^1.1.2"
   },
   "apidoc": {
     "title": "APIs of Elasticsearch Status",
