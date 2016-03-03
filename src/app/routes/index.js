@@ -5,7 +5,7 @@ import { replacePath, pushPath } from 'redux-simple-router'
 import Root from 'components/Root'
 import FetchStatus from 'components/FetchStatus'
 import Login from 'components/Login'
-
+import FileUpload from 'components/FileUpload'
 import { setFetched } from 'actions/fetch-action'
 import { canUseDOM } from '../utils/fetch'
 import { fetchStatus } from 'actions/fetch-status-action'
@@ -23,7 +23,8 @@ export default (store) => {
 	return (
 		<Route path="/" component={ Root }>
 			<IndexRoute component={FetchStatus} onEnter={requireFetch(fetchStatus, { authRequired: true, store, reduxState: 'fetchStatus', status: 'status' })} />
-			<Route path="login" component={ Login } />
+			<Route path="login" component={Login} />
+			<Route path="fileupload" component={FileUpload} />
 		</Route>
 	)
 }

@@ -6,6 +6,7 @@ import dummy from 'reducers/dummy-data-reducer'
 import protectedData from 'reducers/auth-data-reducer'
 import fetchStatus from 'reducers/fetch-status-reducer'
 import { reducer as formReducer } from 'redux-form'
+import { filesSelectedReducer as files, filesUploadStatus as uploadStatus } from 'reducers/files-upload-reducer'
 
 const reducer = combineReducers({
 	routing,
@@ -14,7 +15,9 @@ const reducer = combineReducers({
 	dummy,
 	fetchStatus,
 	protectedData,
-	form : formReducer //redux-form's reducer
+	form : formReducer, //redux-form's reducer
+	files,
+	uploadStatus
 })
 
 export default reducer

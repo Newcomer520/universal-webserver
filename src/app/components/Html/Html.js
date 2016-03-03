@@ -30,6 +30,7 @@ export default class Html extends Component {
 
 					<link rel="shortcut icon" href="/static/favicon1116.ico" />
 					<meta name="viewport" content="width=device-width, initial-scale=1" />
+					<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css" />
 					{/* styles (will be present only in production with webpack extract text plugin) */}
 					{Object.keys(assets).filter(a => !!assets[a].css).map((prop, key) =>
 						<link href={assets[prop].css} key={key} media="screen, projection"

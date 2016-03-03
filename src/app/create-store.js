@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux'
+import createSagaMiddleware from 'redux-saga'
 import fetchMiddleware from './middlewares/fetch-middleware'
 import promiseMiddleware from './middlewares/promise-middleware'
 import authMiddleware from './middlewares/auth-middleware'
@@ -6,8 +7,11 @@ import reducer from 'reducers/reducer'
 import { canUseDOM } from './utils/fetch'
 import merge from 'lodash.merge'
 import { initState as authState } from 'reducers/auth-reducer'
+import { addFiles as addFilesSaga, uploadFiles as uploadFilesSaga } from 'sagas/file-upload'
 
-const middlewares = [ fetchMiddleware, promiseMiddleware ]
+const sagaMiddlewares = createSagaMiddleware(addFilesSaga, uploadFilesSaga)
+const middlewares = [fetchMiddleware, promiseMiddleware, authMiddleware, sagaMiddlewares]
+
 /**
  * function to create a redux store
  * history   {object}               from some createHistroy()
@@ -19,7 +23,7 @@ export default function(initState) {
 		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem('refresh-token') } })
 	}
 	const finalCreateStore = compose(
-		applyMiddleware(fetchMiddleware, promiseMiddleware, authMiddleware),
+		applyMiddleware(...middlewares),
 		__DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
 	)(createStore)
 	const store = finalCreateStore(reducer, initState)
