@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { addFiles, uploadFiles, removeFile, TYPES } from 'actions/files-upload-action'
 import Modal from 'react-modal'
-import { spring, TransitionMotion, Motion } from 'react-motion'
+import { spring, TransitionMotion, Motion, StaggeredMotion } from 'react-motion'
 const cx = classNames.bind(styles)
 const { FILE_UPLOAD_REQUESTING, FILE_UPLOAD_SUCCESS, FILE_UPLOAD_FAILED } = TYPES
 
@@ -125,9 +125,10 @@ class FileList extends Component {
 	willLeave = (previousStyle) => {
 		const { style } = previousStyle
 		return {
-			x: spring(-100),
+			x: -100,
 			y: 0,
-			h: style.h
+			h: 0,
+			timer: spring(100, { stiffness: 80, damping: 26 })
 		}
 	};
 	mapTransitionStyle = (y) => (f) => ({
@@ -136,24 +137,45 @@ class FileList extends Component {
 		style: {
 			x: 0,
 			y: y,
-			h: 50
+			h: 50,
+			timer: 0
 		}
 	});
-	renderItem = (config) => {
-		const styles = {
-			transform: `translate(${config.style.x}%, ${config.style.y}%)`,
-			height: `${config.style.h}px`
-		}
-		return Math.abs(Math.round(config.style.x)) !== 100?
-			<FileItem key={config.key} file={config.data} styles={styles} callbackRemove={this.props.onRemoveFile.bind(null, config.key)} />:
-			(<Motion defaultStyle={{ h: config.style.h }} style={{ h: spring(0) }}>
-			{
-				inted => {
-					const s = { ...styles, height: `${inted.h}px` }
-					return <FileItem key={config.key} file={config.data} styles={s} callbackRemove={this.props.onRemoveFile.bind(null, config.key)} />
+	mergeStyles(...intedStyles) {
+		const tf = { x: 0, y: 0, h: 0}
+		for (let s of intedStyles) {
+			for (let p in s) {
+				switch (p) {
+					case 'x':
+					case 'y':
+						tf[p] = s[p]
+						break
+					case 'h':
+						tf.h = s.h
+						break
 				}
 			}
-			</Motion>)
+		}
+		return { transform: `translate(${tf.x}%, ${tf.y}%)`, height: `${tf.h}px` }
+	}
+	renderItem = (config) => {
+		const { style } = config
+		const { timer } = style
+
+		let springConfig = { stiffness: 170, damping: 26 }
+		let rendered =
+			<StaggeredMotion
+				key={config.key}
+				defaultStyles={[{ x: 0, y: 100 }, { h: 50 }]}
+				styles={prevIntedStyles => prevIntedStyles.map((ps, i) => {
+					return i === 0
+						? { x: spring(config.style.x, springConfig), y: spring(config.style.y, springConfig) }
+						: Math.abs((prevIntedStyles[0].x)) < 98 ? { h: 50 } : { h: spring(0, springConfig) }
+				})}>
+				{intedStyles => <FileItem file={config.data} styles={this.mergeStyles(...intedStyles)} callbackRemove={this.props.onRemoveFile.bind(null, config.key)} /> }
+			</StaggeredMotion>
+
+		return rendered
 	};
 	render() {
 		const { files } = this.props
@@ -161,8 +183,7 @@ class FileList extends Component {
 			<TransitionMotion
 				willEnter={this.willEnter}
 				willLeave={this.willLeave}
-				styles={files.map(this.mapTransitionStyle(spring(0)))}
-			>
+				styles={files.map(this.mapTransitionStyle(0))}>
 			{
 				intedStyles =>
 				<ul className={styles['file-selector__list']}>
