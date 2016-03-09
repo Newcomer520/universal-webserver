@@ -11,5 +11,6 @@ module.exports = {
 	redisIp: process.env.redisip,
 	redisPort: process.env.redisport,
 	logFolder: process.env.logfolder || path.join(__dirname, './logs/'),
-	recaptchaSecret: '6LcSzRQTAAAAAOMCnSZ_xx41-nCUBS2eLHQ7ga6x'
+	recaptchaSecret: '6LcSzRQTAAAAAOMCnSZ_xx41-nCUBS2eLHQ7ga6x',
+	mongo: 'mongodb://210.200.13.224:5505/universal'
 }
