@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import Html from 'app/components/Html'
-import { match, RoutingContext } from 'react-router'
+import { match, RouterContext } from 'react-router'
 import createHistory from 'history/lib/createMemoryHistory'
 import getRoutes from 'app/routes'
 import createStore from 'app/create-store'
@@ -54,7 +54,7 @@ function *universalRender(next) {
 			store.dispatch(clearToken())
 			const component = (
 				<Provider store={store}>
-					<RoutingContext {...renderProps}/>
+					<RouterContext {...renderProps}/>
 				</Provider>
 			)
 			ctx.body = '<!doctype html>' +
