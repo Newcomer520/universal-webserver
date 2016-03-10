@@ -121,6 +121,7 @@ const appConfig = merge({}, defaultConfig, {
 		// main: './src/main.js'
 		main: [
 			...(WATCH ? ['webpack/hot/dev-server', 'webpack-hot-middleware/client'] : []),
+			'babel-polyfill',
 			'./src/app/main.js',
 		],
 	},

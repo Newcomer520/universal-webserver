@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import router from 'koa-router'
 import authenticator from '../middlewares/authenticator'
 import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
 
@@ -14,27 +14,26 @@ import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
  * @apiError (Error 500) InternalServerError UnexpectedError
  */
 
-const router = new Router()
+const logoutRouter = router()
 
-router.use(authenticator)
-router.use((req, res, next) => {
-	if (!req.token) {
-		next({ message: 'no request token', statusCode: 400 })
-	} else {
-		next()
+logoutRouter.use(authenticator)
+logoutRouter.use(function *(next) {
+	if (!this.state.token) {
+		this.throw('no request token', 400)
 	}
+	yield next
 })
-router.post('/', async (req, res) => {
+
+logoutRouter.post('/', function *(next) {
 	try {
 
-		await authHelper.logout(req.token)
-		res.clearCookie(COOKIE_AUTH_TOKEN)
-		res.status(200).json('log out successfully')
+		yield authHelper.logout(this.state.token)
+		this.cookies.set(COOKIE_AUTH_TOKEN, null)
+		this.type = 'application/json'
+		this.body = JSON.stringify('log out successfully')
 	}	catch (err) {
-		let error = new Error(err)
-		error.statusCode = 500
-		throw error
+		this.throw(err.message, 500)
 	}
 })
 
-export default router
+export default logoutRouter

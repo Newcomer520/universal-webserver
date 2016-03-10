@@ -1,7 +1,6 @@
-import { Router } from 'express'
+import router from 'koa-router'
 import authenticator from '../middlewares/authenticator'
-const { elIp: ip, elPort: port, elTokenDuration: duration, secret  } = global.config
-const es = require('../helpers/elasticsearch')(ip, port)
+const { secret } = global.config
 
 /**
  * @apiDefine Admin Accessed only by administrator.
@@ -37,28 +36,49 @@ const es = require('../helpers/elasticsearch')(ip, port)
  * "Unauthenticated"
  *
  */
-const router = new Router()
+const statusRouter = router()
 
-router.use(authenticator)
-router.use((req, res, next) => {
-	// console.log('req midd', req.userInfo)
-	if (req.userInfo.isAuthenticated !== true) {
-		const err = new Error('Unauthenticated')
-		err.statusCode = 401
-		next(err)
-	} else {
-		next()
+statusRouter.use(authenticator)
+statusRouter.use(function *(next) {
+	if (this.state.userInfo.isAuthenticated !== true) {
+		this.throw('Unauthenticated', 401)
 	}
+	yield next
 })
-router.get('/', async (req, res) => {
+statusRouter.get('/', function *(next) {
 	try {
-		const { username, password } = req.userInfo
-		const healthInfo = await es.getStatus(username, password)
-		res.status(200).json(healthInfo)
+		const { state, response: res, request: req } = this
+		const { username, password } = state.userInfo
+		const healthInfo = yield getStatus(username, password)
+		res.body = healthInfo
 	}	catch (err) {
 		console.log(err)
-		throw err
+		this.throw(err.message, err.status)
 	}
 })
 
-export default router
+function getStatus(username, password) {
+	return new Promise((resolve, reject) => {
+		if (username !== 'user02' || password !== '123') {
+			reject({ status: 401, message: 'username or password is incorrect'})
+		} else {
+			resolve({
+				"cluster_name" : "security-el",
+				"status" : "green",
+				"timed_out" : false,
+				"number_of_nodes" : 1,
+				"number_of_data_nodes" : 1,
+				"active_primary_shards" : 0,
+				"active_shards" : 0,
+				"relocating_shards" : 0,
+				"initializing_shards" : 0,
+				"unassigned_shards" : 0,
+				"delayed_unassigned_shards" : 0,
+				"number_of_pending_tasks" : 0,
+				"number_of_in_flight_fetch" : 0
+			})
+		}
+	})
+}
+
+export default statusRouter

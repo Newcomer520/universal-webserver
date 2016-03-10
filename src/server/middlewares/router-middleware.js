@@ -9,19 +9,20 @@ import { Provider } from 'react-redux'
 import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
 import { replacePath, pushPath } from 'redux-simple-router'
 import { setFetched, clearToken } from 'actions/fetch-action'
-import { Router } from 'express'
+import koa from 'koa'
 import authenticator from './authenticator'
 import fs from 'fs'
 
 const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
 
-const router = new Router()
-router.use(authenticator)
-router.get('*', routesHandler)
-export default router
+const frontend = koa()
+frontend.use(authenticator)
+frontend.use(initStore)
+global.config.universal === true ? frontend.use(universalRender): frontend.use(nonUniversalRender)
 
-function routesHandler(req, res) {
-	const userInfo = req.userInfo
+function *initStore(next) {
+	console.log('this.originalUrl0', this.originalUrl)
+	const { userInfo } = this.state
 	const initState = {
 		auth: {
 			isAuthenticated: userInfo.isAuthenticated,
@@ -30,50 +31,48 @@ function routesHandler(req, res) {
 			username: userInfo.username,
 			tokenValid: userInfo.tokenValid,
 			tokenExpired: userInfo.tokenExpired,
-			token: req.token
+			token: this.state.token
 		}
 	}
-	const store = createStore(initState)
-	global.config.universal === true? universalRender(store).call(this, req, res): nonUniversalRender(store).call(this, req, res)
+	this.state.store = createStore(initState)
+	yield next
 }
+function *universalRender(next) {
+	const ctx = this
+	const { state: { store } } = this
+	const routes = getRoutes(store)
 
-function universalRender(store) {
-	return (req, res) => {
-		const routes = getRoutes(store, req)
-		match({ routes, location: req.originalUrl }, function(error, redirectLocation, renderProps) {
-			if (error) {
-				res.status(500).send(error.message)
-			} else if (redirectLocation) {
-				res.redirect(302, redirectLocation.pathname + redirectLocation.search)
-			} else if (renderProps) {
-				// material ui use js inline style, need to mock a navigator
-				global.navigator = { userAgent: req.headers['user-agent'] }
-				// prevent the token from going to front-end
-				store.dispatch(clearToken())
-				const component = (
-					<Provider store={store}>
-						<RoutingContext {...renderProps}/>
-					</Provider>
-				)
-				res.send('<!doctype html>' +
-					ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
-				)
-			} else {
-				res.status(404).send('Not found')
-			}
-		})
-	}
-}
-
-function nonUniversalRender(store) {
-	return (req, res) => {
-		const validUrls = /^\/$|^\/index\.html$/i
-		if (!validUrls.test(req.url)) {
-			res.status(404).send('Page not found')
-		} else {
-			res.send('<!doctype html>' +
-				ReactDOM.renderToString(<Html assets={webpackIsomorphicTools.assets()} store={store} />)
+	match({ routes, location: this.originalUrl }, function(error, redirectLocation, renderProps) {
+		if (error) {
+			ctx.throw(error.message, 500)
+		} else if (redirectLocation) {
+			ctx.redirect(redirectLocation.pathname + redirectLocation.search)
+		} else if (renderProps) {
+			// material ui use js inline style, need to mock a navigator
+			global.navigator = { userAgent: ctx.request.get('user-agent') }
+			// prevent the token from going to front-end
+			store.dispatch(clearToken())
+			const component = (
+				<Provider store={store}>
+					<RoutingContext {...renderProps}/>
+				</Provider>
 			)
+			ctx.body = '<!doctype html>' +
+				ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
+		} else {
+			ctx.throw('Not found', 404)
 		}
+	})
+}
+
+function *nonUniversalRender(next) {
+	const validUrls = /^\/$|^\/index\.html$/i
+	if (!validUrls.test(this.url)) {
+		this.throw('Page not found', 404)
+	} else {
+		this.body = '<!doctype html>' +
+			ReactDOM.renderToString(<Html assets={assets} store={this.state.store} />)
 	}
 }
+
+export default frontend

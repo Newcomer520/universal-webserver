@@ -1,11 +1,10 @@
-import { Router } from 'express'
+import router from 'koa-router'
 import crypto from 'crypto'
 import bodyParser from 'body-parser'
 import authHelper, { COOKIE_AUTH_TOKEN, TTL } from '../helpers/server-auth-helper'
 import fetch from 'isomorphic-fetch'
 
-const { elIp: ip, elPort: port, elTokenDuration: duration, secret, recaptchaSecret } = global.config
-const es = require('../helpers/elasticsearch')(ip, port)
+const { secret, recaptchaSecret } = global.config
 
 /**
  * check if the recaptcha is valid
@@ -14,27 +13,28 @@ const es = require('../helpers/elasticsearch')(ip, port)
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
-async function recaptchaMiddleware(req, res, next) {
-	const { gRecaptchaResponse } = req.body
+function *recaptchaMiddleware(next) {
+	const { gRecaptchaResponse } = this.request.body
 	if (!gRecaptchaResponse) {
-		return next({ statusCode: 400, message: 'recaptcha response must be provided'})
+		this.throw('recaptcha response must be provided', 400)
+		return
 	}
 	try {
 		const body = JSON.stringify({ secret: recaptchaSecret, response: gRecaptchaResponse })
 		const options = { method: 'post' }
-		console.log(options)
-		await fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${gRecaptchaResponse}`, options)
+		yield fetch(`https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${gRecaptchaResponse}`, options)
 		.then(response => response.json().then(json => {
 			if (!json.success) {
-				throw json
+				console.log(json)
+				this.throw(json.message || 'unable to verify recaptcha', json.status)
 			} else {
 				return json
 			}
 		}))
-		next()
+		yield next
 	} catch (err) {
 		console.log(err)
-		next({ statusCode: 400, message: 'invalid recaptcha response' })
+		this.throw('invalid recaptcha response', 400)
 	}
 }
 
@@ -69,34 +69,42 @@ async function recaptchaMiddleware(req, res, next) {
  * HTTP/1.1 400 Bad Request
  * "invalid recaptcha response"
  */
-const loginRouter = new Router()
-
-loginRouter.use(bodyParser.json(), (err, req, res, next) => {
-	if (err) {
-		return next({ statusCode: 500, message: 'failed to parse body' })
-	}
-	next()
-})
-
+const loginRouter = router()
 loginRouter.use(recaptchaMiddleware)
-loginRouter.post('/', async (req, res) => {
-	if (!req.body) {
-		res.status(400).json('username or password should be provided...')
-	} else if (!req.body.username || !req.body.password) {
-		res.status(400).json('username or password should be provided.')
+loginRouter.post('/', function *(next) {
+	const { request: req, response: res } = this
+	if (!req.body || !req.body.username || !req.body.password) {
+		this.throw('username or password should be provided...', 400)
 	} else {
 		try {
-			const result = await es.authenticate(req.body.username, req.body.password)
-			const { jwt, refreshToken } = await authHelper.jwtSign(req.body.username, result.secret, TTL)
-			res.cookie(COOKIE_AUTH_TOKEN, jwt, { httpOnly: true, maxAge: 8 * 24 * 60 * 60 * 1000 })
-			res.status(result.statusCode).json({
+			const result = yield authenticate(req.body.username, req.body.password)
+			const { jwt, refreshToken } = yield authHelper.jwtSign(req.body.username, result.secret, TTL)
+			this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { signed: false, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8) })
+			res.body = {
 				username: req.body.username,
 				refreshToken: refreshToken,
 				expiresIn: new Date(Date.now() + TTL)
-			})
+			}
 		} catch (err) {
-			res.status(err.statusCode).json(err)
+			this.throw(err.message || JSON.stringify(err), err.status || err.statusCode)
 		}
 	}
 })
+
+/**
+ * pseudo authenticate
+ * @param  {[type]} username [description]
+ * @param  {[type]} password [description]
+ * @return {[type]}          [description]
+ */
+function authenticate(username, password) {
+	return new Promise((resolve, reject) => {
+		if ( username !== 'user02' || password !== '123') {
+			reject({ message: 'Incorrect username or password', statusCode: 401 })
+		} else {
+			resolve({ statusCode: 200, mesage: 'login successfully', secret: authHelper.encrypt(password) })
+		}
+	})
+}
+
 export default loginRouter

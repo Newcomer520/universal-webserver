@@ -46,7 +46,10 @@ export const requireFetch = (fetchMethod, { authRequired = false, store, reduxSt
 	return (nextState, replaceState, cb) => {
 		const state$ = observableFromStore(store).startWith(store.getState()).map(state => ({ canUseDOM, authRequired, reduxState, status, ...state })) // provide the other information
 		// unauthenticated => redirect to login
-		state$.filter(s => s.authRequired && !s.auth.tokenValid).first().subscribe(state => replaceState(null, 'login', { to: nextState.location.pathname }))
+		state$.filter(s => s.authRequired && !s.auth.tokenValid).first().subscribe(state => {
+			replaceState(null, 'login', { to: nextState.location.pathname })
+			cb()
+		})
 		// when to render the view
 		state$.filter(s => s.fetched || s.canUseDOM || (s.auth.tokenValid && s.auth.tokenExpired)).first().subscribe(state => cb())
 

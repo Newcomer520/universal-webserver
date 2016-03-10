@@ -1,32 +1,59 @@
 import path from 'path'
-import express from 'express'
-import ReactDOM from 'react-dom/server'
-import routerMiddleware from './middlewares/router-middleware'
-import bodyParser from 'body-parser'
-import cookieParser from 'cookie-parser'
+import koa from 'koa'
+import logger from 'koa-logger'
+import bodyParser from 'koa-bodyparser'
+import helmet from 'koa-helmet'
+import mount from 'koa-mount'
+import serve from 'koa-static'
 import apiRouter from './api/index'
-import logger from './middlewares/logger'
-import helmet from 'helmet'
+import errorHandler, { slackReportBot } from './middlewares/error-handler'
+import morganLogger from './middlewares/logger'
+import routerMiddleware from './middlewares/router-middleware'
+import co from 'co'
+import initDatabase from './lib/mongodb'
+import { initRedis } from './utils/redis'
 
-const app = new express()
-app.use(helmet())
-app.use(logger)
-app.use(cookieParser())
+// application level init
+co(function *() {
+	// try {
+		yield initDatabase()
+		yield initRedis()
 
-// assets
-app.use('/static', express.static(path.join(__dirname, '../..', 'build/public')))
+		// initial server setting
 
-// apis
+		const app = koa()
+		// error handling asap
+		app.use(errorHandler)
+		// app.use(slackReportBot)
+		app.use(logger())
+		app.use(morganLogger)
+		app.use(bodyParser({
+			onerror: (err, ctx) => ctx.throw('body parse error', 422)
+		}))
+		app.use(helmet())
 
-// api documents
-app.use('/apidoc/', express.static(path.join(__dirname, '../..', 'apidoc')))
-app.use('/api', apiRouter)
+		const apidoc = koa()
+		apidoc.use(serve(path.join(__dirname, '../..', 'apidoc')))
 
-// router setting
-app.use('*', routerMiddleware)
+		const statics = koa()
+		statics.use(serve(path.join(__dirname, '../..', 'build/public')))
+		app.use(mount('/static', statics))
 
-const server = app.listen(global.config.port, () => {
-	const host = server.address().address
-	const port = server.address().port
-	console.log('Server listening at http://%s:%s', host, port)
+		app.use(mount('/api', apiRouter))
+		app.use(mount('/apidoc', apidoc))
+
+		// mainly rendering
+		app.use(mount(routerMiddleware))
+
+
+		const server = app.listen(global.config.port, () => {
+			const host = server.address().address
+			const port = server.address().port
+			console.log('Server listening at http://%s:%s', host, port)
+		})
+
+	// }	catch (ex) {
+	// 	console.log('err', ex)
+	// 	throw new Error(ex)
+	// }
 })
