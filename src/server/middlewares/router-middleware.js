@@ -2,16 +2,17 @@ import React from 'react'
 import ReactDOM from 'react-dom/server'
 import Html from 'app/components/Html'
 import { match, RouterContext } from 'react-router'
-import createHistory from 'history/lib/createMemoryHistory'
-import getRoutes from 'app/routes'
-import createStore from 'app/create-store'
+import routes from 'app/routes'
+import createStore, { sagaMiddleware } from 'app/create-store'
 import { Provider } from 'react-redux'
 import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
 import { replacePath, pushPath } from 'redux-simple-router'
-import { setFetched, clearToken } from 'actions/fetch-action'
 import koa from 'koa'
 import authenticator from './authenticator'
 import fs from 'fs'
+import serverRender from '../utils/server-render'
+import { initState as universalState } from 'reducers/universal-reducer'
+import { setServerFetched } from 'actions/universal-action'
 
 const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
 
@@ -21,7 +22,6 @@ frontend.use(initStore)
 global.config.universal === true ? frontend.use(universalRender): frontend.use(nonUniversalRender)
 
 function *initStore(next) {
-	console.log('this.originalUrl0', this.originalUrl)
 	const { userInfo } = this.state
 	const initState = {
 		auth: {
@@ -30,39 +30,31 @@ function *initStore(next) {
 			expiresIn: userInfo.expiresIn,
 			username: userInfo.username,
 			tokenValid: userInfo.tokenValid,
-			tokenExpired: userInfo.tokenExpired,
-			token: this.state.token
-		}
+			tokenExpired: userInfo.tokenExpired
+		},
+		universal: universalState
 	}
 	this.state.store = createStore(initState)
 	yield next
 }
-function *universalRender(next) {
-	const ctx = this
-	const { state: { store } } = this
-	const routes = getRoutes(store)
 
-	match({ routes, location: this.originalUrl }, function(error, redirectLocation, renderProps) {
-		if (error) {
-			ctx.throw(error.message, 500)
-		} else if (redirectLocation) {
-			ctx.redirect(redirectLocation.pathname + redirectLocation.search)
-		} else if (renderProps) {
-			// material ui use js inline style, need to mock a navigator
-			global.navigator = { userAgent: ctx.request.get('user-agent') }
-			// prevent the token from going to front-end
-			store.dispatch(clearToken())
-			const component = (
-				<Provider store={store}>
-					<RouterContext {...renderProps}/>
-				</Provider>
-			)
-			ctx.body = '<!doctype html>' +
-				ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
-		} else {
-			ctx.throw('Not found', 404)
+function *universalRender(next) {
+	const { store } = this.state
+	const { token } = this.state
+	const { auth } = store.getState()
+	const loginUrl = '/login'
+	try {
+		const component = yield matchRoutes(this.originalUrl, store, token)
+		// material ui use js inline style, need to mock a navigator
+		global.navigator = { userAgent: this.request.get('user-agent') }
+		this.body = renderToHtml(assets, component, store)
+	}	catch (ex) {
+		if (ex.status != 401) { //unknown error occurs
+			this.throw(ex.message || 'interval server ERROR', ex.status || 500)
 		}
-	})
+
+		this.redirect(`${loginUrl}?to=${this.originalUrl}`)
+	}
 }
 
 function *nonUniversalRender(next) {
@@ -73,6 +65,55 @@ function *nonUniversalRender(next) {
 		this.body = '<!doctype html>' +
 			ReactDOM.renderToString(<Html assets={assets} store={this.state.store} />)
 	}
+}
+
+/**
+ * wrap the matching function in a co-style generator recognition
+ * @param  {[type]} url   [description]
+ * @param  {[type]} store [description]
+ * @param  {[type]} token [description]
+ * @return {[type]}       [description]
+ */
+const matchRoutes = (url, store, token) => done => {
+	match({ routes, location: url }, function (error, redirectLocation, renderProps) {
+		if (error) {
+			error = { message: 'Internal SERVER error', status: 500 , ...error }
+			done(error, null)
+		} else if (redirectLocation) {
+			console.warn('redirectLocation in mathRoutes, might be something wrong')
+			// is it possible to enter here?
+			// ctx.redirect(redirectLocation.pathname + redirectLocation.search)
+		} else if (renderProps) {
+			const { auth: authState } = store.getState()
+			serverRender(authState, renderProps, { token })
+				.then(isFetch => {
+					const component =
+						<Provider store={store}>
+							<RouterContext {...renderProps}/>
+						</Provider>
+					if (isFetch) {
+						// need to notify serverFetch is done => do not fetch at client side as startup
+						store.dispatch(setServerFetched())
+						return done(null, component)
+					}
+					else if ( authState.tokenValid && authState.tokenExpired) { // token valid but expired, need to fetch data at client side(refresh token)
+						return done(null, component)
+					}
+					// failed to fetch data ... should check the auth state
+					const error = new Error('unauthorized')
+					error.status = 401
+					return done(error, null)
+				})
+				.catch(ex => done( { status: 500, message: 'internal server error', ...ex }, null))
+		} else {
+			done({ status: 404, message: 'Not found' }, null)
+		}
+	})
+}
+
+function renderToHtml(assets, component, store) {
+	return '<!doctype html>' +
+				ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
 }
 
 export default frontend

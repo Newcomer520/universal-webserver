@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import getRoutes from './routes/index'
+import routes from './routes/index'
 import createStore from './create-store'
 import { Provider } from 'react-redux'
 import { Router, browserHistory } from 'react-router'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+import { renderRouterContext } from './utils/universal'
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:
@@ -16,10 +17,10 @@ injectTapEventPlugin()
 
 const store = createStore(window.__reduxState__) // __reduxState__ will be valid if universal rendering
 const history = syncHistoryWithStore(browserHistory, store)
-const routes = getRoutes(store)
+console.log('browserHistory ', browserHistory)
 const component = (
 	<Provider store={store}>
-		<Router history={history}>
+		<Router history={history} render={renderRouterContext(store)}>
 			{routes}
 		</Router>
 	</Provider>

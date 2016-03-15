@@ -1,4 +1,4 @@
-import { fetchStatus as fetchStatusApi } from '../utils/fetch'
+import { fetchStatus as fetchStatusApi, SAGA_FETCH_ACTION } from '../utils/fetch'
 
 export const TYPES = {
 	FETCH_STATUS_REQUESTING: `Symbol('request fetch status')`,
@@ -8,6 +8,6 @@ export const TYPES = {
 
 export const fetchStatus = () => {
 	const fetch = fetchStatusApi()
-	const types = Object.keys(TYPES).map(k => TYPES[k])
-	return { fetch, types }
+	const status = Object.keys(TYPES).map(k => TYPES[k])
+	return { fetch, status, type: SAGA_FETCH_ACTION }
 }

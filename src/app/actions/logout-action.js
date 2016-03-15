@@ -8,6 +8,6 @@ export const TYPES = {
 
 export const logout = () => {
 	const fetch = logoutApi()
-	const types = Object.keys(TYPES).map(k => TYPES[k])
-	return { fetch, types }
+	const status = Object.keys(TYPES).map(k => TYPES[k])
+	return { fetch, status }
 }

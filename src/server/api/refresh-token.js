@@ -58,8 +58,9 @@ refreshRouter.post('/', function *(next) {
 		this.throw('the refresh token is invalid, please re-login', 401)
 	}
 	const { jwt, refreshToken } = yield authHelper.jwtSign(parsed.username, parsed.secret, TTL, parsed.jti)
+	console.log('new access token: ', jwt)
 	console.log('do not remove right now: ', refreshToken)
-	this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { expires: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000) })
+	this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { signed: false, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8) })
 	this.body = { refreshToken: refreshToken, accessToken: jwt }
 })
 

@@ -1,6 +1,6 @@
 
 import React, { Component, PropTypes } from 'react'
-import { reducer as formReducer, reduxForm, initialize, reset } from 'redux-form'
+import { reduxForm, reset } from 'redux-form'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -17,6 +17,10 @@ import ResetButton from 'material-ui/lib/raised-button'
 
 //Recaptcha
 import Recaptcha from 'components/Recaptcha'
+
+
+
+export const fields = ['userName', 'password']
 
 const hideAutoFillColorStyle = {
 	WebkitBoxShadow: '0 0 0 1000px white inset'
@@ -37,14 +41,14 @@ const validate = (values, props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		recaptcha_id: state.auth.recaptcha_id,
-		recaptcha_response: state.auth.recaptcha_response,
-		is_btn_disable: state.auth.is_btn_disable,
+		loginStatus: state.login.status,
+		recaptcha_id: state.login.recaptcha_id,
+		recaptcha_response: state.login.recaptcha_response,
+		is_btn_disable: state.login.is_btn_disable,
 		state : state.form
 	}
 }
 
-export const fields = [ 'userName', 'password' ]
 @connect( mapStateToProps, dispatch => ({ actions: bindActionCreators({ login, reset }, dispatch) }))
 @reduxForm({ // <----- THIS IS THE IMPORTANT PART!
 	form: 'login',                           // a unique name for this form
