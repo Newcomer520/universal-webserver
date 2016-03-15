@@ -20,6 +20,7 @@ Application state are managed at both server and client. Furthurmore, server wil
 Routes are defined in `react-router` way. It helps us to get the correct component to be rendered.
 * **redux-saga**
 We use `redux-saga` to compose many asychronous tasks. The major purpose is for related fetching and authentication flow. Since the authetication flow is the token based architecture. With `redux-saga` composable tasks are elegant and maintable.
+
 ### Universal Fetching data
 In my opinion, this is the most difficult when doing universal rendering. More precisely, the difficulty is to fetch secured data. References to the [server rendering guide](https://github.com/reactjs/react-router/blob/master/docs/guides/ServerRendering.md) of `react-router`:
 > For data loading, you can use the renderProps argument to build whatever convention you want--like adding static load methods to your route components, or putting data loading functions on the routes--it's up to you.
