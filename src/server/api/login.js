@@ -17,7 +17,6 @@ function *recaptchaMiddleware(next) {
 	const { gRecaptchaResponse } = this.request.body
 	if (!gRecaptchaResponse) {
 		this.throw('recaptcha response must be provided', 400)
-		return
 	}
 	try {
 		const body = JSON.stringify({ secret: recaptchaSecret, response: gRecaptchaResponse })
@@ -32,9 +31,8 @@ function *recaptchaMiddleware(next) {
 			}
 		}))
 		yield next
-	} catch (err) {
-		console.log(err)
-		this.throw('invalid recaptcha response', 400)
+	} catch (ex) { // might be thrown from downstream
+		this.throw(ex.message || 'invalid recaptcha response', ex.status || 400)
 	}
 }
 
@@ -70,23 +68,23 @@ function *recaptchaMiddleware(next) {
  * "invalid recaptcha response"
  */
 const loginRouter = router()
-loginRouter.use(recaptchaMiddleware)
+// loginRouter.use(recaptchaMiddleware)
 loginRouter.post('/', function *(next) {
 	const { request: req, response: res } = this
 	if (!req.body || !req.body.username || !req.body.password) {
-		this.throw('username or password should be provided...', 400)
+		this.throw('username or password should be provided...', 401)
 	} else {
 		try {
 			const result = yield authenticate(req.body.username, req.body.password)
 			const { jwt, refreshToken } = yield authHelper.jwtSign(req.body.username, result.secret, TTL)
 			this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { signed: false, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8) })
-			res.body = {
+			this.body = {
 				username: req.body.username,
 				refreshToken: refreshToken,
 				expiresIn: new Date(Date.now() + TTL)
 			}
 		} catch (err) {
-			this.throw(err.message || JSON.stringify(err), err.status || err.statusCode)
+			this.throw(err.message, err.status || 401)
 		}
 	}
 })
@@ -100,9 +98,9 @@ loginRouter.post('/', function *(next) {
 function authenticate(username, password) {
 	return new Promise((resolve, reject) => {
 		if ( username !== 'user02' || password !== '123') {
-			reject({ message: 'Incorrect username or password', statusCode: 401 })
+			reject({ message: 'Incorrect username or password', status: 401 })
 		} else {
-			resolve({ statusCode: 200, mesage: 'login successfully', secret: authHelper.encrypt(password) })
+			resolve({ status: 200, mesage: 'login successfully', secret: authHelper.encrypt(password) })
 		}
 	})
 }

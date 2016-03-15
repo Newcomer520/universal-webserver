@@ -4,7 +4,7 @@ import { reducer as formReducer, reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { logout } from 'actions/logout-action'
-
+import { fetchStatus as fetchStatusAction } from 'actions/fetch-status-action'
 // import comonents from material-ui
 import FetchCard from 'material-ui/lib/card/card'
 import CardTitle from 'material-ui/lib/card/card-title'
@@ -18,7 +18,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import Recaptcha from 'components/Recaptcha'
 
 // loading icon
-import { TYPES as FETCH_STATUS_TYPES} from 'actions/fetch-status-action'
+import { TYPES as FETCH_STATUS_TYPES } from 'actions/fetch-status-action'
 const { FETCH_STATUS_REQUESTING, FETCH_STATUS_SUCCESS, FETCH_STATUS_FAILED } = FETCH_STATUS_TYPES
 
 
@@ -30,6 +30,9 @@ export default class FetchStatus extends Component {
 	static propTypes = {
 		actions: React.PropTypes.object
 	};
+
+	static preloader = fetchStatusAction;
+
 	requestLogout = () => {
 		// useing boundAction to trigger middlewares
 		const { logout } = this.props.actions

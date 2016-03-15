@@ -1,4 +1,4 @@
-import { login as loginApi } from '../utils/fetch'
+import { login as loginApi, SAGA_FETCH_ACTION } from '../utils/fetch'
 
 export const TYPES = {
 	LOGIN_REQUESTING: 'request_login',
@@ -8,6 +8,6 @@ export const TYPES = {
 
 export const login = (username, password, gRecaptchaResponse) => {
 	const fetch = loginApi(username, password, gRecaptchaResponse)
-	const types = Object.keys(TYPES).map(k => TYPES[k])
-	return { fetch, types }
+	const status = Object.keys(TYPES).map(k => TYPES[k])
+	return { fetch, status, type: SAGA_FETCH_ACTION }
 }

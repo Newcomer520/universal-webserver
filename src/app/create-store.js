@@ -1,13 +1,16 @@
 import { createStore, applyMiddleware, compose } from 'redux'
-import fetchMiddleware from './middlewares/fetch-middleware'
+import createSagaMiddleware from 'redux-saga'
 import promiseMiddleware from './middlewares/promise-middleware'
 import authMiddleware from './middlewares/auth-middleware'
 import reducer from 'reducers/reducer'
-import { canUseDOM } from './utils/fetch'
+import { canUseDOM, KEY_REFRESH_TOKEN } from './utils/fetch'
 import merge from 'lodash.merge'
 import { initState as authState } from 'reducers/auth-reducer'
+import * as authSaga  from 'sagas/auth'
+import { fetchSaga, preloaderSaga } from 'sagas/fetch'
 
-const middlewares = [ fetchMiddleware, promiseMiddleware ]
+const middlewares = [promiseMiddleware, authMiddleware]
+export const sagaMiddleware = createSagaMiddleware(...[fetchSaga, preloaderSaga])
 /**
  * function to create a redux store
  * history   {object}               from some createHistroy()
@@ -16,10 +19,10 @@ const middlewares = [ fetchMiddleware, promiseMiddleware ]
  */
 export default function(initState) {
 	if (canUseDOM && initState) {
-		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem('refresh-token') } })
+		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
 	}
 	const finalCreateStore = compose(
-		applyMiddleware(fetchMiddleware, promiseMiddleware, authMiddleware),
+		applyMiddleware(...middlewares, sagaMiddleware),
 		__DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
 	)(createStore)
 	const store = finalCreateStore(reducer, initState)

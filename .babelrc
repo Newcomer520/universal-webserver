@@ -11,7 +11,9 @@
 	  		{ "src": "./src/app", "expose": "app" },
 	  		{ "src": "./src/app/actions", "expose": "actions" },
 	  		{ "src": "./src/app/reducers", "expose": "reducers" },
+	  		{ "src": "./src/app/sagas", "expose": "sagas" },
 	  		{ "src": "./src/app/components", "expose": "components" },
+	  		{ "src": "./src/app/containers", "expose": "containers" },
 	  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" }
   		]
   	],

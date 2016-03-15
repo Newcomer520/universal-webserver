@@ -7,11 +7,10 @@ import jwt from 'jsonwebtoken'
 import uuid from 'node-uuid'
 import { initState as authInitState } from 'reducers/auth-reducer'
 const { secret } = global.config
-
 const algorithm = 'aes-256-ctr'
 export const COOKIE_AUTH_TOKEN = 'auth-token'
 export const TOKEN_EXPIERED_ERROR = 'TokenExpiredError'
-export const TTL = 10 * 60 * 1000
+export const TTL = 1 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
 
 export default class authHelper {
 	static recoverToken(token) {
@@ -53,7 +52,8 @@ export default class authHelper {
 			await redisClient.set(jwtObject.jti, refreshToken)
 			await redisClient.expire(jwtObject.jti, 60 * 60 * 24 * 7) // 7 days
 		} catch (err) {
-			throw new Error(err)
+			err.status = 500
+			throw err
 		}
 		return {
 			jwt: jwt.sign(jwtObject, secret, { expiresIn: `${ttlMS} ms`, algorithm: 'HS256' }),

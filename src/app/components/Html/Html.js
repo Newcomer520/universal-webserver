@@ -29,6 +29,7 @@ export default class Html extends Component {
 					{/*DocumentMeta.renderAsReact()*/}
 
 					<link rel="shortcut icon" href="/static/favicon1116.ico" />
+					<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css" />
 					<meta name="viewport" content="width=device-width, initial-scale=1" />
 					{/* styles (will be present only in production with webpack extract text plugin) */}
 					{Object.keys(assets).filter(a => !!assets[a].css).map((prop, key) =>
