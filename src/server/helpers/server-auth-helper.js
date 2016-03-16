@@ -6,11 +6,11 @@ import redisClient from '../utils/redis'
 import jwt from 'jsonwebtoken'
 import uuid from 'node-uuid'
 import { initState as authInitState } from 'reducers/auth-reducer'
-const { secret } = global.config
-const algorithm = 'aes-256-ctr'
+const { secret, privateKey, publicKey } = global.config
+const algorithm = 'aes-256-ctr' // alogorithm for encrypting password, NOT for jwt
 export const COOKIE_AUTH_TOKEN = 'auth-token'
 export const TOKEN_EXPIERED_ERROR = 'TokenExpiredError'
-export const TTL = 1 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
+export const TTL = 0.3 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
 
 export default class authHelper {
 	static recoverToken(token) {
@@ -56,17 +56,15 @@ export default class authHelper {
 			throw err
 		}
 		return {
-			jwt: jwt.sign(jwtObject, secret, { expiresIn: `${ttlMS} ms`, algorithm: 'HS256' }),
+			jwt: jwt.sign(jwtObject, privateKey, { expiresIn: `${ttlMS} ms`, algorithm: 'RS256' }),
 			refreshToken: refreshToken
 		}
-
-		// return jwt.sign(jwtObject, secret, { expiresIn: `${ttlMS} ms`, algorithm: 'HS256' })
 	}
 	static jwtVerify(token) {
 		let decoded	= { verified: false }
 		try {
-			const options = { algorithms: ['HS256'] }
-			decoded = Object.assign(jwt.verify(token, secret, options), { verified: true })
+			const options = { algorithms: ['RS256'] }
+			decoded = Object.assign(jwt.verify(token, publicKey, options), { verified: true })
 		} catch(err) {
 			decoded.err = err
 		}
