@@ -1,4 +1,9 @@
 var path = require('path')
+var fs = require('fs')
+
+var privateKey = fs.readFileSync('keys/key_rsa', { encoding: 'utf-8' })
+var publicKey = fs.readFileSync('keys/key_rsa.pub', { encoding: 'utf-8' })
+
 /**
  * default server setting
  */
@@ -7,6 +12,8 @@ module.exports = {
 	port: process.env.port || 8808,
 	assets: 'assets',
 	secret: 'xbEa1EGS56yoLmZfF0gUh0tsfpCYWjt44AiDk5N9CCPDuBc9Nd4XWBAKOFTVA37',
+	privateKey: privateKey,
+	publicKey: publicKey,
 	universal: true,
 	redisIp: process.env.redisip,
 	redisPort: process.env.redisport,
