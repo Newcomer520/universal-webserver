@@ -66,19 +66,15 @@ export const renderRouterContext = (store) => (props) => {
 		.map(c => {
 			let preloaders = []
 			if (typeof c.preloader === 'function') {
-				// preloaders.push(c.preloader(props.params))
-				preloaders.push(c.preloader)
+				preloaders.push(c.preloader(props.params))
 			} else if (Array.isArray(c.preloader)) {
-				// c.preloader.forEach(pl => preloaders.push(pl(props.params)))
-				c.preloader.forEach(pl => preloaders.push(pl))
+				c.preloader.forEach(pl => preloaders.push(pl(props.params)))
 			}
 			return preloaders
 		})
 		.reduce((result, preloaders) => result.concat(preloaders), [])
 
 	// must ensure component do rendering first, any better way?
-	// use redux saga to do loading
-	// setTimeout(() => preloaders.forEach(pl => store.dispatch(pl)), 0)
-	store.dispatch({ type: SAGA_PRELOAD_ACTION, preloaders, params: props.params })
+	setTimeout(() => preloaders.forEach(pl => store.dispatch(pl)), 0)
 	return <RouterContext {...props}/>
 }

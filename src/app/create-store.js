@@ -7,10 +7,10 @@ import { canUseDOM, KEY_REFRESH_TOKEN } from './utils/fetch'
 import merge from 'lodash.merge'
 import { initState as authState } from 'reducers/auth-reducer'
 import * as authSaga  from 'sagas/auth'
-import { fetchSaga, preloaderSaga } from 'sagas/fetch'
+import { fetchSaga } from 'sagas/fetch'
 
 const middlewares = [promiseMiddleware, authMiddleware]
-export const sagaMiddleware = createSagaMiddleware(...[fetchSaga, preloaderSaga])
+export const sagaMiddleware = createSagaMiddleware(...[fetchSaga])
 /**
  * function to create a redux store
  * history   {object}               from some createHistroy()
