@@ -3,7 +3,7 @@
  @modifier : modifier */
 
 .Login {
-	width: 50%;
+	width: 100%;
 	margin: auto;
 
 	&__banner {

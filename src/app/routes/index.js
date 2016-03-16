@@ -1,14 +1,19 @@
 import React, { Component } from 'react'
 import { Router, Route, IndexRoute } from 'react-router'
 
-// components
-import Root from 'components/Root'
-import FetchStatus from 'components/FetchStatus'
-import Login from 'components/Login'
+// containers
+import Root from 'containers/Root'
+import Home from 'containers/Home'
+import FetchStatus from 'containers/FetchStatus'
+import Login from 'containers/Login'
+import NoMatch from 'containers/NoMatch'
 
 export default (
 	<Route path="/" component={Root}>
-		<IndexRoute component={FetchStatus}/>
+		<Route component={Home}>
+			<IndexRoute component={FetchStatus}/>
+		</Route>
 		<Route path="login" component={Login}/>
+		<Route path="*" component={NoMatch}/>
 	</Route>
 )

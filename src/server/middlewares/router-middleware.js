@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
-import Html from 'app/components/Html'
+import Html from 'containers/Html'
 import { match, RouterContext } from 'react-router'
 import routes from 'app/routes'
 import createStore, { sagaMiddleware } from 'app/create-store'
