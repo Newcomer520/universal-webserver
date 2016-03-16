@@ -1,4 +1,3 @@
-import { pushPath, UPDATE_PATH } from 'redux-simple-router'
 import { TYPES as LOGOUT_TYPES } from 'actions/logout-action'
 import { REFRESH_TOKEN_DONE } from 'app/utils/fetch'
 

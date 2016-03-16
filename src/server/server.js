@@ -10,13 +10,11 @@ import errorHandler, { slackReportBot } from './middlewares/error-handler'
 import morganLogger from './middlewares/logger'
 import routerMiddleware from './middlewares/router-middleware'
 import co from 'co'
-import initDatabase from './lib/mongodb'
 import { initRedis } from './utils/redis'
 
 // application level init
 co(function *() {
 	// try {
-	yield initDatabase()
 	yield initRedis()
 
 	// initial server setting

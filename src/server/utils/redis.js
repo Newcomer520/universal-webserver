@@ -13,7 +13,7 @@ const log = type => () => console.log(type, arguments)
 // client.on('ready', log('ready'))
 // client.on('reconnecting', log('reconnecting'))
 
-const client = redis.createClient({ host: redisIp, port: redisPort, max_attempts: 10 })
+const client = redis.createClient({ host: redisIp, port: redisPort })
 export default client
 
 // use this flag to check if redis connected

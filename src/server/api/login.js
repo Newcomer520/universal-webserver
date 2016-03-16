@@ -1,6 +1,5 @@
 import router from 'koa-router'
 import crypto from 'crypto'
-import bodyParser from 'body-parser'
 import authHelper, { COOKIE_AUTH_TOKEN, TTL } from '../helpers/server-auth-helper'
 import fetch from 'isomorphic-fetch'
 

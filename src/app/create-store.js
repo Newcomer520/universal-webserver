@@ -6,7 +6,6 @@ import reducer from 'reducers/reducer'
 import { canUseDOM, KEY_REFRESH_TOKEN } from './utils/fetch'
 import merge from 'lodash.merge'
 import { initState as authState } from 'reducers/auth-reducer'
-import * as authSaga  from 'sagas/auth'
 import { fetchSaga } from 'sagas/fetch'
 
 const middlewares = [promiseMiddleware, authMiddleware]
