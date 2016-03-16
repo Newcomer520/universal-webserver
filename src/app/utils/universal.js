@@ -80,7 +80,6 @@ export const renderRouterContext = (store) => (props) => {
 		.filter(l => previousLoaders.indexOf(l) == -1)
 		.map(l => l(props.params))
 	if (needToFetch.length > 0) {
-		console.log(needToFetch, previousLoaders)
 		previousLoaders = currentLoaders
 		// must ensure component do rendering first, any better way?
 		setTimeout(() => needToFetch.forEach(pl => store.dispatch(pl)), 0)

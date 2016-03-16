@@ -17,7 +17,6 @@ injectTapEventPlugin()
 
 const store = createStore(window.__reduxState__) // __reduxState__ will be valid if universal rendering
 const history = syncHistoryWithStore(browserHistory, store)
-console.log('browserHistory ', browserHistory)
 const component = (
 	<Provider store={store}>
 		<Router history={history} render={renderRouterContext(store)}>

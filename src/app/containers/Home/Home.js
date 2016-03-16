@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
 import Header from 'components/Header'
 import Radium from 'radium'
-
 import RootCss from '../Root/Root.css'
+
 @Radium
 export default class Home extends Component {
 	render() {
@@ -11,16 +11,15 @@ export default class Home extends Component {
 		return (
 			<div style={styles.base}>
 				<Header/>
-				<div style={[styles.content, { top: '70px' }]}>
+				<div style={[styles.transitionContainer, { top: '70px' }]}>
 					<ReactCSSTransitionGroup
 						transitionAppear={false}
 						transitionName={RootCss}
 						transitionEnterTimeout={500}
 						transitionLeaveTimeout={500}>
-						<div key={home.props.location.pathname}>
-							{home.props.children}
+						<div key={this.props.location.pathname} style={styles.content}>
+							{this.props.children}
 						</div>
-						{/*React.cloneElement(home.props.children, { key: home.props.location.pathname })*/}
 					</ReactCSSTransitionGroup>
 				</div>
 			</div>
@@ -36,12 +35,18 @@ const styles = {
 		flexDirection: 'column',
 		alignItems: 'center'
 	},
-	content: {
+	transitionContainer: {
 		position: 'absolute',
 		top: '0px',
 		left: '0px',
 		right: '0px',
 		bottom: '0px'
+	},
+	content: {
+		width: '100%',
+		maxWidth: '1024px',
+		marginLeft: 'auto',
+		marginRight: 'auto'
 	}
 }
 

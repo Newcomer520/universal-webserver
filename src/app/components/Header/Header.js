@@ -45,7 +45,8 @@ const styles = {
 		minHeight: '70px',
 		backgroundColor: 'lightblue',
 		padding: '10px',
-		boxSizing: 'border-box'
+		boxSizing: 'border-box',
+		boxShadow: '0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)'
 	},
 	logo: {
 		width: '50px',
