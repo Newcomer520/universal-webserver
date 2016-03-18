@@ -7,6 +7,7 @@ import tableStyle from 'app/css/tables.css'
 import componentStyle from 'app/css/components.css'
 
 import FormSBP from 'components/Forms/FormSBP'
+import SimulatorChart from 'components/SimulatorChart'
 
 const cx = classnames.bind(styles)
 const tcx = classnames.bind(tableStyle)
@@ -71,6 +72,7 @@ export default class extends Component {
 					<div className={cx('main__column', 'main__column--left')}>
 						{this.renderFilterBar()}
 						<div className={cx('chart-container')}>
+							<SimulatorChart />
 						</div>
 					</div>
 					<div className={cx('main__column', 'main__column--right')}>
