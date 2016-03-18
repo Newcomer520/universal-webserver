@@ -65,6 +65,29 @@ export default class extends Component {
 	};
 
 	render() {
+		const points = [
+			{ "x": 1,   "y": 100},
+			{ "x": 20,  "y": 221},
+			{ "x": 50,  "y": 12},
+			{ "x": 60,  "y": 142},
+			{ "x": 80,  "y": 10},
+			{ "x": 100, "y": 246},
+			{ "x": 150, "y": 24},
+			{ "x": 200, "y": 246},
+			{ "x": 250, "y": 24},
+			{ "x": 300, "y": 246}
+		]
+		const predictPoints = [
+			{ "x": 1,   "y": 100},
+			{ "x": 50,  "y": 221},
+			{ "x": 51,  "y": 100},
+			{ "x": 120,   "y": 290},
+			{ "x": 121,  "y": 80},
+			{ "x": 300,  "y": 210}
+		]
+		const svgHeight = 400
+		const svgWidth = 800
+		const svgLinePointDisplay = true
 		return (
 			<div className={styles.container}>
 				{this.renderUserBar()}
@@ -72,7 +95,11 @@ export default class extends Component {
 					<div className={cx('main__column', 'main__column--left')}>
 						{this.renderFilterBar()}
 						<div className={cx('chart-container')}>
-							<SimulatorChart />
+							<SimulatorChart height={svgHeight}
+								width={svgWidth}
+								points={points}
+								pointsDisplay={svgLinePointDisplay}
+								predictPoints={predictPoints}/>
 						</div>
 					</div>
 					<div className={cx('main__column', 'main__column--right')}>
