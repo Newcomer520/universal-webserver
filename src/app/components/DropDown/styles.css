@@ -38,27 +38,3 @@
 		animation: toggle2 0.3s ease 0s 1;
 	}
 }
-
-/* const styles = {
-	dropdown: {
-		visibility: 'hidden',
-		display: 'block',
-		transformOrigin: '0% 0%',
-		animationName: toggleKeyframes
-	},
-	anVisible: {
-		visibility: 'visible',
-		// transformOrigin: '0 0 0',
-		animationName: toggleKeyframes,
-		animation: 'x 0.3s ease 0s 1',
-	},
-	anHidden: {
-		visibility: 'hidden',
-		// animation: 'x 0.3s ease 0s 1 reverse',
-		// animationName: hiddenKeyframes
-	},
-	hidden: {
-		transform: 'scale(1, 0)'
-		// visibility: 'hidden'
-	}
-} */

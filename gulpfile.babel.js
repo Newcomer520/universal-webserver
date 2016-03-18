@@ -14,6 +14,7 @@ import gutil from 'gulp-util'
 import del from 'del'
 import vinylPaths from 'vinyl-paths'
 import apidoc from 'gulp-apidoc'
+import mocha from 'gulp-mocha'
 
 const bs = require('browser-sync').create()
 const BROWSER_SYNC_RELOAD_DELAY = 500
@@ -141,4 +142,14 @@ gulp.task('build', ['copy', 'apidoc'], cb => {
 		}))
 		cb()
 	})
+})
+
+gulp.task('mocha', () => {
+	return gulp.src(['test/**/*.js'], { read: false })
+    .pipe(mocha({ reporter: 'list' }))
+    .on('error', gutil.log)
+})
+
+gulp.task('test', [], () => {
+	gulp.watch(['src/app/**', 'test/**'], ['mocha'])
 })

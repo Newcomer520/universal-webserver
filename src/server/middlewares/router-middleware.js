@@ -42,10 +42,11 @@ function *universalRender(next) {
 	const { token } = this.state
 	const { auth } = store.getState()
 	const loginUrl = '/login'
+	const userAgent = this.request.headers['user-agent']
 	try {
 		const component = yield matchRoutes(this.originalUrl, store, token)
 		// material ui use js inline style, need to mock a navigator
-		global.navigator = { userAgent: this.request.get('user-agent') }
+		global.navigator = { userAgent: userAgent }
 		this.body = renderToHtml(assets, component, store)
 	}	catch (ex) {
 		if (ex.status != 401) { //unknown error occurs
@@ -112,7 +113,7 @@ const matchRoutes = (url, store, token) => done => {
 
 function renderToHtml(assets, component, store) {
 	return '<!doctype html>' +
-				ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
+		ReactDOM.renderToStaticMarkup(<Html assets={assets} component={component} store={store} />)
 }
 
 export default frontend

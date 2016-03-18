@@ -27,10 +27,10 @@ export default class DropDown extends Component {
 	};
 
 	componentWillMount() {
+		this.props.selectedIndex != -1 && this.setState({ selectedIndex: this.props.selectedIndex })
+	}
+	componentDidMount() {
 
-		this.setState({
-			selectedIndex: this.props.selectedIndex? this.props.selectedIndex: -1
-		})
 	}
 	componentWillReceiveProps(newProps) {
 		if (newProps.list != this.props.list) {
@@ -41,7 +41,10 @@ export default class DropDown extends Component {
 		}
 	}
 	toggle = e => {
-		this.setState({ visible: !this.state.visible })
+		this.setState({
+			visible: !this.state.visible,
+			hoverIndex: -1
+		})
 	};
 
 	handleClickOutside = e => {
@@ -50,6 +53,11 @@ export default class DropDown extends Component {
 
 	handleSelectItem = (idx, e) => {
 		this.setState({ selectedIndex: idx, visible: false })
+		const { callback } = this.props
+		if (typeof callback != 'function') {
+			return
+		}
+		callback(idx)
 	};
 
 	setHoverIndex = (idx, e) => {
@@ -60,8 +68,8 @@ export default class DropDown extends Component {
 		const { selectedIndex, hoverIndex } = this.state
 		return items.map((item, idx) => {
 			const cls = cx('item', {
-				selected: selectedIndex == idx,
-				active: hoverIndex == idx
+				active: selectedIndex == idx,
+				selected: hoverIndex == idx
 			})
 			return (
 				<div className={cls} key={idx} onClick={this.handleSelectItem.bind(this, idx)}>
@@ -74,11 +82,13 @@ export default class DropDown extends Component {
 	handleKeyDown = e => {
 		const { visible } = this.state
 		const { selectedIndex, hoverIndex } = this.state
-		console.log(e.which, 'ss')
-		// 38: up 40: down
-		if (e.which != 38 && e.which != 40 && e.which != 13) {
+		// 38: up 40: down  27: escape
+		if (e.which == 27) {
+			return this.setState({ visible: false })
+		}
+		else if (e.which != 38 && e.which != 40 && e.which != 13) {
 			return
-		} else if (e.which == 38 && !visible && hoverIndex == -1) {
+		} else if (e.which == 38 && visible && hoverIndex == -1) {
 			return
 		} else if (e.which == 40 && visible && hoverIndex == this.props.children.length - 1) {
 			return
@@ -87,7 +97,7 @@ export default class DropDown extends Component {
 		switch (e.which) {
 			case 38:
 				// this.setState({ selectedIndex: selectedIndex - 1 })
-				this.setHoverIndex(hoverIndex - 1)
+				this.setHoverIndex(Math.max(hoverIndex - 1, -1))
 				break
 			case 40:
 				if (!visible) {
@@ -120,13 +130,15 @@ export default class DropDown extends Component {
 			[styles.toggle]: visible,
 		})
 		const { list } = this.props
+		const currentValueStyle = (this.state.selectedIndex >= 0 && list && Array.isArray(list) && list.length - 1 >= this.state.selectedIndex)?
+			"text": "default text"
 		const currentValue =  (this.state.selectedIndex >= 0 && list && Array.isArray(list) && list.length - 1 >= this.state.selectedIndex)?
 			list[this.state.selectedIndex] : this.props.placeholder
 		return (
-			<div className={containerCls} onClick={this.toggle} tabIndex="0" onKeyDown={this.handleKeyDown}>
+			<div style={this.props.style} className={containerCls} onClick={this.toggle} tabIndex="0" onKeyDown={this.handleKeyDown}>
 				{/*<input type="hidden" name="gender"/>*/}
 				<i className="dropdown icon"></i>
-				<div className="default text">{currentValue}</div>
+				<div className={currentValueStyle}>{currentValue}</div>
 				<div className={menuCls}>
 					{this.renderItems(this.props.children)}
 				</div>

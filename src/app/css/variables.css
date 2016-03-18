@@ -1,0 +1,19 @@
+$appWidth: 1200px;
+$datePickerWidth: 200px;
+$fontFamily: Verdana, Ms Gothic, Ms PGothic, Arial, sans-serif;
+
+$primary-green: #50b4aa;
+$primary-green--hover: #3CA096;
+$primary-green--active: #288C82;
+
+
+$lightgray-color: rgba(100, 100, 100, 1);
+$whiteBorderColor: silver;
+$background-primary-color: #dbdcdd;
+
+
+$componentSingleLineHeight: 3em;
+$table-row-height: 2.0em;
+
+
+$border-thin: 1px;

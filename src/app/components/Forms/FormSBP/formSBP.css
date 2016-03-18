@@ -1,0 +1,22 @@
+@import "app/css/variables.css";
+@import "app/css/mixins.css";
+
+$padding-space: 1rem;
+
+.container {
+	@mixin flex-box column, flex-start, stretch;
+	flex: 1;
+}
+
+.operations {
+	margin-top: 0.5rem;
+	@mixin flex-box row, center, stretch;
+}
+
+.sbp-form {
+
+	&__row {
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+}

@@ -1,7 +1,9 @@
+var path = require('path')
 
 module.exports = {
 	output: {
-		libraryTarget: 'commonjs2'
+		libraryTarget: 'commonjs2',
+		publicPath: '/static/'
 	},
 	module: {
 		loaders: [
@@ -28,7 +30,8 @@ module.exports = {
 				loader: 'raw-loader',
 			}, {
 				test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
-				loader: 'url-loader?limit=10000',
+				loader: 'file-loader',
+				// loader: 'url-loader?limit=10000',
 			}, {
 				test: /\.(eot|ttf|wav|mp3)$/,
 				loader: 'file-loader',
@@ -37,9 +40,16 @@ module.exports = {
 	},
 	postcss: function plugins(bundler) {
 		return [
+			require('postcss-import')({ path: [path.join(__dirname, '../src')] }), //addDependencyTo: bundler,
 			require('precss'),
 			require("postcss-cssnext")(),
-			require('postcss-nested')
+			require('postcss-nested'),
+			require('postcss-simple-vars')({
+				variables: function () {
+					return require('../src/app/css/variables-with-js');
+				}
+			}),
+			require('postcss-mixins')
 		]
 	}
 }

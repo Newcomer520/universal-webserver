@@ -14,8 +14,12 @@ export default class extends Component {
 	componentDidUpdate() {
 		if (this.state.countDown <= 0) {
 			clearInterval(this.timer)
+			this.timer = null
 			setTimeout(() => browserHistory.push('/'), 500)
 		}
+	}
+	componentWillUnmount() {
+		this.timer && clearInterval(this.timer)
 	}
 	render() {
 		return (

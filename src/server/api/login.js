@@ -76,7 +76,7 @@ loginRouter.post('/', function *(next) {
 		try {
 			const result = yield authenticate(req.body.username, req.body.password)
 			const { jwt, refreshToken } = yield authHelper.jwtSign(req.body.username, result.secret, TTL)
-			this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { signed: false, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8) })
+			this.cookies.set(COOKIE_AUTH_TOKEN, jwt, { signed: false, /*expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8)*/ })
 			this.body = {
 				username: req.body.username,
 				refreshToken: refreshToken,

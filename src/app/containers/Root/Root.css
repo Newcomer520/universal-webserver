@@ -1,11 +1,18 @@
 html, body {
-	width: 100vw;
-	height: 100vh;
+	font-size: 14px;
 	margin: 0px;
+	display: block;
+	@media (max-width: 1199px) {
+		overflow-x: auto !important;
+	}
+}
+body {
+	background: url("/static/bg_2.jpg") fixed;
+	background-attachment: fixed;
+	background-size: cover;
 }
 .root {
 	position: relative;
-	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
 
@@ -15,12 +22,13 @@ html, body {
 		top: 0px;
 		left: 0px;
 		right: 0px;
-		bottom: 0px;
+		bottom: 50px;
+		min-height: 500px;
 	}
 }
 .enter {
 	opacity: 0.01;
-	transition: opacity 0.5s ease-in;
+	transition: opacity 0.5s ease;
 }
 
 .enterActive {
@@ -29,7 +37,7 @@ html, body {
 
 .leave {
 	opacity: 1;
-	transition: opacity 0.3s ease-in;
+	transition: opacity 0.3s ease;
 }
 
 .leaveActive {
@@ -38,7 +46,7 @@ html, body {
 
 .appear {
 	opacity: 0.01;
-	transition: opacity 1.5s ease-in;
+	transition: opacity 0.5s ease;
 }
 
 .appearActive {

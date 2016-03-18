@@ -1,8 +1,20 @@
 import React, { Component } from 'react'
-import Radium from 'radium'
 import { Link } from 'react-router'
+import styles from './header.css'
+import logo from './images/logo.png'
+import cx from 'classnames'
 
-@Radium
+const NavItem = (props) => (
+	// activeClassName={styles['nav-item--selected']}
+	// style={{ backgroundImage: `url(${props.image})` }}
+	<Link
+		className={cx(styles['nav-item'], styles[`${props.image}`])}
+		activeClassName={cx(styles['selected'])}
+		to={props.to || '/'}>
+		<div className={styles['nav-item__text']}>{props.text}</div>
+	</Link>
+)
+
 export default class extends Component {
 	componentDidMount() {
 
@@ -13,52 +25,46 @@ export default class extends Component {
 	handleScroll(e) {
 
 	}
+
+	handleClickNav = (i, e) => {
+
+	};
+
+	renderNavBar = () => {
+		return (
+			<div className={styles['nav-bar']}>
+				<NavItem text="選擇病人" image="patient" to="patient"/>
+				<NavItem text="儀表板" image="dashboard" to="dashboard" />
+				<NavItem text="血液透析紀錄" image="report" to="record" />
+				<NavItem text="血液透析檢驗" image="check" to="examination" />
+				<NavItem text={<span>血液透析<br/>模擬與紀錄</span>} image="simulate" to="simulate"/>
+			</div>
+		)
+	};
+
+	renderRightSection = () => {
+		return (
+			<div className={styles['right-section']}>
+				<div className={styles.info}>
+					<span>Johnny@ehospital.com</span>
+					<span>2015-08-22 13:40 pm</span>
+				</div>
+				<img className={styles.setting}/>
+			</div>
+		)
+	};
+
 	render() {
 		return (
-			<div style={styles.header}>
-				<img style={styles.logo} src={'/static/tile.png'}/>
-				<div style={styles.description}>A Solution for Universal Rendering</div>
-				{/*<Link to="/login">
-					<span>Login</span>
-				</Link>
-				<Link style={styles.signup} to="/signup">
-					<span>Sign up</span>
-				</Link>*/}
-
+			<div className={styles['header-container']}>
+				<div className={styles.header}>
+					<Link to="/"><img className={styles.logo} src={logo}/></Link>
+					{this.renderNavBar()}
+					{this.renderRightSection()}
+				</div>
 			</div>
 		)
 	}
 }
 
-const styles = {
-	container: {
-		width: '100%',
-	},
-	header: {
-		position: 'fixed',
-		zIndex: '999',
-		width: '100%',
-		display: 'flex',
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
-		alignItems: 'center',
-		minHeight: '70px',
-		backgroundColor: 'lightblue',
-		padding: '10px',
-		boxSizing: 'border-box',
-		boxShadow: '0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)'
-	},
-	logo: {
-		width: '50px',
-		height: '50px',
-		marginRight: 'auto'
-	},
-	description: {
-		fontFamily: `"Segoe UI",Arial,sans-serif`,
-		fontWeight: 'bolder',
-		fontSize: '15px'
-	},
-	signup: {
-		marginLeft: '20px'
-	}
-}
+

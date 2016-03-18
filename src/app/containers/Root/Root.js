@@ -12,8 +12,9 @@ export default class Root extends Component {
 					transitionAppear={false}
 					transitionName={ styles }
 					transitionEnterTimeout={500} transitionLeaveTimeout={500}>
-					<div className={styles.root__container} key={this.props.location.pathname}>{this.props.children}</div>
+					<div className={styles.root__container} key={this.props.children.type.displayName || this.props.children.type.name}>{this.props.children}</div>
 				</ReactCSSTransitionGroup>
-			</div>)
+			</div>
+		)
 	}
 }

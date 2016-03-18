@@ -91,7 +91,7 @@ const defaultConfig = {
 				test: /\.css$/,
 				loaders: [
 					'style-loader',
-					'css-loader?' + (DEBUG ? 'sourceMap&' : 'minimize&') + 'modules&localIdentName=[local]_[hash:base64:3]-[name]',
+					'css-loader?' +  'modules&localIdentName=[local]_[hash:base64:3]-[name]', //(DEBUG ? 'sourceMap&' : 'minimize&') +
 					'postcss-loader'
 				]
 			}, {
@@ -102,7 +102,8 @@ const defaultConfig = {
 				loader: 'raw-loader',
 			}, {
 				test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)$/,
-				loader: 'url-loader?limit=10000',
+				loader: 'file-loader',
+				// loader: 'url-loader?limit=10000',
 			}, {
 				test: /\.(eot|ttf|wav|mp3)$/,
 				loader: 'file-loader',
