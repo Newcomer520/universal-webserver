@@ -1,0 +1,40 @@
+@keyframes toggle {
+	0% {
+		transform: scale(1, 0);
+	}
+	100% {
+		transform: scale(1, 1) !important;
+	}
+}
+@keyframes toggle2 {
+	0% {
+		transform: scale(1, 1);
+	}
+	100% {
+		display: none !important;
+		visibility: hidden;
+		transform: scale(1, 0);
+	}
+}
+.dropdown {
+	/* visibility: hidden; */
+/* 	display: 'block', */
+	display: block !important;
+	visibility: visible;
+	transform-origin: 0% 0%;
+	transform: scale(1, 0);
+	transition: transform 0.3s !important;
+	/* animation: toggle 0.3s ease 0s 1; */
+}
+.toggle {
+	/* display: block !important;
+	visibility: visible; */
+	transform: scale(1, 1);
+	/* animation: toggle 0.3s ease 0s 1; */
+	&--reverse {
+		/* display: block !important; */
+		visibility: visible;
+		/* visibility: visible; */
+		animation: toggle2 0.3s ease 0s 1;
+	}
+}

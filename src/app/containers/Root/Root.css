@@ -1,0 +1,54 @@
+html, body {
+	font-size: 14px;
+	margin: 0px;
+	display: block;
+	@media (max-width: 1199px) {
+		overflow-x: auto !important;
+	}
+}
+body {
+	background: url("/static/bg_2.jpg") fixed;
+	background-attachment: fixed;
+	background-size: cover;
+}
+.root {
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+
+
+	&__container {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 50px;
+		min-height: 500px;
+	}
+}
+.enter {
+	opacity: 0.01;
+	transition: opacity 0.5s ease;
+}
+
+.enterActive {
+	opacity: 1;
+}
+
+.leave {
+	opacity: 1;
+	transition: opacity 0.3s ease;
+}
+
+.leaveActive {
+	opacity: 0.01;
+}
+
+.appear {
+	opacity: 0.01;
+	transition: opacity 0.5s ease;
+}
+
+.appearActive {
+	opacity: 1;
+}
