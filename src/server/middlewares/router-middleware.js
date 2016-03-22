@@ -50,7 +50,8 @@ function *universalRender(next) {
 		this.body = renderToHtml(assets, component, store)
 	}	catch (ex) {
 		if (ex.status != 401) { //unknown error occurs
-			this.throw(ex.message || 'interval server ERROR', ex.status || 500)
+			this.throw(ex, ex.status || 500)
+			// this.throw(ex.message || 'interval server ERROR', ex.status || 500)
 		}
 
 		this.redirect(`${loginUrl}?to=${this.originalUrl}`)

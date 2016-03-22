@@ -14,15 +14,13 @@ const Blank = props => <div/>
 
 export default (
 	<Route path="/" component={Root}>
-		<Route path="/" component={Home}>
+		<Route component={Home}>
 			<IndexRoute component={Blank}/>
 			<Route path="patient" component={Patient}/>
 			<Route path="simulate" component={Demo27}/>
 			<Route path="dashboard" component={Blank}/>
 			<Route path="record" component={Blank}/>
 			<Route path="examination" component={Blank}/>
-			{/*<IndexRoute component={FetchStatus}/>*/}
-			{/*<Route path="demo" component={Demo27}/>*/}
 		</Route>
 		<Route path="login" component={Login}/>
 		<Route path="*" component={NoMatch}/>

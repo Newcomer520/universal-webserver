@@ -21,18 +21,7 @@ export default class Home extends Component {
 						</div>
 					</div>
 				</ReactCSSTransitionGroup>
-				{/*<div className={styles['transition-container']} style={{ top: '103px' }}>
-					<ReactCSSTransitionGroup
-						transitionAppear={false}
-						transitionAppearTimeout={500}
-						transitionName={RootCss}
-						transitionEnterTimeout={500}
-						transitionLeaveTimeout={500}>
-						<div key={this.props.location.pathname} className={styles.content}>
-							{this.props.children}
-						</div>
-					</ReactCSSTransitionGroup>
-				</div>*/}
+
 			</div>
 		)
 	}
