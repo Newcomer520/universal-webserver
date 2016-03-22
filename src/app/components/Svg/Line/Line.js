@@ -2,18 +2,24 @@ import React, { Component, PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import { Motion, spring } from 'react-motion'
 import Path from 'paths-js/path'
+import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 export default class Line extends Component {
-	render(){
-		const { points, pointsDisplay, marginLeft, marginButtom, circleRadius } = this.props
-		const LineFunctions = points.map((point, idx)=>{
+	constructor(props) {
+		super(props);
+		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+	}
+
+	genLineFunctions = () => {
+		const { points } = this.props
+		const lines = points.map((point, idx)=>{
 			let  x1, y1, x2, y2
 			x1 = points[idx].x
 			y1 = points[idx].y
 			if(idx + 1 === points.length){
 				x2 = points[idx].x
 				y2 = points[idx].y
-			}else{
+			} else {
 				x2 = points[idx + 1].x
 				y2 = points[idx + 1].y
 			}
@@ -30,59 +36,76 @@ export default class Line extends Component {
 				}
 			)
 		})
+		return lines
+	};
 
-		const xArray = points.map((point, idx)=>(point.x))
+	updateStep = (x, currentStep, xArray) => {
+		for (let i = 0; i < xArray.length - 1; i++) {
+			if (x >= xArray[i] && x < xArray[i + 1]) {
+				return i
+			}
+		}
+		return xArray.length -1
+	};
+
+	renderCircle = (currentStep, styles) => {
+		const circles = []
+		const { points, pointsDisplay } = this.props
+		if( pointsDisplay === true){
+			for(let idx=0; idx<=currentStep; idx++){
+				circles.push( <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/> )
+			}
+		}
+		return circles
+	};
+
+	getXArray = () => {
+		const { points } = this.props
+		return points.map((point, idx)=>(point.x))
+	};
+
+	render(){
+		const { points, xOffset, yOffset } = this.props
+
+		let lineFunctions = this.genLineFunctions()
+		let xArray = this.getXArray()
+
 		let currentStep = 0
-		const updateStep = (x, currentStep, xArray) => {
-			// reach the lastest step
-			if(currentStep + 1 === xArray.length) {
-				return currentStep
-			}
-			// not finish current step
-			if( x < xArray[currentStep + 1] ) return currentStep
-
-			// rest condition
-			return currentStep + 1
-		}
-
-		const x1 = points[0].x
-		const y1 = points[0].y
+		let previousStep = 0
+		const x0 = points[0].x
+		const y0 = points[0].y
 		const lastX = points[points.length - 1].x
-		let path = Path().moveto(x1, y1)
-
-		const renderCircle = (currentStep, styles) => {
-			const circles = []
-			if( pointsDisplay === true){
-				for(let idx=0; idx<=currentStep; idx++){
-					circles.push( <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/> )
-				}
-			}
-			return circles
-		}
+		let count = 0
+		let path = Path().moveto(x0, y0)
+		const { lineStyles, circleStyles }= this.props
 
 		return (
-			<g>
-			<Motion
-				defaultStyle={{ x: x1 }}
-				style={{
-					x: spring(lastX, { stiffness: 27, damping: 90 })
-			}}>
-				{
-					value => {
-						currentStep = updateStep(value.x, currentStep, xArray)
-						let getY = LineFunctions[currentStep]
-						let y = getY(value.x)
-						path = path.lineto(value.x, y)
+			<g transform={`translate(${xOffset}, ${yOffset})`}>
+				<Motion
+					defaultStyle={{ x: x0 }}
+					style={{
+						x: spring(lastX, { stiffness: 64, damping:15, precision: 0.1 })
+				}}>
+					{
+						value => {
+							currentStep = this.updateStep(value.x, currentStep, xArray)
+							for (let i = previousStep+1; i <=currentStep; i++) {
+								path = path.lineto(points[i].x, points[i].y)
+							}
+							previousStep = currentStep
+							let getY = lineFunctions[currentStep]
+							let y = getY(value.x)
+							path = path.lineto(value.x, y)
 
-						return (
-							<g style={{border: '1px solid #cf0'}}>
-							<path strokeDasharray="false" d={path.print()} fill={'none'} stroke={'#50b4aa'} strokeWidth={2} ></path>
-							{ renderCircle(currentStep, { display: pointsDisplay, r: circleRadius, strokeWidth:2, stroke:'#50b4aa', fill:'#fff' }) }
-							</g>
-						)
+							return (
+								<g>
+								<path d={path.print()} { ...lineStyles } ></path>
+								{ this.renderCircle(currentStep, { ...circleStyles }) }
+								</g>
+							)
+						}
 					}
-				}
-			</Motion>
+				</Motion>
 			</g>
 		)
 	}

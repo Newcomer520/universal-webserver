@@ -1,0 +1,20 @@
+.yAxis path {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1px;
+}
+
+.yAxis text {
+	font-size: 16px;
+  fill: #666;
+}
+
+.yAxis line {
+	fill: none;
+  stroke: #666;
+}
+.minor{
+	stroke: red;
+	stroke-width: 1.5;
+	stroke-opacity: 0.5;
+}

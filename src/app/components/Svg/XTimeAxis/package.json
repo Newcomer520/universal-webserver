@@ -1,0 +1,6 @@
+{
+  "name": "xTimeAxis",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./xTimeAxis.js"
+}

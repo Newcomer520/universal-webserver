@@ -1,0 +1,17 @@
+.xAxis path {
+  fill: none;
+  stroke: #666;
+  stroke-width: 1px;
+}
+
+.xAxis text {
+	font-size: 16px;
+  fill: #666;
+}
+
+.xAxis line {
+	fill: none;
+	stroke-width:1;
+	stroke-dasharray: 3,3;
+  stroke: #999;
+}
