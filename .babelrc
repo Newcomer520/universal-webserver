@@ -14,7 +14,8 @@
 	  		{ "src": "./src/app/sagas", "expose": "sagas" },
 	  		{ "src": "./src/app/components", "expose": "components" },
 	  		{ "src": "./src/app/containers", "expose": "containers" },
-	  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" }
+	  		{ "src": "./src/app/middlewares", "expose": "app-middlewares" },
+	  		{ "src": "./src/app/constants", "expose": "constants" }
   		]
   	],
   	"add-module-exports",

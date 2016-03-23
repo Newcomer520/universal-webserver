@@ -16,12 +16,21 @@ module.exports = {
 					'less-loader?outputStyle=expanded&sourceMap'
 				]
 			}, {
-			test:   /\.css$/,
-			loaders: [
+				test: /\.css$/,
+				loaders: [
 					'style-loader',
 					'css-loader?sourceMap&modules&localIdentName=[local]_[hash:base64:3]-[name]',
 					'postcss-loader'
 				],
+				exclude: /node_modules/
+			}, {
+				test: /\.css$/,
+				loaders: [
+					'style-loader',
+					'css-loader?sourceMap',
+					'postcss-loader'
+				],
+				include: /node_modules/
 			}, {
 				test: /\.json$/,
 				loader: 'json-loader',
@@ -40,7 +49,10 @@ module.exports = {
 	},
 	postcss: function plugins(bundler) {
 		return [
-			require('postcss-import')({ path: [path.join(__dirname, '../src')] }), //addDependencyTo: bundler,
+			require('postcss-import')({ path: [
+				path.join(__dirname, '../src'),
+				path.join(__dirname, '../node_modules')
+			] }), //addDependencyTo: bundler,
 			require('precss'),
 			require("postcss-cssnext")(),
 			require('postcss-nested'),

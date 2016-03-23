@@ -91,9 +91,18 @@ const defaultConfig = {
 				test: /\.css$/,
 				loaders: [
 					'style-loader',
-					'css-loader?' +  'modules&localIdentName=[local]_[hash:base64:3]-[name]', //(DEBUG ? 'sourceMap&' : 'minimize&') +
+					'css-loader?importLoaders=1' + (DEBUG ? '&' : '&minimize&') + 'modules&localIdentName=[local]_[hash:base64:3]-[name]', //(DEBUG ? 'sourceMap&' : 'minimize&') +
 					'postcss-loader'
-				]
+				],
+				exclude: /node_modules/
+			}, {
+				test: /\.css$/,
+				loaders: [
+					'style-loader',
+					'css-loader?&importLoaders=1' + (DEBUG ? '' : '&minimize'), //(DEBUG ? 'sourceMap&' : 'minimize&') +
+					'postcss-loader'
+				],
+				include: /node_modules/
 			}, {
 				test: /\.json$/,
 				loader: 'json-loader',
