@@ -30,12 +30,10 @@ export default class YTimeAxis extends Component {
 
     const vdom = ReactFauxDOM.createElement('g')
 		const g = d3.select(vdom)
-		.attr("transform", `translate(${x} , ${y})`)
+		.attr("transform", `translate(${x}, ${y})`)
 		.call(yAxis)
 
-		// vdom.setAttribute("style", this.props.style)
-		console.log(styles)
-		return <g className={styles.yAxis} >{vdom.toReact()}</g>
+		return <g className={styles.yAxis}>{vdom.toReact()}</g>
 	}
 }
 

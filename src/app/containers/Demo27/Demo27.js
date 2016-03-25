@@ -986,11 +986,11 @@ export default class extends Component {
        upr: 87.85264662565422 } ]
 
 		const xtimingarray = (
-			()=>{
+			() => {
 				let inarr = []
 				let startTime = moment("2016-10-20 8:29", "YYYY-MM-DD HH:mm")
 				for(let i=0; i<300; i++){
-					inarr.push(startTime.add(1,'m').valueOf())
+					inarr.push(startTime.add(1, 'm').valueOf())
 				}
 			return inarr
 			}
@@ -1011,7 +1011,7 @@ export default class extends Component {
 
 
 		const simtimingarray = (
-			()=>{
+			() => {
 				let inarr = []
 				let startTime = moment("2016-10-20 10:29", "YYYY-MM-DD HH:mm")
 				for(let i=0; i<300; i++){

@@ -15,12 +15,12 @@ export default class YGridLine extends Component {
 
 		const smax = yScale(upperBound)
 		const smin = yScale(lowerBound)
-		const maxLinePts = [{x: xOffset, y: smax + yOffset}, {x: w - xOffset, y: smax + yOffset}]
-		const minLinePts = [{x: xOffset, y: smin + yOffset}, {x: w - xOffset, y: smin + yOffset}]
+		const maxLinePts = [{ x: xOffset, y: smax + yOffset }, { x: w - xOffset, y: smax + yOffset }]
+		const minLinePts = [{ x: xOffset, y: smin + yOffset }, { x: w - xOffset, y: smin + yOffset }]
 
     const vdom = ReactFauxDOM.createElement('g')
 
-		const g = d3.select(vdom)
+		d3.select(vdom)
 		.append('line')
 		.attr('x1', maxLinePts[0].x)
 		.attr('y1', maxLinePts[0].y)
@@ -31,7 +31,7 @@ export default class YGridLine extends Component {
 		.attr("opacity", 0.5)
 		.attr("stroke", "black")
 
-		const g2 = d3.select(vdom)
+		d3.select(vdom)
 		.append('line')
 		.attr('x1', minLinePts[0].x)
 		.attr('y1', minLinePts[0].y)

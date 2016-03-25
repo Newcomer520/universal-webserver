@@ -3,7 +3,6 @@ import Line from 'components/Svg/Line'
 import PredictLine from 'components/Svg/PredictLine'
 import XTimeAxis from 'components/Svg/XTimeAxis'
 import YTimeAxis from 'components/Svg/YTimeAxis'
-import XGridLine from 'components/Svg/XGridLine'
 import YGridLine from 'components/Svg/YGridLine'
 import moment from 'moment'
 import d3 from 'd3'
@@ -107,39 +106,33 @@ export default class SimulatorChart extends Component {
 
 		const redLineStyles = {
 			circleStyles: { r: 0, strokeWidth: 2, stroke: '#e61673', fill: '#fff'},
-			lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#e61673', strokeDasharray:"none"  }
+			lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#e61673', strokeDasharray:"none"  },
+			fillStyles: { stroke: '#e61673', opacity: 0.1 }
 		}
 
 		const blueLineStyles = {
 			circleStyles: { r: 0, strokeWidth: 2, stroke: '#00a0e9', fill: '#fff'},
-			lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#00a0e9', strokeDasharray:"none"  }
+			lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#00a0e9', strokeDasharray:"none"  },
+			fillStyles: { stroke: '#00a0e9', opacity: 0.5 }
 		}
 
-		const clickCallback = (d,i) => { console.log(d,i)}
+		const clickCallback = (d,i) => {alert(d,i)}
 
 		return (
-			<div>
 				<svg width={widthOffset} height={heightOffset}>
-
 					<g transform={`translate(${margin.left + circleRadius}, ${margin.top + circleRadius})
 													scale(${scaleRatioX}, ${scaleRatioY})`}>
-
-
-						<XGridLine pointsUp={predictUprPointsScale} pointsBottom={predictLwrPointsScale} xOffset={AxisOffsetX} />
-
 
 						<XTimeAxis xScale={pointsXScale} x={AxisOffsetX} y={heightOffset} callback={clickCallback} height={height} heightOffset={heightMargin}/>
 						<YTimeAxis yScale={pointsYScale} x={AxisOffsetX} y={AxisOffsetY} upperBound={upperBound} lowerBound={lowerBound}/>
 
-						<YGridLine xScale={pointsXScale} yScale={pointsYScale} xOffset={AxisOffsetX} yOffset={AxisOffsetY} w={width} upperBound={upperBound} lowerBound={lowerBound} />
 						<PredictLine fitPoints={predictFitPointsScale} uprPoints={predictUprPointsScale} lwrPoints={predictLwrPointsScale} pointsDisplay={'false'} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...redLineStyles} />
 						<PredictLine fitPoints={simFitPointsScale} uprPoints={simUprPointsScale} lwrPoints={simLwrPointsScale} pointsDisplay={'false'} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...blueLineStyles} />
 						<Line points={pointsScale} pointsDisplay={pointsDisplay} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...greenLineStyles} />
 
+						<YGridLine xScale={pointsXScale} yScale={pointsYScale} xOffset={AxisOffsetX} yOffset={AxisOffsetY} w={width} upperBound={upperBound} lowerBound={lowerBound} />
 					</g>
-
 				</svg>
-			</div>
 		)
 	}
 }

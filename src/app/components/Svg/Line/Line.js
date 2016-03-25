@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import { Motion, spring } from 'react-motion'
 import Path from 'paths-js/path'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
-import style from './style.css'
 import { linearInterpolator } from '../hack-spring100-to-linear'
 
 export default class Line extends Component {
@@ -14,7 +13,7 @@ export default class Line extends Component {
 
 	genLineFunctions = () => {
 		const { points } = this.props
-		const lines = points.map((point, idx)=>{
+		const lines = points.map((point, idx) => {
 			let  x1, y1, x2, y2
 			x1 = points[idx].x
 			y1 = points[idx].y
@@ -29,9 +28,9 @@ export default class Line extends Component {
 			return (
 				(x) => {
 					let m = 1
-					if(x2 - x1 === 0){
+					if(x2 - x1 === 0) {
 						m = 0
-					}else{
+					} else {
 						m = (y2 - y1) / (x2 - x1)
 					}
 					return (m * (x - x1) + y1)
@@ -63,7 +62,7 @@ export default class Line extends Component {
 
 	getXArray = () => {
 		const { points } = this.props
-		return points.map((point, idx)=>(point.x))
+		return points.map((point, idx) => (point.x))
 	};
 
 	render(){
@@ -103,7 +102,7 @@ export default class Line extends Component {
 							return (
 								<g>
 								<path d={path.print()} {...lineStyles} ></path>
-									{this.renderCircle(currentStep, { ...circleStyles })}
+									{this.renderCircle(currentStep, {...circleStyles})}
 								</g>
 							)
 						}
