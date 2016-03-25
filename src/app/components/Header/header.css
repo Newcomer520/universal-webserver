@@ -68,6 +68,7 @@
 	color: #3A3D3C;
 	background: 50% 10px no-repeat;
 	transition: background 0.3s;
+	user-select: none;
 
 	&.patient {
 		background-image: url("./images/patient_b.png");

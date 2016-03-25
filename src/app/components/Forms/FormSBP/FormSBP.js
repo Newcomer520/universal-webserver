@@ -66,20 +66,24 @@ export default class FormSBP extends Component {
 	};
 
 	renderRow(name, value, type = "number", field) {
-			return (
-				<div styleName="row">
-					<div styleName="cell">{name}</div>
-					<div styleName="cell">{value}</div>
-					<div styleName="cell">
-						<input type={type} {...field}/>
-					</div>
+		return (
+			<div styleName="row">
+				<div styleName="cell">{name}</div>
+				<div styleName="cell">{value}</div>
+				<div styleName="cell">
+					<input type={type} {...field}/>
 				</div>
-			)
+			</div>
+		)
 	}
 
 	render() {
-
+		const { fields } = this.props
 		const btnStyle = { width: '150px' }
+		const {
+			uf
+		} = fields
+
 		return (
 			<form styleName="container" onSubmit={this.handleSubmit}>
 				<div styleName="table-default">
@@ -89,6 +93,15 @@ export default class FormSBP extends Component {
 						<div styleName="cell">模擬</div>
 					</div>
 					<div styleName="body">
+						<FormRow name="UF" value={uf.value} type="number" field={uf} />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
 						<FormRow name="gender" value="male" type="number" />
 					</div>
 				</div>

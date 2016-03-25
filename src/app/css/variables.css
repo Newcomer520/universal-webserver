@@ -11,7 +11,7 @@ $lightgray-color: rgba(100, 100, 100, 1);
 $whiteBorderColor: silver;
 $background-primary-color: #dbdcdd;
 
-
+$normal-border-radius: 5px;
 $componentSingleLineHeight: 3em;
 $table-row-height: 2.0em;
 
