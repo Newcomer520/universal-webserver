@@ -1,20 +1,19 @@
 import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux'
 import auth from 'reducers/auth-reducer'
-import dummy from 'reducers/dummy-data-reducer'
-import protectedData from 'reducers/auth-data-reducer'
-import fetchStatus from 'reducers/fetch-status-reducer'
 import { reducer as formReducer } from 'redux-form'
 import universal from 'reducers/universal-reducer'
 import login from 'reducers/login-reducer'
+import simulate from 'reducers/simulate-reducer'
+import app from 'reducers/app-reducer'
 
 const reducer = combineReducers({
+	app,
 	routing,
 	auth,
-	// dummy,
-	fetchStatus,
 	universal,
 	login,
+	simulate,
 	form : formReducer //redux-form's reducer
 })
 

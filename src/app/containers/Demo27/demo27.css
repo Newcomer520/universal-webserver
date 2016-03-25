@@ -2,52 +2,14 @@
 @import "app/css/mixins.css";
 
 $padding-simulator: 0.5em;
+$filter-bar-height: 50px;
 
 .container {
+	position: relative;
 	width: 100%;
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
-}
-
-.user-bar {
-	@mixin flex-box row, flex-end;
-	padding-top: 2em;
-	padding-bottom: 2em;
-
-	&__info-container {
-		@mixin flex-box;
-		flex: 1;
-		overflow: hidden;
-		&:after {
-			display: flex;
-			content: '';
-			border-top: $border-thin solid $whiteBorderColor;
-			height: 0px;
-			width: 2em;
-		}
-	}
-
-	&__user-info {
-		@mixin flex-box row,  flex-start, center;
-		flex: 1;
-		overflow: hidden;
-		font-family: $fontFamily;
-		flex-wrap: nowrap;
-		padding-left: 1rem;
-		padding-right: 1rem;
-		color: #fff;
-		height: $componentSingleLineHeight;
-		border-radius: calc($componentSingleLineHeight / 2);
-		border: $border-thin solid $whiteBorderColor;
-
-		* {
-			font-size: 1.3rem;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-	}
 }
 
 .main {
@@ -60,83 +22,125 @@ $padding-simulator: 0.5em;
 	flex-direction: row;
 	flex-wrap: wrap;
 	justify-content: center;
-	background-color: rgba(219, 220, 221, 0.7);
+	/* background-color: rgba(219, 220, 221, 0.7); */
+	background-color: rgba(255, 255, 255, 0.8);
 	overflow: hidden;
 	border-radius: 5px;
 	@media (max-width: 992px) {
 		justify-content: flex-start;
 	}
+}
 
-	&__column {
-		display: flex;
-		flex-direction: column;
+.content {
+	width: 100%;
+	@mixin flex-box row, flex-start, stretch;
+	flex-wrap: nowrap;
+}
 
-		&--left {
-			padding-left: 5px;
-			padding-right: 5px;
-			margin-right: 2px;
-			flex: 1 1 auto;
-			/* border-right: 10px solid gray; */
-			box-shadow: 2px 0px 4px -2px gray;
-			/* min-height: 500px; */
-			/* background-color: pink; */
-		}
+.column {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: stretch;
+	padding-bottom: 20px;
+}
 
-		&--right {
-			overflow-x: hidden;
-			overflow-y: auto;
-			min-width: 400px;
-			background: linear-gradient(to bottom, #dbdcdd 0%,#fcfaf9 50%,#f5f9fa 100%);
-		}
-	}
+.column-left {
+	composes: column;
+	padding-top: $filter-bar-height;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-right: 2px;
+	/* border-right: 10px solid gray; */
+	box-shadow: 2px 0px 4px -2px gray;
+	/* min-height: 500px; */
+	/* background-color: pink; */
+}
+
+.column-right {
+	composes: column;
+	position: relative;
+	overflow-x: hidden;
+	overflow-y: auto;
+	min-width: 400px;
+	background: linear-gradient(to bottom, #dbdcdd 0%,#fcfaf9 50%,#f5f9fa 100%);
 }
 
 .filter-bar {
-	height: 50px;
+	position: absolute;
+	left: $padding-simulator;
+	height: $filter-bar-height;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
-	/* background-color: #8e8e8e; */
+	>div:first-child {
+		margin-right: 1rem;
+	}
 }
 
 .chart-container {
-	flex: 1;
-	/* background-color: yellow; */
+	/* flex: 1; */
+	&:after {
+		content: '提醒';
+		display: block;
+		margin-left: 1rem;
+		margin-top: 1rem;
+		margin-bottom: 0.5rem;
+	}
 }
 
 .simulator {
-	@mixin flex-box column, center, center;
+	@mixin flex-box column, flex-start, center;
+	flex-wrap: nowrap;
+	flex-shrink: 0;
 	font-family: $fontFamily;
 	font-size: 1.2rem;
 
 	>div {
 		@mixin flex-box row, center, center;
+		flex-shrink: 0;
 	}
+}
 
-	.time {
-		color: $lightgray-color;
-		height: 2.4rem;
-		padding-left: $padding-simulator;
-		padding-right: $padding-simulator;
-		align-self: flex-start;
-	}
+.time {
+	color: $lightgray-color;
+	height: 2.4rem;
+	padding-left: $padding-simulator;
+	padding-right: $padding-simulator;
+	align-self: flex-start;
+}
 
-	.tag {
-		color: #fff;
-		height: $table-row-height;
-		padding-left: $padding-simulator;
-		padding-right: $padding-simulator;
-		align-self: stretch;
-		background: #3EADAD;
-		text-align: center;
-	}
+.tag {
+	color: #fff;
+	height: $table-row-height;
+	padding-left: $padding-simulator;
+	padding-right: $padding-simulator;
+	align-self: stretch;
+	background: #3EADAD;
+	text-align: center;
+}
 
-	.section {
-		padding: 5px;
-		padding-left: 10px;
-		padding-right: 10px;
-		min-height: 2rem;
-		align-self: stretch;
-	}
+.section {
+	padding: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	min-height: 2rem;
+	align-self: stretch;
+}
+.section-form {
+	flex: 1 1 0;
+	composes: section;
+	overflow-y: auto;
+}
+
+.comment {
+	font-size: 1.2rem;
+	margin-left: 1rem;
+	margin-right: 1rem;
+	border-radius: 5px;
+	flex: 1;
+	border: 1px solid black;
+	padding: 2rem;
+	background: #ffffff;
 }

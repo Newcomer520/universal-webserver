@@ -1,70 +1,160 @@
 import React, { Component } from 'react'
-import DropDown from 'components/DropDown/DropDown'
-import styles from './demo27.css'
-import classnames from 'classnames/bind'
-import DatePicker from 'components/DatePicker'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+import demo27Styles from './demo27.css'
 import tableStyle from 'app/css/tables.css'
 import componentStyle from 'app/css/components.css'
+import transitionStyle from './transition.css'
 
 import FormSBP from 'components/Forms/FormSBP'
 import SimulatorChart from 'components/SimulatorChart'
+import Select from 'react-select'
+import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
+import UserBar from 'components/UserBar'
 
-const cx = classnames.bind(styles)
-const tcx = classnames.bind(tableStyle)
-const ccx = classnames.bind(componentStyle)
+// actioncreators
+import { actions as filters } from 'actions/simulate-action'
+import TYPES from 'constants/action-types'
+import CSSModules from 'react-css-modules'
 
+const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
+
+function observorLabel(observor) {
+	switch (observor) {
+		case TYPES.SIMULATE_TYPE_SBP:
+			return 'SBP'
+	}
+
+	return 'null'
+}
+
+function mapStateToProps(state) {
+	const { simulate } = state
+	const categories = simulate.get('categories')
+	const types = simulate.get('types')
+	const ret = {
+		categories: [],
+		selectedCategory: simulate.get('selectedCategory'),
+		types: [],
+		selectedType: simulate.get('selectedType'),
+		observor: simulate.get('observor'),
+		obTime: simulate.get('obTime'),
+		requestStatus: simulate.get('requestStatus')
+	}
+
+	categories.forEach((label, key) => ret.categories.push({ label, value: key }))
+	types && types.forEach((label, key) => ret.types.push({ label, value: key }))
+
+	return ret
+}
+
+function bindDispatchToActions(dispatch) {
+	return {
+		actions: bindActionCreators({ ...filters }, dispatch)
+	}
+}
+
+function SimulateForm(props) {
+	const { observor } = props
+	switch (observor) {
+		case TYPES.SIMULATE_TYPE_SBP:
+			return <FormSBP />
+		default:
+			return <div/>
+	}
+}
+
+@connect(
+	mapStateToProps,
+	bindDispatchToActions
+)
+@CSSModules(styles)
 export default class extends Component {
+	handleSelectType = (selected) => {
+		const { actions: { selectType }, selectedType } = this.props
+		if (selected.value === selectedType) { // do not trigger the action if value is the same
+			return
+		}
+		selectType(selected)
+	};
+
 	renderFilterBar = () => {
+		const { actions: { selectCategory, selectType } } = this.props
 		return (
-			<div className={cx('filter-bar')}>
-				<div style={{ marginRight: '10px' }}>
-					<a className="ui olive tag label">類目</a>
-					<DropDown
-						style={{ width: '80px', minWidth: '120px' }}
-						selectedIndex={-1}
-						list={['1', '2']}>
-						<span>1</span>
-						<span>2</span>
-					</DropDown>
-				</div>
-				<div style={{ marginLeft: '10px' }}>
-					<a className="ui teal tag label">細項</a>
-					<DropDown
-						style={{ width: '8em', minWidth: '120px', borderRadius: '10px' }}
-						selectedIndex={-1}
-						list={['1', '2']}>
-						<span>1</span>
-						<span>2</span>
-					</DropDown>
-				</div>
+			<div styleName="filter-bar">
+				<Select
+					clearable={false}
+					searchable={false}
+					placeholder="項目"
+					styleName="dropdown"
+					options={this.props.categories}
+					value={this.props.selectedCategory}
+					onChange={selectCategory}/>
+				<Select
+					disabled={!this.props.types || this.props.types.length <= 0}
+					clearable={false}
+					searchable={false}
+					placeholder="細項"
+					styleName="dropdown"
+					options={this.props.types}
+					value={this.props.selectedType}
+					onChange={this.handleSelectType}/>
 			</div>
 		)
 	};
 
-	renderChart = () => {
-		return (
-			<div className={cx('chart-container')}>
+	renderSimulator = () => {
+		const { requestStatus, selectedType, observor, obTime } = this.props
 
-			</div>
-		)
-	};
-
-	renderUserBar = () => {
+		if (requestStatus == null) {
+			return null
+		} else if (selectedType == TYPES.SIMULATE_TYPE_TIME_SERIES) {
+			return null
+		}
+		const s = {
+			position: 'absolute',
+			top: '0',
+			left: '0',
+			right: '0',
+			bottom: '0'
+		}
 		return (
-			<div className={cx('user-bar')}>
-				<div className={cx('user-bar__info-container')}>
-					<div className={cx('user-bar__user-info')}>
-						<div>
-							姓名：陳o佑  年齡：40  病歷號碼：A1256890  透析床號：B02  其他相關系統性疾病：糖尿病、高血壓常態症狀高血壓常態症狀高血壓常態症狀
+			<div key={observor} styleName="simulator" style={s}>
+				<div styleName="time">
+					<span>Time: {obTime}</span>
+				</div>
+				<div styleName="tag">
+					<span>{observorLabel(observor)}</span>
+				</div>
+				<div styleName="section">
+					<div styleName="table-default">
+						<div styleName="header">
+							<div styleName="cell">實際</div>
+							<div styleName="cell">預測</div>
+							<div styleName="cell">誤差</div>
+						</div>
+						<div styleName="body">
+							<div styleName="row">
+
+							</div>
 						</div>
 					</div>
 				</div>
-				<DatePicker/>
+				<div styleName="tag">
+					<span>Value</span>
+				</div>
+				<div styleName="section-form">
+					<SimulateForm observor={observor}/>
+				</div>
 			</div>
 		)
 	};
 
-	render() {
+	defaultContent = () => {
+		const svgHeight = 400
+		const svgWidth = 800
+		const svgLinePointDisplay = true
 		const points = [
 			{ "x": 1,   "y": 100},
 			{ "x": 20,  "y": 221},
@@ -85,51 +175,62 @@ export default class extends Component {
 			{ "x": 121,  "y": 80},
 			{ "x": 300,  "y": 210}
 		]
-		const svgHeight = 400
-		const svgWidth = 800
-		const svgLinePointDisplay = true
+
 		return (
-			<div className={styles.container}>
-				{this.renderUserBar()}
-				<div className={styles.main}>
-					<div className={cx('main__column', 'main__column--left')}>
-						{this.renderFilterBar()}
-						<div className={cx('chart-container')}>
-							<SimulatorChart height={svgHeight}
-								width={svgWidth}
-								points={points}
-								pointsDisplay={svgLinePointDisplay}
-								predictPoints={predictPoints}/>
-						</div>
+			<div styleName="content">
+				<div styleName="column-left">
+					<div styleName="chart-container">
+						<SimulatorChart
+							height={svgHeight}
+							width={svgWidth}
+							points={points}
+							pointsDisplay={svgLinePointDisplay}
+							predictPoints={predictPoints}/>
 					</div>
-					<div className={cx('main__column', 'main__column--right')}>
-						<div className={cx('simulator')}>
-							<div className={cx('time')}>
-								<span>Time: {'10:30'}</span>
-							</div>
-							<div className={cx('tag')}>
-								<span>{'SBP Value'}</span>
-							</div>
-							<div className={cx('section')}>
-								<div className={tcx('table-default')}>
-									<div className={tcx('header')}>
-										<div className={tcx('cell')}>實際</div>
-										<div className={tcx('cell')}>預測</div>
-										<div className={tcx('cell')}>誤差</div>
-									</div>
-									<div className={tcx('body')}>
-										{/*<div className={tcx('row')}></div>*/}
-									</div>
-								</div>
-							</div>
-							<div className={cx('tag')}>
-								<span>Value</span>
-							</div>
-							<div className={cx('section')}>
-								<FormSBP/>
-							</div>
-						</div>
-					</div>
+					<p styleName="comment">
+						胰島素可增加葡萄糖的利用，加速葡萄糖的無氧酵解和有氧氧化，抑制糖元分解和糖異生而降低血糖，
+						臨床上主要用于胰島素依賴型糖尿病以及部分非胰島素依賴型糖尿病的治療也可用於細胞內缺鉀的治療
+						，抑制糖元分解和糖異生而降低血糖，臨床上用於胰島素依賴型糖尿病以及部分非胰島素依賴型糖尿病
+						的治療。
+					</p>
+				</div>
+				<div styleName="column-right">
+					<ReactCSSTransitionGroup
+						transitionAppear={true}
+						transitionName={transitionStyle}
+						transitionAppearTimeout={500}
+						transitionEnterTimeout={500}
+						transitionLeaveTimeout={500}>
+						{this.renderSimulator()}
+					</ReactCSSTransitionGroup>
+				</div>
+			</div>
+		)
+	};
+
+	timeSeriesContent = () => {
+		return <div styleName="content"></div>
+	};
+
+	renderMainContent = () => {
+		const { selectedType } = this.props
+
+		switch (selectedType) {
+			default:
+				return this.defaultContent()
+			case TYPES.SIMULATE_TYPE_TIME_SERIES:
+				return this.timeSeriesContent()
+		}
+
+	};
+
+	render() {
+		return (
+			<div styleName="container">
+				<UserBar/>
+				<div styleName="main">
+					{this.renderFilterBar()}
+					{this.renderMainContent()}
 				</div>
 			</div>
 		)
