@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+import moment from 'moment'
 
 import demo27Styles from './demo27.css'
 import tableStyle from 'app/css/tables.css'
@@ -19,6 +20,9 @@ import TYPES from 'constants/action-types'
 import CSSModules from 'react-css-modules'
 
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
+
+// fakedata @todo: remember to remove it
+import { rawPts } from './fake-data'
 
 function observorLabel(observor) {
 	switch (observor) {
@@ -106,10 +110,10 @@ export default class extends Component {
 
 	renderSimulator = () => {
 		const { requestStatus, selectedType, observor, obTime } = this.props
-
 		if (requestStatus == null) {
 			return null
-		} else if (selectedType == TYPES.SIMULATE_TYPE_TIME_SERIES) {
+		} else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
+			console.log('time series')
 			return null
 		}
 		const s = {
@@ -152,40 +156,94 @@ export default class extends Component {
 	};
 
 	defaultContent = () => {
+		const startTime1 = moment("2016-10-20 8:30", "YYYY-MM-DD HH:mm")
+		const startTime2 = moment("2016-10-20 8:30", "YYYY-MM-DD HH:mm")
+
+		const points = [
+			{ "x": startTime1.valueOf(),							"y": 111.72106625822656},
+			{ "x": startTime1.add(30,'m').valueOf(),	"y": 120},
+			{ "x": startTime1.add(28,'m').valueOf(),	"y": 139},
+			{ "x": startTime1.add(32,'m').valueOf(),	"y": 118},
+			{ "x": startTime1.add(15,'m').valueOf(),	"y": 123}//,
+			// { "x": startTime1.add(45,'m').valueOf(),	"y": 108},
+			// { "x": startTime1.add(30,'m').valueOf(),	"y": 90},
+			// { "x": startTime1.add(30,'m').valueOf(),	"y": 106},
+			// { "x": startTime1.add(30,'m').valueOf(),	"y": 99},
+			// { "x": startTime1.add(30,'m').valueOf(),	"y": 106}
+		]
+
+		const xtimingarray = (
+			() => {
+				let inarr = []
+				let startTime = moment("2016-10-20 8:29", "YYYY-MM-DD HH:mm")
+				for(let i=0; i<300; i++){
+					inarr.push(startTime.add(1, 'm').valueOf())
+				}
+			return inarr
+			}
+		)()
+
+		const predictFitPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: xtimingarray[idx], y: point.fit}
+			return fitItem
+		})
+
+		const predictUprPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: xtimingarray[idx], y: point.upr}
+			return fitItem
+		})
+
+		const predictLwrPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: xtimingarray[idx], y: point.lwr}
+			return fitItem
+		})
+
+
+		const simtimingarray = (
+			() => {
+				let inarr = []
+				let startTime = moment("2016-10-20 10:29", "YYYY-MM-DD HH:mm")
+				for(let i=0; i<300; i++){
+					inarr.push(startTime.add(1,'m').valueOf())
+				}
+			return inarr
+			}
+		)()
+
+		const simFitPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: simtimingarray[idx], y: point.fit}
+			return fitItem
+		})
+
+		const simUprPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: simtimingarray[idx], y: point.upr}
+			return fitItem
+		})
+
+		const simLwrPoints = rawPts.map((point, idx, arr)=>{
+			let fitItem = { x: simtimingarray[idx], y: point.lwr}
+			return fitItem
+		})
+
 		const svgHeight = 400
 		const svgWidth = 800
 		const svgLinePointDisplay = true
-		const points = [
-			{ "x": 1,   "y": 100},
-			{ "x": 20,  "y": 221},
-			{ "x": 50,  "y": 12},
-			{ "x": 60,  "y": 142},
-			{ "x": 80,  "y": 10},
-			{ "x": 100, "y": 246},
-			{ "x": 150, "y": 24},
-			{ "x": 200, "y": 246},
-			{ "x": 250, "y": 24},
-			{ "x": 300, "y": 246}
-		]
-		const predictPoints = [
-			{ "x": 1,   "y": 100},
-			{ "x": 50,  "y": 221},
-			{ "x": 51,  "y": 100},
-			{ "x": 120,   "y": 290},
-			{ "x": 121,  "y": 80},
-			{ "x": 300,  "y": 210}
-		]
 
 		return (
 			<div styleName="content">
 				<div styleName="column-left">
 					<div styleName="chart-container">
 						<SimulatorChart
-							height={svgHeight}
-							width={svgWidth}
-							points={points}
-							pointsDisplay={svgLinePointDisplay}
-							predictPoints={predictPoints}/>
+								height={svgHeight}
+								width={svgWidth}
+								points={points}
+								pointsDisplay={svgLinePointDisplay}
+								predictFitPoints={predictFitPoints}
+								predictUprPoints={predictUprPoints}
+								predictLwrPoints={predictLwrPoints}
+								simFitPoints={simFitPoints}
+								simUprPoints={simUprPoints}
+								simLwrPoints={simLwrPoints}/>
 					</div>
 					<p styleName="comment">
 						胰島素可增加葡萄糖的利用，加速葡萄糖的無氧酵解和有氧氧化，抑制糖元分解和糖異生而降低血糖，
@@ -236,3 +294,4 @@ export default class extends Component {
 		)
 	}
 }
+
