@@ -56,7 +56,7 @@ export default class Line extends Component {
 			for(let idx=1; idx<=currentStep; idx++){
 
 				circles.push(
-					<g>
+					<g key={`circle-${idx}`}>
 					<text x={points[idx].x - 14} y={points[idx].y - 14} >{parseInt(values[idx])}</text>
 					<circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/>
 					</g>)
