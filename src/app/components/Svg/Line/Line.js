@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import { Motion, spring } from 'react-motion'
 import Path from 'paths-js/path'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
+import style from './style.css'
+import { linearInterpolator } from '../hack-spring100-to-linear'
 
 export default class Line extends Component {
 	constructor(props) {
@@ -16,7 +18,7 @@ export default class Line extends Component {
 			let  x1, y1, x2, y2
 			x1 = points[idx].x
 			y1 = points[idx].y
-			if(idx + 1 === points.length){
+			if (idx + 1 === points.length) {
 				x2 = points[idx].x
 				y2 = points[idx].y
 			} else {
@@ -51,7 +53,7 @@ export default class Line extends Component {
 	renderCircle = (currentStep, styles) => {
 		const circles = []
 		const { points, pointsDisplay } = this.props
-		if( pointsDisplay === true){
+		if ( pointsDisplay === true) {
 			for(let idx=0; idx<=currentStep; idx++){
 				circles.push( <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/> )
 			}
@@ -82,25 +84,26 @@ export default class Line extends Component {
 		return (
 			<g transform={`translate(${xOffset}, ${yOffset})`}>
 				<Motion
-					defaultStyle={{ x: x0 }}
-					style={{
-						x: spring(lastX, { stiffness: 64, damping:15, precision: 0.1 })
-				}}>
+					defaultStyle={{ x: 0 }}
+					style={{ x: spring(100, { stiffness: 100 }) }}>
 					{
 						value => {
-							currentStep = this.updateStep(value.x, currentStep, xArray)
+							let x = linearInterpolator(xArray, value.x, 100)  // xarray, current-value, stiffness <= third arg is stiffness, currently only 'default' and 100 is available
+							currentStep = this.updateStep(x, currentStep, xArray)
 							for (let i = previousStep+1; i <=currentStep; i++) {
 								path = path.lineto(points[i].x, points[i].y)
 							}
 							previousStep = currentStep
 							let getY = lineFunctions[currentStep]
-							let y = getY(value.x)
-							path = path.lineto(value.x, y)
+							let y = getY(x)
+							if (x <= xArray[xArray.length - 1]) {
+								path = path.lineto(x, y)
+							}
 
 							return (
 								<g>
-								<path d={path.print()} { ...lineStyles } ></path>
-								{ this.renderCircle(currentStep, { ...circleStyles }) }
+								<path d={path.print()} {...lineStyles} ></path>
+									{this.renderCircle(currentStep, { ...circleStyles })}
 								</g>
 							)
 						}
