@@ -23,7 +23,8 @@ export default function(initState) {
 		// initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
 
 		// need to serialize
-		initState.simulate && (initState = fromJS(initState.simulate))
+		initState.app && (initState.app = fromJS(initState.app))
+		initState.simulate && (initState.simulate = fromJS(initState.simulate))
 	}
 	const finalCreateStore = compose(
 		applyMiddleware(...middlewares, sagaMiddleware),
