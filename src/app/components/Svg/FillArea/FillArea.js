@@ -74,6 +74,13 @@ export default class FillArea extends Component {
 						.attr('d', area)
 						.attr('opacity', fillStyles.opacity)
 						.attr('fill', fillStyles.stroke)
+
+						// d3.select(vdom)
+						// .append('div')
+						// .attr('className', 'filltext95')
+						// .style('color', fillStyles.stroke)
+						// .text("a simple tooltip")
+
 						return (<g>{vdom.toReact()}</g>)
 					}
 				}

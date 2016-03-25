@@ -51,10 +51,15 @@ export default class Line extends Component {
 
 	renderCircle = (currentStep, styles) => {
 		const circles = []
-		const { points, pointsDisplay } = this.props
+		const { points, pointsDisplay, values } = this.props
 		if ( pointsDisplay === true) {
-			for(let idx=0; idx<=currentStep; idx++){
-				circles.push( <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/> )
+			for(let idx=1; idx<=currentStep; idx++){
+
+				circles.push(
+					<g>
+					<text x={points[idx].x - 14} y={points[idx].y - 14} >{parseInt(values[idx])}</text>
+					<circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/>
+					</g>)
 			}
 		}
 		return circles

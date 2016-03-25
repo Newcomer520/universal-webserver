@@ -128,9 +128,12 @@ export default class SimulatorChart extends Component {
 
 						<PredictLine fitPoints={predictFitPointsScale} uprPoints={predictUprPointsScale} lwrPoints={predictLwrPointsScale} pointsDisplay={'false'} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...redLineStyles} />
 						<PredictLine fitPoints={simFitPointsScale} uprPoints={simUprPointsScale} lwrPoints={simLwrPointsScale} pointsDisplay={'false'} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...blueLineStyles} />
-						<Line points={pointsScale} pointsDisplay={pointsDisplay} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...greenLineStyles} />
 
 						<YGridLine xScale={pointsXScale} yScale={pointsYScale} xOffset={AxisOffsetX} yOffset={AxisOffsetY} w={width} upperBound={upperBound} lowerBound={lowerBound} />
+						<Line points={pointsScale} values={yArray} pointsDisplay={pointsDisplay} xOffset={AxisOffsetX} yOffset={AxisOffsetY} {...greenLineStyles} />
+						<text fill={redLineStyles.circleStyles.stroke} x={predictFitPointsScale[0].x + AxisOffsetX +3} y={predictFitPointsScale[0].y - 20} >{'95% UB'}</text>
+						<text fill={redLineStyles.circleStyles.stroke} x={predictFitPointsScale[0].x + AxisOffsetX +3} y={predictFitPointsScale[0].y + 40} >{'95% LB'}</text>
+
 					</g>
 				</svg>
 		)

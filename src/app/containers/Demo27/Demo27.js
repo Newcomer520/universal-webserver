@@ -71,7 +71,7 @@ export default class extends Component {
 		const startTime2 = moment("2016-10-20 8:30", "YYYY-MM-DD HH:mm")
 
 		const points = [
-			{ "x": startTime1.valueOf(),							"y": 114},
+			{ "x": startTime1.valueOf(),							"y": 111.72106625822656},
 			{ "x": startTime1.add(30,'m').valueOf(),	"y": 120},
 			{ "x": startTime1.add(28,'m').valueOf(),	"y": 139},
 			{ "x": startTime1.add(32,'m').valueOf(),	"y": 118},
