@@ -11,7 +11,7 @@ import morganLogger from './middlewares/logger'
 import routerMiddleware from './middlewares/router-middleware'
 import co from 'co'
 import { initRedis } from './utils/redis'
-
+import timeout from 'koa-timeout'
 // application level init
 co(function *() {
 	// try {
@@ -22,6 +22,7 @@ co(function *() {
 	const app = koa()
 	// error handling asap
 	app.use(errorHandler)
+	app.use(timeout(1000 * 20))
 	// app.use(slackReportBot)
 	app.use(logger())
 	app.use(morganLogger)
@@ -42,7 +43,6 @@ co(function *() {
 
 	// mainly rendering
 	app.use(mount(routerMiddleware))
-
 
 	const server = app.listen(global.config.port, () => {
 		const host = server.address().address

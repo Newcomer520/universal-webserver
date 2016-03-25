@@ -6,10 +6,11 @@ import reducer from 'reducers/reducer'
 import { canUseDOM, KEY_REFRESH_TOKEN } from './utils/fetch'
 import merge from 'lodash.merge'
 import { initState as authState } from 'reducers/auth-reducer'
-import { fetchSaga } from 'sagas/fetch'
+import sagas from 'sagas'
+import { fromJS } from 'immutable'
 
 const middlewares = [promiseMiddleware, authMiddleware]
-export const sagaMiddleware = createSagaMiddleware(...[fetchSaga])
+export const sagaMiddleware = createSagaMiddleware(...sagas)
 /**
  * function to create a redux store
  * history   {object}               from some createHistroy()
@@ -18,7 +19,12 @@ export const sagaMiddleware = createSagaMiddleware(...[fetchSaga])
  */
 export default function(initState) {
 	if (canUseDOM && initState) {
-		initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
+		// @todo: pass refresh token
+		// initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
+
+		// need to serialize
+		initState.app && (initState.app = fromJS(initState.app))
+		initState.simulate && (initState.simulate = fromJS(initState.simulate))
 	}
 	const finalCreateStore = compose(
 		applyMiddleware(...middlewares, sagaMiddleware),
@@ -28,7 +34,7 @@ export default function(initState) {
 	if (__DEV__ && module.hot) {
 		// Enable Webpack hot module replacement for reducers
 		module.hot.accept('./reducers', () => {
-			const nextRootReducer = require('reducers/reducer')
+			const nextRootReducer = require('reducers/reducer').default
 			store.replaceReducer(nextRootReducer)
 		})
 	}

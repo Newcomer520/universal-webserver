@@ -3,8 +3,8 @@
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 input[type="number"] {
     -moz-appearance: textfield;
@@ -41,4 +41,35 @@ input[type="number"] {
 			background-color: $primary-green--active !important;
 		}
 	}
+}
+
+.dropdown {
+	:global(.Select-control) {
+		border-radius: 1.5rem;
+	}
+
+	:global(.Select-menu-outer) {
+		top: calc(100% + 3px);
+		border-radius: $normal-border-radius;
+		background-color: white;
+	}
+
+	:global(.Select-option) {
+
+		&:first-child {
+			border-radius: $normal-border-radius;
+		}
+
+		&:last-child {
+			border-radius: $normal-border-radius;
+		}
+
+		&:global(.is-focused) {
+
+		}
+
+	}
+
+	text-align: center;
+	width: 150px;
 }

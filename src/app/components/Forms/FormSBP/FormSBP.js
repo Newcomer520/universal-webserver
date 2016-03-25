@@ -2,25 +2,55 @@ import React, { Component } from 'react'
 import classnames from 'classnames/bind'
 import tableStyle from 'app/css/tables.css'
 import componentStyle from 'app/css/components.css'
-import styles from './formSBP.css'
+import formStyle from './formSBP.css'
 import Button from 'components/Buttons/ButtonDefault'
+import { reduxForm } from 'redux-form'
+import CSSModules from 'react-css-modules'
+import { compose } from 'redux'
 
-const cx = classnames.bind(styles)
-const tcx = classnames.bind(tableStyle)
-const ccx = classnames.bind(componentStyle)
+const styles = { ...tableStyle, ...componentStyle, ...formStyle }
 
-const PropertyRow = props => {
-	return (
-		<div className={tcx('row')}>
-			<div className={tcx('cell')}>{props.name}</div>
-			<div className={tcx('cell')}>{props.value}</div>
-			<div className={tcx('cell')}>
-				<input type="number"/>
+// message Request {
+// 	required int32 time = 1;
+// 	required double age = 2;
+// 	required double uf = 3;
+// 	required double conductivity = 4;
+// 	required double dia_temp_value = 5;
+// 	required double temperature = 6;
+// 	required int32 dm = 7;
+// 	required string gender = 8;
+// 	required double d_weight_ratio = 9;
+// 	required int32 bd_median = 10;
+// }
+// "age":<age>,
+// "uf":<uf>,
+// "conductivity":<conductivity>,
+// "dia_temp_value":<dia_temp_value>,
+// "temperature":<temperature>,
+// "dm":<dm>,
+// "gender":<gender>, // format ('F'/'M')
+// "d_weight_ratio":<d_weight_ratio>,
+// "bd_median":<uf>
+
+const FormRowWithoutStyle = ({ name, value, type = 'text', field }) =>
+	(
+		<div styleName="row">
+			<div styleName="cell">{name}</div>
+			<div styleName="cell">{value}</div>
+			<div styleName="cell">
+				<input type={type} {...field}/>
 			</div>
 		</div>
 	)
-}
 
+const FormRow = CSSModules(FormRowWithoutStyle, styles)
+
+const enhance = compose(
+	reduxForm({ form: 'sbp', fields: ['time', 'age', 'uf', 'conductivity', 'diaTemp', 'temperature', 'dm', 'gender', 'dWeightRatio', 'bdMedian'] }),
+	CSSModules(styles)
+)
+
+@enhance
 export default class FormSBP extends Component {
 
 	handleSubmit = e => {
@@ -35,25 +65,49 @@ export default class FormSBP extends Component {
 		return false
 	};
 
-	render() {
-
-		const headerClassName = `${tcx('header')} `
-		const btnStyle = { width: '150px' }
+	renderRow(name, value, type = "number", field) {
 		return (
-			<form className={cx('container')} onSubmit={this.handleSubmit}>
-				<div className={tcx('table-default')}>
-					<div className={headerClassName}>
-						<div className={tcx('cell')}>項目</div>
-						<div className={tcx('cell')}>實際</div>
-						<div className={tcx('cell')}>模擬</div>
-					</div>
-					<div className={tcx('body')}>
+			<div styleName="row">
+				<div styleName="cell">{name}</div>
+				<div styleName="cell">{value}</div>
+				<div styleName="cell">
+					<input type={type} {...field}/>
+				</div>
+			</div>
+		)
+	}
 
+	render() {
+		const { fields } = this.props
+		const btnStyle = { width: '150px' }
+		const {
+			uf
+		} = fields
+
+		return (
+			<form styleName="container" onSubmit={this.handleSubmit}>
+				<div styleName="table-default">
+					<div styleName="header">
+						<div styleName="cell">項目</div>
+						<div styleName="cell">實際</div>
+						<div styleName="cell">模擬</div>
+					</div>
+					<div styleName="body">
+						<FormRow name="UF" value={uf.value} type="number" field={uf} />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
+						<FormRow name="gender" value="male" type="number" />
 					</div>
 				</div>
-				<div className={cx('operations')}>
-					<Button onClick={this.handleReset} style={btnStyle} className={ccx("primary")}>清除</Button>
-					<Button onClick={this.handleSubmit} style={btnStyle} className={ccx("primary")}>模擬</Button>
+				<div styleName="operations">
+					<Button onClick={this.handleReset} style={btnStyle} styleName="primary">清除</Button>
+					<Button onClick={this.handleSubmit} style={btnStyle} styleName="primary">模擬</Button>
 				</div>
 
 			</form>
