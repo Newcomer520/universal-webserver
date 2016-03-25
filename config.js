@@ -20,5 +20,6 @@ module.exports = {
 	logFolder: process.env.logfolder || path.join(__dirname, './logs/'),
 	recaptchaSecret: '6LcSzRQTAAAAAOMCnSZ_xx41-nCUBS2eLHQ7ga6x',
 	mongo: 'mongodb://210.200.13.224:5505/universal',
-	slackWebHook: 'https://hooks.slack.com/services/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'
+	slackWebHook: 'https://hooks.slack.com/services/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',
+	apiServer: process.env.apiServer || 'http://210.200.13.224:10080'
 }

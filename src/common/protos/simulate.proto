@@ -1,0 +1,21 @@
+message Predict {
+	required int32 time = 1;
+	required double age = 2;
+	required double uf = 3;
+	required double conductivity = 4;
+	required double dia_temp_value = 5;
+	required double temperature = 6;
+	required int32 dm = 7;
+	required string gender = 8;
+	required double d_weight_ratio = 9;
+	required int32 bd_median = 10;
+}
+
+message ActualRow {
+    required int32 time = 1 ;
+    required int32 sbp = 2 ;
+}
+
+message Actual {
+	repeated ActualRow result = 1 ;
+}
