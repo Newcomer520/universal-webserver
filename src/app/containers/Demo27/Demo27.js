@@ -110,10 +110,10 @@ export default class extends Component {
 
 	renderSimulator = () => {
 		const { requestStatus, selectedType, observor, obTime } = this.props
-
 		if (requestStatus == null) {
 			return null
-		} else if (selectedType == TYPES.SIMULATE_TYPE_TIME_SERIES) {
+		} else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
+			console.log('time series')
 			return null
 		}
 		const s = {
