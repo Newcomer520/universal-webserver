@@ -46,7 +46,6 @@ function* actualAndPredict() {
 	yield put({ 
 		type: SAGA_FETCH_ACTION, 
 		fetch: [apiActual(), apiPredict()],
-		// fetch: apiActual(), 
 		status: [SIMULATE_ACTUAL_PREDICT_FETCHING, SIMULATE_ACTUAL_PREDICT_SUCCESS, SIMULATE_ACTUAL_PREDICT_FAILED] 
 	})
 

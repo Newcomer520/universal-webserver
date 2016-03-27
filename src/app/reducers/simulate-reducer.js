@@ -36,7 +36,18 @@ export default function (state = initState, action) {
 			}
 			break
 		case TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS:
-			const { actual, predict } = action
+			const { result: [rawActual, rawPredict] } = action
+			let actual
+			let predict
+			
+			if (rawActual && rawActual.rows) {
+				actual = rawActual.rows.map(r => ({ ...r }))
+			}
+
+			if (rawPredict && rawPredict.rows) {
+				predict = rawPredict.rows.map(r => ({ ...r }))
+			}
+
 			return state.merge({
 				requestStatus: action.type,
 				actual,
