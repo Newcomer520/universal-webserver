@@ -116,6 +116,9 @@ const defaultConfig = {
 			}, {
 				test: /\.(eot|ttf|wav|mp3)$/,
 				loader: 'file-loader',
+			}, {
+				test: /\.proto$/,
+				loader: 'raw-loader'
 			}
 		]
 	},

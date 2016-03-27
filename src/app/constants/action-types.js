@@ -1,8 +1,15 @@
 import constants from 'flux-constants'
 
 export default constants([
+	// universal
+	'UNIVERSAL_LOAD',
 	// application level constants
 	'APP_LOADING',
+
+	// fetch related
+	'SAGA_FETCH_ACTION',
+	'SAGA_PRELOAD_ACTION',
+	'REFRESH_TOKEN_DONE',
 
 	//
 	// simulate page

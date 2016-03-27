@@ -1,4 +1,4 @@
-import { TYPES } from 'actions/universal-action'
+import TYPES from 'constants/action-types'
 
 const { UNIVERSAL_LOAD } = TYPES
 

@@ -1,20 +1,21 @@
 import { SagaCancellationException } from 'redux-saga'
 import { put, take, call, fork, cancel, select } from 'redux-saga/effects'
+import TYPES from 'constants/action-types'
+import CONSTANTS from 'constants'
+
 import {
-	fetch,
-	SAGA_FETCH_ACTION,
-	SAGA_PRELOAD_ACTION,
-	KEY_REFRESH_TOKEN,
-	REFRESH_TOKEN_DONE,
-	REFRESH_TOKEN_URL,
+	fetch,	
 	DEFAULT_OPTIONS,
 	canUseDOM, } from '../utils/fetch'
+
+const { SAGA_FETCH_ACTION, SAGA_PRELOAD_ACTION, REFRESH_TOKEN_DONE } = TYPES
+const { KEY_REFRESH_TOKEN, REFRESH_TOKEN_URL } = CONSTANTS
 
 export function* fetchSaga() {
 	while (true) {
 		const {
 			fetch,
-			status: [REQUESTING, SUCCESS, FAILURE, CANCELLATION]
+			status: [REQUESTING = 'NULL_REQUESTING', SUCCESS = 'NULL_SUCCESS', FAILURE = 'NULL_FAILURE', CANCELLATION]
 		} = yield take(SAGA_FETCH_ACTION)
 		console.log('capture fetch in fetch saga')
 		// check if token exist, if so, attach token to the option
@@ -39,7 +40,8 @@ export function* fetchSaga() {
  */
 export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects) {
 	try {
-		yield put({ type: REQUESTING })
+		yield put({ type: TYPES.APP_LOADING, isBusy: true })
+		yield put({ type: REQUESTING })		
 		// generate the fetching jobs
 		const tasks = fetchObjects.map(fo => {
 			const { url, options } = fo
@@ -54,17 +56,22 @@ export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CAN
 		}
 
 		const results = yield tasks
+		console.log(results)
 		const reduxResult = results && results.length == 1? results[0]: results
 		yield put({ type: SUCCESS, result: reduxResult })
+		yield put({ type: TYPES.APP_LOADING, isBusy: false })
 		return reduxResult
 
 	}	catch (ex) {
+		console.error(ex)
 		if (!(ex instanceof SagaCancellationException)) {
 			yield put({ type: FAILURE, message: ex.message, error: ex })
 		} else {
 			yield put({ type: CANCELLATION, message: ex.message, error: ex })
 		}
+		yield put({ type: TYPES.APP_LOADING, isBusy: false })
 	}
+	
 }
 
 function* refreshTokenTask() {
@@ -100,6 +107,7 @@ function* refreshTokenTask() {
  * @param  {...[type]} options.options      [description]
  * @return {[type]}                        [description]
  */
+
 function* decoratedFetch(url, { refreshOnce, ...options } ) {
 	try {
 		const result = yield call(fetch, url, options)
@@ -109,7 +117,7 @@ function* decoratedFetch(url, { refreshOnce, ...options } ) {
 			yield call(refreshTokenTask)
 			// after refreshing token, try to request again,
 			// if it still fails this time, there should be an error.
-			const result = yield call(fetch, url, options)
+			const result = yield call(fetch, url, options, transform)
 			return result
 		}
 		// cannot throw error!! user Promise.reject instead

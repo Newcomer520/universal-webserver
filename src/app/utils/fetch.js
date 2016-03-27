@@ -1,11 +1,12 @@
 import originalFetch from 'isomorphic-fetch'
 import merge from 'lodash.merge'
+import CONSTANTS from 'constants'
+import TYPES from 'constants/action-types'
 
-export const SAGA_FETCH_ACTION = '/!!!!TYPE_FETCH_ACTION///'
-export const SAGA_PRELOAD_ACTION = '/~PRELOAD_ACTION~/'
-export const KEY_REFRESH_TOKEN = 'refresh-token'
-export const REFRESH_TOKEN_DONE = '/!!REFRESH_TOKEN_DONE!/'
-export const REFRESH_TOKEN_URL = '/api/refreshtoken'
+const { KEY_REFRESH_TOKEN } = CONSTANTS
+const { SAGA_FETCH_ACTION, SAGA_PRELOAD_ACTION, REFRESH_TOKEN_DONE } = TYPES
+const { REFRESH_TOKEN_URL } = CONSTANTS
+
 export const DEFAULT_OPTIONS = { credentials: 'same-origin', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' } }
 
 export const canUseDOM = !!(
@@ -38,13 +39,13 @@ export function fetchStatus() {
  * @param  {...[type]} options.options     the original fetching options
  * @return {[type]}                        [description]
  */
-export default function fetchObj(url, { refreshOnce = true, ...options} ) {
+export default function fetchObj(url, { refreshOnce = true, transform = 'json', ...options} ) {
 	if (!canUseDOM) {
 		url = `http://${__HOST__}:${__PORT__}${url}`
 	} else {
 		// add cookies:
 		// https://github.com/github/fetch#sending-cookies
-		options = merge({}, DEFAULT_OPTIONS, { refreshOnce }, options)
+		options = merge({}, DEFAULT_OPTIONS, { refreshOnce, transform }, options)
 	}
 	return { url, options }
 }
@@ -58,7 +59,7 @@ export default function fetchObj(url, { refreshOnce = true, ...options} ) {
  *                                           refreshing should not be done here
  * @return {[type]}                    the fetching promise
  */
-export function fetch(url, { token, refreshOnce, ...options }, transform = 'json') {
+export function fetch(url, { token, refreshOnce, transform = 'json', ...options }) {
 
 	if (typeof token === 'string' && token.trim() !== '') {
 		options = merge({}, { headers: { Authorization: `Bearer ${token}` } }, options)
@@ -77,10 +78,11 @@ export function fetch(url, { token, refreshOnce, ...options }, transform = 'json
 		})
 		.catch(err => errorTransform(err.response, 'text'))
 
-		return typeof transform === 'string' ?
-		promise.then(result => result[transform]())
-		:
-		promise.then(result => transform(result))
+		return typeof transform === 'string' 
+		? promise.then(result => result[transform]())
+		: typeof transform === 'function' 
+		? promise.then(transform)
+		: promise
 }
 
 /**

@@ -1,5 +1,13 @@
 import { fork, take, put, call, select } from 'redux-saga/effects'
 import TYPES from 'constants/action-types'
+import { apiActual, apiPredict } from 'app/apis/simulate'
+
+const { 
+	SAGA_FETCH_ACTION, 
+	SIMULATE_ACTUAL_PREDICT_FETCHING,
+	SIMULATE_ACTUAL_PREDICT_SUCCESS,
+	SIMULATE_ACTUAL_PREDICT_FAILED 
+} = TYPES
 
 export function* simulateSaga() {
 	yield [
@@ -17,13 +25,14 @@ function* requestActualAndPredict() {
 			const { selectedType: type } = yield take(TYPES.SIMULATE_SELECT_TYPE)
 			const simulate = yield select(state => state.simulate)
 
-			if (simulate.get('requestStatus') !== TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS) {
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FETCHING })
-				const { actual, predict } = yield call(actualAndPredictApi, type)
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS, actual, predict })
-			} else {
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS })
-			}
+			const { actual, predict } = yield call(actualAndPredict, type)
+			// if (simulate.get('requestStatus') !== TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS) {
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FETCHING })
+			// 	const { actual, predict } = yield call(actualAndPredict, type)
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS, actual, predict })
+			// } else {
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS })
+			// }
 		} catch (ex) {
 			console.error(ex)
 			yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FAILED })
@@ -33,10 +42,13 @@ function* requestActualAndPredict() {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function* actualAndPredictApi() {
-	yield put({ type: TYPES.APP_LOADING, isBusy: true })
-	yield call(delay, 1000)
-	yield put({ type: TYPES.APP_LOADING, isBusy: false })
+function* actualAndPredict() {
+	yield put({ 
+		type: SAGA_FETCH_ACTION, 
+		fetch: [apiActual(), apiPredict()],
+		// fetch: apiActual(), 
+		status: [SIMULATE_ACTUAL_PREDICT_FETCHING, SIMULATE_ACTUAL_PREDICT_SUCCESS, SIMULATE_ACTUAL_PREDICT_FAILED] 
+	})
 
 	return {
 		actual: [ 1, 2, 3 ],
