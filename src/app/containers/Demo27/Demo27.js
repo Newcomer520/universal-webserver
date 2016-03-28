@@ -15,7 +15,7 @@ import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
 
 // actioncreators
-import { actions as filters } from 'actions/simulate-action'
+import { actions as filters, fetchActual } from 'actions/simulate-action'
 import TYPES from 'constants/action-types'
 import CSSModules from 'react-css-modules'
 
@@ -37,6 +37,8 @@ function mapStateToProps(state) {
 	const { simulate } = state
 	const categories = simulate.get('categories')
 	const types = simulate.get('types')
+	const actual = simulate.get('actual').toJS()
+	console.log(actual)
 	const ret = {
 		categories: [],
 		selectedCategory: simulate.get('selectedCategory'),
@@ -44,9 +46,9 @@ function mapStateToProps(state) {
 		selectedType: simulate.get('selectedType'),
 		observor: simulate.get('observor'),
 		obTime: simulate.get('obTime'),
-		requestStatus: simulate.get('requestStatus')
+		requestStatus: simulate.get('requestPredictStatus'),
+		actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp }))
 	}
-
 	categories.forEach((label, key) => ret.categories.push({ label, value: key }))
 	types && types.forEach((label, key) => ret.types.push({ label, value: key }))
 
@@ -75,6 +77,7 @@ function SimulateForm(props) {
 )
 @CSSModules(styles)
 export default class extends Component {
+	static preloader = fetchActual;
 	handleSelectType = (selected) => {
 		const { actions: { selectType }, selectedType } = this.props
 		if (selected.value === selectedType) { // do not trigger the action if value is the same
@@ -236,7 +239,7 @@ export default class extends Component {
 						<SimulatorChart
 								height={svgHeight}
 								width={svgWidth}
-								points={points}
+								points={this.props.actualPoints}
 								pointsDisplay={svgLinePointDisplay}
 								predictFitPoints={predictFitPoints}
 								predictUprPoints={predictUprPoints}

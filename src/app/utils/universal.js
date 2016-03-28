@@ -5,8 +5,11 @@ import { sagaMiddleware } from 'app/create-store'
 import { call, put, take, fork } from 'redux-saga/effects'
 import { Provider } from 'react-redux'
 import merge from 'lodash.merge'
-import { canUseDOM, SAGA_PRELOAD_ACTION } from './fetch'
+import { canUseDOM } from './fetch'
 import { enableFetchAtBrowser } from 'actions/universal-action'
+import TYPES from 'constants/action-types'
+
+const { SAGA_PRELOAD_ACTION } = TYPES
 
 export function findPreloaderTasks(authState, components, params, options) {
 	return components
@@ -27,7 +30,7 @@ export function findPreloaderTasks(authState, components, params, options) {
 		.reduce((result, preloader) => result.concat(preloader), [])
 }
 
-function makeFetchingTask(authState, { status, fetch }, options) { // fetch is like: { url, options }
+function makeFetchingTask(authState, { status = [], fetch }, options) { // fetch is like: { url, options }
 	const [REQUESTING, SUCCESS, FAILURE, CANCELLATION] = status
 	// feed the token
 	if (Array.isArray(fetch)) {

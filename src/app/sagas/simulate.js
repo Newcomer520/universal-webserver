@@ -1,5 +1,14 @@
 import { fork, take, put, call, select } from 'redux-saga/effects'
 import TYPES from 'constants/action-types'
+import { apiActual, apiPredict } from 'app/apis/simulate'
+
+const {
+	SAGA_FETCH_ACTION,
+	SIMULATE_PREDICT_FETCHING,
+	SIMULATE_PREDICT_SUCCESS,
+	SIMULATE_PREDICT_FAILED,
+	SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED
+} = TYPES
 
 export function* simulateSaga() {
 	yield [
@@ -17,26 +26,31 @@ function* requestActualAndPredict() {
 			const { selectedType: type } = yield take(TYPES.SIMULATE_SELECT_TYPE)
 			const simulate = yield select(state => state.simulate)
 
-			if (simulate.get('requestStatus') !== TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS) {
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FETCHING })
-				const { actual, predict } = yield call(actualAndPredictApi, type)
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS, actual, predict })
-			} else {
-				yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS })
-			}
+			yield call(getPredict, type)
+			// if (simulate.get('requestStatus') !== TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS) {
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FETCHING })
+			// 	const { actual, predict } = yield call(actualAndPredict, type)
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS, actual, predict })
+			// } else {
+			// 	yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS })
+			// }
 		} catch (ex) {
 			console.error(ex)
-			yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FAILED })
+			yield put({ type: TYPES.SIMULATE_PREDICT_FAILED })
 		}
 	}
 }
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-function* actualAndPredictApi() {
-	yield put({ type: TYPES.APP_LOADING, isBusy: true })
-	yield call(delay, 1000)
-	yield put({ type: TYPES.APP_LOADING, isBusy: false })
+function* getPredict() {
+	yield put({
+		type: SAGA_FETCH_ACTION,
+		fetch: apiActual(),
+		// fetch: [apiActual()],
+		// status: [SIMULATE_PREDICT_FETCHING, SIMULATE_PREDICT_SUCCESS, SIMULATE_PREDICT_FAILED]
+		status: [SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED]
+	})
 
 	return {
 		actual: [ 1, 2, 3 ],
@@ -44,6 +58,6 @@ function* actualAndPredictApi() {
 	}
 }
 
-function* predictApi() {
+function* getActual() {
 
 }

@@ -9,11 +9,12 @@ const initState = fromJS({
 	observor: null,
 	obTime: null,
 	// data
-	actual: null,
+	actual: {},
 	predict: null,
 	simulation: null,
 	// status
-	requestStatus: null, // user 欲查詢所選的category & type
+	requestActualStatus: null, // user 欲查詢所選的category & type
+	requestPredictStatus: null,
 	simulateStatus: null // user 欲進行模擬資料
 })
 
@@ -35,12 +36,21 @@ export default function (state = initState, action) {
 				return state.merge({ selectedType: action.selectedType })
 			}
 			break
-		case TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS:
-			const { actual, predict } = action
+		case TYPES.SIMULATE_ACTUAL_SUCCESS:
+			const { result } = action
+			let actual
+
+			if (result && result.rows) {
+				actual = result.rows.reduce((prev, currRow) => {
+					// time is type of long, need to convert it to a number
+					prev[currRow.time.toNumber()] = { ...currRow, time: currRow.time.toNumber() }
+					return prev
+				}, {})
+			}
+
 			return state.merge({
 				requestStatus: action.type,
 				actual,
-				predict,
 				observor: state.get('selectedType')
 			})
 	}

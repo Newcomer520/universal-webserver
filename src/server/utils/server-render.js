@@ -8,8 +8,10 @@ import { findPreloaderTasks } from 'app/utils/universal'
 
 export default (authState, renderProps, options) => new Promise((resolve, reject) => {
 	const preloaderTasks = findPreloaderTasks(authState, renderProps.components, renderProps.params, options)
-	sagaMiddleware.run(serverStartupSaga(preloaderTasks)).done
+	sagaMiddleware.run(serverStartupSaga(preloaderTasks))
+		.done
 		.then((isFetch) => resolve(isFetch))
+		.catch((ex) => reject(ex))
 })
 
 /**
@@ -21,8 +23,16 @@ const serverStartupSaga = (preloaderTasks) => function* () {
 	if (preloaderTasks.length == 0) { // no preload tasks needed
 		return true
 	}
-	console.log('serverFecthing start')
-	const result = yield preloaderTasks
-	const isFetched = result.reduce((r, isNoFetch) => !!isNoFetch || r, false)
-	return isFetched
+	try {
+		console.log('serverFecthing start')
+		const result = yield preloaderTasks
+		const isFetched = result.reduce((r, isNoFetch) => !!isNoFetch || r, false)
+		return isFetched
+	} catch (ex) {
+		if (ex.status != '401') {
+			ex.status = 500
+		}
+		console.log('serverStartupSaga', ex.message)
+		throw ex
+	}
 }

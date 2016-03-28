@@ -12,6 +12,7 @@ import routerMiddleware from './middlewares/router-middleware'
 import co from 'co'
 import { initRedis } from './utils/redis'
 import timeout from 'koa-timeout'
+
 // application level init
 co(function *() {
 	// try {
