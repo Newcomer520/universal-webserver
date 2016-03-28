@@ -1,6 +1,7 @@
 import { TYPES as LOGOUT_TYPES } from 'actions/logout-action'
-import { REFRESH_TOKEN_DONE } from 'app/utils/fetch'
+import TYPES from 'constants/action-types'
 
+const { REFRESH_TOKEN_DONE } = TYPES
 const { LOGIN_REQUESTING, LOGIN_SUCCESS, LOGIN_FAILED } = require('actions/login-action').TYPES
 const { LOGOUT_REQUESTING, LOGOUT_SUCCESS, LOGOUT_FAILED } = LOGOUT_TYPES
 export const initState = {

@@ -44,7 +44,10 @@ module.exports = {
 			}, {
 				test: /\.(eot|ttf|wav|mp3)$/,
 				loader: 'file-loader',
-			},
+			}, {
+				test: /\.proto$/,
+				loader: 'raw-loader'
+			}
 		],
 	},
 	postcss: function plugins(bundler) {

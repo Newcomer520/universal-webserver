@@ -1,6 +1,4 @@
-export const TYPES = {
-	UNIVERSAL_LOAD: '//UNIVERSAL_LOAD\\'
-}
+import TYPES from 'constants/action-types'
 
 export function setServerFetched() {
 	return {

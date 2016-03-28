@@ -101,11 +101,15 @@ const matchRoutes = (url, store, token) => done => {
 						return done(null, component)
 					}
 					// failed to fetch data ... should check the auth state
-					const error = new Error('unauthorized')
-					error.status = 401
-					return done(error, null)
+					// const error = new Error('unauthorized')
+					// error.status = 401
+					// return done(error, null)
 				})
-				.catch(ex => done( { status: 500, message: 'internal server error', ...ex }, null))
+				.catch(ex => {
+					ex.status = ex.status || 500
+					ex.message = ex.message || 'internal server error'
+					done(ex, null)
+				})
 		} else {
 			done({ status: 404, message: 'Not found' }, null)
 		}
