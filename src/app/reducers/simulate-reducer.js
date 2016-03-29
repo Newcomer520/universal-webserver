@@ -9,9 +9,10 @@ const initState = fromJS({
 	observor: null,
 	obTime: null,
 	// data
+  actualFirstRecord: null,
 	actual: {},
-	predict: null,
-	simulation: null,
+	predict: {},
+	simulate: {},
 	// status
 	requestActualStatus: null, // user 欲查詢所選的category & type
 	requestPredictStatus: null,
@@ -36,9 +37,10 @@ export default function (state = initState, action) {
 				return state.merge({ selectedType: action.selectedType })
 			}
 			break
-		case TYPES.SIMULATE_ACTUAL_SUCCESS:
-			const { result } = action
+		case TYPES.SIMULATE_ACTUAL_SUCCESS: {
+			let { result } = action
 			let actual
+      let actualFirstRecord
 
 			if (result && result.rows) {
 				actual = result.rows.reduce((prev, currRow) => {
@@ -46,13 +48,33 @@ export default function (state = initState, action) {
 					prev[currRow.time.toNumber()] = { ...currRow, time: currRow.time.toNumber() }
 					return prev
 				}, {})
+
+        // set first record
+        result.rows[0] && result.rows[0].time && (actualFirstRecord = { ...result.rows[0], time: result.rows[0].time.toNumber() })
 			}
 
 			return state.merge({
-				requestStatus: action.type,
+				requestActualStatus: action.type,
 				actual,
-				observor: state.get('selectedType')
+				observor: state.get('selectedType'),
+        actualFirstRecord
 			})
+    }
+    case TYPES.SIMULATE_PREDICT_SUCCESS: {
+      const { result } = action
+      let predictStartTime
+      let rows
+
+      result && result.time && (predictStartTime = result.time.toNumber())
+      result && result.rows && Array.isArray(result.rows) && (rows = result.rows.map(r => ({ ...r })))
+      return state.merge({
+        requestPredictStatus: action.type,
+        predict: {
+          startTime: predictStartTime,
+          rows: rows
+        }
+      })
+    }
 	}
 
 	return state
