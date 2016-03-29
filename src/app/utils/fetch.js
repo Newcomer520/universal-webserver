@@ -15,21 +15,21 @@ export const canUseDOM = !!(
 )
 
 export function login(username, password, gRecaptchaResponse) {
-	const url = '/api/login'
-	const options = { method: 'post', body: JSON.stringify({ username, password, gRecaptchaResponse }), refreshOnce: false }
-	return fetchObj(url, options)
+  const url = '/api/login'
+  const options = { method: 'post', body: JSON.stringify({ username, password, gRecaptchaResponse }), refreshOnce: false }
+  return fetchObj(url, options)
 }
 
 export function logout() {
-	const url = '/api/logout'
-	const options = { method: 'post', refreshOnce: false }
-	return fetchObj(url, options)
+  const url = '/api/logout'
+  const options = { method: 'post', refreshOnce: false }
+  return fetchObj(url, options)
 }
 
 export function fetchStatus() {
-	const url = '/api/status'
-	const options = { method: 'get' }
-	return fetchObj(url, options)
+  const url = '/api/status'
+  const options = { method: 'get' }
+  return fetchObj(url, options)
 }
 
 /**
@@ -40,15 +40,15 @@ export function fetchStatus() {
  * @return {[type]}                        [description]
  */
 export default function fetchObj(url, { refreshOnce = true, transform = 'json', ...options} ) {
-	if (!canUseDOM) {
-		url = `http://${__HOST__}:${__PORT__}${url}`
-		options = { ...options, transform }
-	} else {
-		// add cookies:
-		// https://github.com/github/fetch#sending-cookies
-		options = merge({}, DEFAULT_OPTIONS, { refreshOnce }, options)
-	}
-	return { url, options }
+  if (!canUseDOM) {
+    url = `http://${__HOST__}:${__PORT__}${url}`
+    options = { ...options, transform }
+  } else {
+    // add cookies:
+    // https://github.com/github/fetch#sending-cookies
+    options = merge({}, DEFAULT_OPTIONS, { refreshOnce, transform }, options)
+  }
+  return { url, options }
 }
 
 /**
@@ -61,30 +61,28 @@ export default function fetchObj(url, { refreshOnce = true, transform = 'json', 
  * @return {[type]}                    the fetching promise
  */
 export function fetch(url, { token, refreshOnce, transform = 'json', ...options }) {
+  if (typeof token === 'string' && token.trim() !== '') {
+    options = merge({}, { headers: { Authorization: `Bearer ${token}` } }, options)
+  }
 
-	if (typeof token === 'string' && token.trim() !== '') {
-		options = merge({}, { headers: { Authorization: `Bearer ${token}` } }, options)
-	}
+  const promise = originalFetch(url, options)
+    .then(response => {
+      if (response.status >= 200 && response.status < 300) {
+        return response
+      } else {
+        const error = new Error(response.statusText)
+        error.status = response.status
+        error.response = response
+        throw error
+      }
+    })
+    .catch(err => errorTransform(err.response, 'text'))
 
-	const promise = originalFetch(url, options)
-		.then(response => {
-			console.log(transform)
-			if (response.status >= 200 && response.status < 300) {
-				return response
-			} else {
-				const error = new Error(response.statusText)
-				error.status = response.status
-				error.response = response
-				throw error
-			}
-		})
-		.catch(err => errorTransform(err.response, 'text'))
-
-		return typeof transform === 'string'
-		? promise.then(result => result[transform]())
-		: typeof transform === 'function'
-		? promise.then(transform)
-		: promise
+    return typeof transform === 'string'
+    ? promise.then(result => result[transform]())
+    : typeof transform === 'function'
+    ? promise.then(transform)
+    : promise
 }
 
 /**
@@ -94,16 +92,16 @@ export function fetch(url, { token, refreshOnce, transform = 'json', ...options 
  * @return {[type]}           [description]
  */
 function errorTransform(res, transform = 'json') {
-	if (typeof res[transform] !== 'function') {
-		const err = new Error(res.statusText)
-		err.response = res
-		err.status = res.status
-		throw err
-	}
-	return res[transform]().then(t => {
-		const err = new Error(t)
-		err.response = res
-		err.status = res.status
-		throw err
-	})
+  if (typeof res[transform] !== 'function') {
+    const err = new Error(res.statusText)
+    err.response = res
+    err.status = res.status
+    throw err
+  }
+  return res[transform]().then(t => {
+    const err = new Error(t)
+    err.response = res
+    err.status = res.status
+    throw err
+  })
 }

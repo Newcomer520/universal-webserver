@@ -3,6 +3,7 @@
 
 $padding-simulator: 0.5em;
 $filter-bar-height: 50px;
+$right-column-width: 400px;
 
 .container {
 	position: relative;
@@ -39,13 +40,13 @@ $filter-bar-height: 50px;
 
 .column {
 	display: flex;
-	flex: 1 1 auto;
 	flex-direction: column;
 	align-items: stretch;
 	padding-bottom: 20px;
 }
 
 .column-left {
+	flex: 1 1 0;
 	composes: column;
 	padding-top: $filter-bar-height;
 	padding-left: 5px;
@@ -62,13 +63,14 @@ $filter-bar-height: 50px;
 	position: relative;
 	overflow-x: hidden;
 	overflow-y: auto;
-	min-width: 400px;
+	width: $right-column-width;
 	background: linear-gradient(to bottom, #dbdcdd 0%,#fcfaf9 50%,#f5f9fa 100%);
 }
 
 .filter-bar {
 	position: absolute;
 	left: $padding-simulator;
+	right: $right-column-width;
 	height: $filter-bar-height;
 	display: flex;
 	flex-direction: row;
@@ -81,13 +83,7 @@ $filter-bar-height: 50px;
 
 .chart-container {
 	/* flex: 1; */
-	&:after {
-		content: '提醒';
-		display: block;
-		margin-left: 1rem;
-		margin-top: 1rem;
-		margin-bottom: 0.5rem;
-	}
+	min-height: 400px;
 }
 
 .simulator {
@@ -134,6 +130,13 @@ $filter-bar-height: 50px;
 	overflow-y: auto;
 }
 
+.comment-label {
+	display: block;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	margin-bottom: 0.5rem;
+}
+
 .comment {
 	font-size: 1.2rem;
 	margin-left: 1rem;
@@ -143,4 +146,40 @@ $filter-bar-height: 50px;
 	border: 1px solid black;
 	padding: 2rem;
 	background: #ffffff;
+}
+
+.legend-container {
+	@mixin flex-box row, space-around;
+	flex: 1;
+}
+
+.legend {
+	@mixin flex-box row;
+	height: 30px;
+	/* default icon */
+	&:before {
+		margin-right: 0.5rem;
+		content: url('./images/i_g.png');
+	}
+}
+
+.actual-legend {
+	composes: legend;
+	&:before {
+		content: url('./images/i_g.png');
+	}
+}
+
+.predict-legend {
+	composes: legend;
+	&:before {
+		content: url('./images/i_r.png');
+	}
+}
+
+.simulate-legend {
+	composes: legend;
+	&:before {
+		content: url('./images/i_b.png');
+	}
 }
