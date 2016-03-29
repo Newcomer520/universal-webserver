@@ -14,7 +14,6 @@ export function selectType(selected) {
 
 export function fetchActual() {
 	const { SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED } = TYPES
-	console.log('simulate-action: ', apiActual())
 	return {
 		type: TYPES.SAGA_FETCH_ACTION,
 		fetch: apiActual(),
