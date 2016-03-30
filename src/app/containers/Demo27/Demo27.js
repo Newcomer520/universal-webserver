@@ -20,12 +20,21 @@ import CSSModules from 'react-css-modules'
 
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
 
+// @todo: need to refactor observorLabel & observorKey
 function observorLabel(observor) {
   switch (observor) {
     case TYPES.SIMULATE_TYPE_SBP:
       return 'SBP'
   }
 
+  return 'null'
+}
+
+function observorKey(observor) {
+  switch (observor) {
+    case TYPES.SIMULATE_TYPE_SBP:
+      return 'sbp'
+  }
   return 'null'
 }
 
@@ -43,12 +52,24 @@ function mapStateToProps(state) {
     selectedType: simulate.get('selectedType'),
     observor: simulate.get('observor'),
     obTime: simulate.get('obTime'),
+    obActual: '─',
+    obPredict: '─',
+    obDiff: '─',
     requestStatus: simulate.get('requestPredictStatus'),
-    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })).sort((a, b) => (a.x - b.x)),
-    predict
+    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })),
+    predict,
   }
+
   categories.forEach((label, key) => ret.categories.push({ label, value: key }))
   types && types.forEach((label, key) => ret.types.push({ label, value: key }))
+
+  if (ret.observor && ret.obTime) {
+    let tempData
+    tempData = simulate.get('actual').get(ret.obTime)
+    tempData && (ret.obActual = tempData.get(observorKey(ret.observor)))
+  } else {
+    ret.obTime = '─'
+  }
 
   return ret
 }
@@ -118,7 +139,7 @@ export default class extends Component {
   };
 
   renderSimulator = () => {
-    const { requestStatus, selectedType, observor, obTime } = this.props
+    const { requestStatus, selectedType, observor, obTime, obActual, obPredict, obDiff } = this.props
     if (requestStatus == null) {
       return null
     } else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
@@ -149,7 +170,9 @@ export default class extends Component {
             </div>
             <div styleName="body">
               <div styleName="row">
-
+                <div styleName="cell">{obActual}</div>
+                <div styleName="cell">{obPredict}</div>
+                <div styleName="cell">{obDiff}</div>
               </div>
             </div>
           </div>

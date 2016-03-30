@@ -129,6 +129,7 @@
     "protobufjs": "^5.0.1",
     "raw-body": "^2.1.6",
     "react": "^0.14.6",
+    "react-addons-clone-with-props": "^0.14.7",
     "react-addons-css-transition-group": "^0.14.6",
     "react-css-modules": "^3.7.6",
     "react-dom": "^0.14.6",

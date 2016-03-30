@@ -14,6 +14,7 @@ $background-primary-color: #dbdcdd;
 $normal-border-radius: 5px;
 $componentSingleLineHeight: 3em;
 $table-row-height: 2.0em;
-
+$default-boder-color: rgba(182, 182, 182, 1);
+$default-border: 1px solid $default-boder-color;
 
 $border-thin: 1px;
