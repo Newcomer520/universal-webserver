@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import moment from 'moment'
 
 import demo27Styles from './demo27.css'
 import tableStyle from 'app/css/tables.css'
@@ -11,7 +10,7 @@ import transitionStyle from './transition.css'
 import FormSBP from 'components/Forms/FormSBP'
 import SimulatorChart from 'components/SimulatorChart'
 import Select from 'react-select'
-import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
 import selector from './selector'
 
@@ -58,7 +57,7 @@ function mapStateToProps(state) {
     obPredict: '─',
     obDiff: '─',
     requestStatus: simulate.get('requestPredictStatus'),
-    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })),
+    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })).sort((a, b) => (a.x - b.x)),
     predict,
   }
 
@@ -190,41 +189,19 @@ export default class extends Component {
   };
 
   defaultContent = () => {
-    const startTime1 = moment("2016-10-20 8:30", "YYYY-MM-DD HH:mm")
-    const startTime2 = moment("2016-10-20 8:30", "YYYY-MM-DD HH:mm")
-
-    const points = [
-      { "x": startTime1.valueOf(),              "y": 111.72106625822656},
-      { "x": startTime1.add(30,'m').valueOf(),  "y": 120},
-      { "x": startTime1.add(28,'m').valueOf(),  "y": 139},
-      { "x": startTime1.add(32,'m').valueOf(),  "y": 118},
-      { "x": startTime1.add(15,'m').valueOf(),  "y": 123}//,
-      // { "x": startTime1.add(45,'m').valueOf(), "y": 108},
-      // { "x": startTime1.add(30,'m').valueOf(), "y": 90},
-      // { "x": startTime1.add(30,'m').valueOf(), "y": 106},
-      // { "x": startTime1.add(30,'m').valueOf(), "y": 99},
-      // { "x": startTime1.add(30,'m').valueOf(), "y": 106}
-    ]
-
+    const { actualPoints, predict } = this.props
     const svgHeight = 400
     const svgWidth = 800
-    const svgLinePointDisplay = true
-
     return (
       <div styleName="content">
         <div styleName="column-left">
           <div styleName="chart-container">
-            {/*<SimulatorChart
+            <SimulatorChart
                 height={svgHeight}
                 width={svgWidth}
-                points={this.props.actualPoints}
-                pointsDisplay={svgLinePointDisplay}
-                predictFitPoints={predictFitPoints}
-                predictUprPoints={predictUprPoints}
-                predictLwrPoints={predictLwrPoints}
-                simFitPoints={simFitPoints}
-                simUprPoints={simUprPoints}
-                simLwrPoints={simLwrPoints}/>*/}
+                actualPoints={actualPoints}
+                predictPoints={predict}
+                simulatePoints={null} />
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">

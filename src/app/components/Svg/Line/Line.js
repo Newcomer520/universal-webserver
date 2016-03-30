@@ -1,120 +1,141 @@
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
 import { Motion, spring } from 'react-motion'
 import Path from 'paths-js/path'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
 import { linearInterpolator } from '../hack-spring100-to-linear'
 
 export default class Line extends Component {
-	constructor(props) {
-		super(props);
-		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
-	}
 
-	genLineFunctions = () => {
-		const { points } = this.props
-		const lines = points.map((point, idx) => {
-			let  x1, y1, x2, y2
-			x1 = points[idx].x
-			y1 = points[idx].y
-			if (idx + 1 === points.length) {
-				x2 = points[idx].x
-				y2 = points[idx].y
-			} else {
-				x2 = points[idx + 1].x
-				y2 = points[idx + 1].y
-			}
+  static propTypes = {
+    lineStyles: PropTypes.object,
+    circleStyles: PropTypes.object,
+    points: PropTypes.array, // after scale ( x and y values)
+    pointsDisplay: PropTypes.bool,
+    values: PropTypes.array, // before scale (y values)
+    xOffset: PropTypes.number,
+    yOffset: PropTypes.number
+  };
 
-			return (
-				(x) => {
-					let m = 1
-					if(x2 - x1 === 0) {
-						m = 0
-					} else {
-						m = (y2 - y1) / (x2 - x1)
-					}
-					return (m * (x - x1) + y1)
-				}
-			)
-		})
-		return lines
-	};
+  constructor(props) {
+    super(props)
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
+  }
 
-	updateStep = (x, currentStep, xArray) => {
-		for (let i = 0; i < xArray.length - 1; i++) {
-			if (x >= xArray[i] && x < xArray[i + 1]) {
-				return i
-			}
-		}
-		return xArray.length -1
-	};
+  /**
+   * Get time axis
+   * @param {array} points - an array contain points positions like [{x1, y1}, {x2, y2}...]
+   * these points must has been scaled by d3.time.scale()
+   */
+  getXArray = () => {
+    const { points } = this.props
+    return points.map((point) => (point.x))
+  };
 
-	renderCircle = (currentStep, styles) => {
-		const circles = []
-		const { points, pointsDisplay, values } = this.props
-		if ( pointsDisplay === true) {
-			for(let idx=1; idx<=currentStep; idx++){
+  /**
+   * Get time axis
+   * @param {array} points - an array contain points positions like [{x1, y1}, {x2, y2}...]
+   * these points must has been scaled by d3.time.scale()
+   */
+  genLineFunctions = () => {
+    const { points } = this.props
+    const lines = points.map((point, idx) => {
+      const x1 = points[idx].x
+      const y1 = points[idx].y
+      let x2 = 0
+      let y2 = 0
+      if (idx + 1 === points.length) {
+        x2 = points[idx].x
+        y2 = points[idx].y
+      } else {
+        x2 = points[idx + 1].x
+        y2 = points[idx + 1].y
+      }
 
-				circles.push(
-					<g key={`circle-${idx}`}>
-					<text x={points[idx].x - 14} y={points[idx].y - 14} >{parseInt(values[idx])}</text>
-					<circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles}/>
-					</g>)
-			}
-		}
-		return circles
-	};
+      return (
+        (x) => {
+          let m = 1
+          if (x2 - x1 === 0) {
+            m = 0
+          } else {
+            m = (y2 - y1) / (x2 - x1)
+          }
+          return (m * (x - x1) + y1)
+        }
+      )
+    })
+    return lines
+  };
 
-	getXArray = () => {
-		const { points } = this.props
-		return points.map((point, idx) => (point.x))
-	};
+  updateStep = (x, xArray) => {
+    for (let i = 0; i < xArray.length - 1; i++) {
+      if (x >= xArray[i] && x < xArray[i + 1]) {
+        return i
+      }
+    }
+    return xArray.length - 1
+  };
 
-	render(){
-		const { points, xOffset, yOffset } = this.props
+  renderCircle = (currentStep, styles) => {
+    const circles = []
+    const { points, values } = this.props
+    if (values) {
+      for (let idx = 1; idx <= currentStep; idx++) {
+        circles.push(
+          <g key={`circle-${idx}`}>
+            <text x={points[idx].x - 14} y={points[idx].y - 14} >{parseInt(values[idx], 10)}</text>
+            <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles} />
+          </g>)
+      }
+    }
+    return circles
+  };
 
-		let lineFunctions = this.genLineFunctions()
-		let xArray = this.getXArray()
+  render() {
+    const { points, xOffset, yOffset } = this.props
 
-		let currentStep = 0
-		let previousStep = 0
-		const x0 = points[0].x
-		const y0 = points[0].y
-		const lastX = points[points.length - 1].x
-		let count = 0
-		let path = Path().moveto(x0, y0)
-		const { lineStyles, circleStyles }= this.props
+    const lineFunctions = this.genLineFunctions()
+    const xArray = this.getXArray()
 
-		return (
-			<g transform={`translate(${xOffset}, ${yOffset})`}>
-				<Motion
-					defaultStyle={{ x: 0 }}
-					style={{ x: spring(100, { stiffness: 100 }) }}>
-					{
-						value => {
-							let x = linearInterpolator(xArray, value.x, 100)  // xarray, current-value, stiffness <= third arg is stiffness, currently only 'default' and 100 is available
-							currentStep = this.updateStep(x, currentStep, xArray)
-							for (let i = previousStep+1; i <=currentStep; i++) {
-								path = path.lineto(points[i].x, points[i].y)
-							}
-							previousStep = currentStep
-							let getY = lineFunctions[currentStep]
-							let y = getY(x)
-							if (x <= xArray[xArray.length - 1]) {
-								path = path.lineto(x, y)
-							}
+    let currentStep = 0
+    let previousStep = 0
+    const x0 = points[0].x
+    const y0 = points[0].y
 
-							return (
-								<g>
-								<path d={path.print()} {...lineStyles} ></path>
-									{this.renderCircle(currentStep, {...circleStyles})}
-								</g>
-							)
-						}
-					}
-				</Motion>
-			</g>
-		)
-	}
+
+    let path = Path().moveto(x0, y0)
+    const { lineStyles, circleStyles } = this.props
+
+    return (
+      <g transform={`translate(${xOffset}, ${yOffset})`} >
+        <Motion
+          defaultStyle={{ x: 0 }}
+          style={{ x: spring(100, { stiffness: 100 }) }} >
+          {
+            value => {
+              const x = linearInterpolator(xArray, value.x, 100)
+              // xarray, current-value, stiffness <= third arg is stiffness,
+              // currently only 'default' and 100 is available
+              currentStep = this.updateStep(x, xArray)
+              for (let i = previousStep + 1; i <= currentStep; i++) {
+                path = path.lineto(points[i].x, points[i].y)
+              }
+              previousStep = currentStep
+              const getY = lineFunctions[currentStep]
+              const y = getY(x)
+              if (x <= xArray[xArray.length - 1]) {
+                path = path.lineto(x, y)
+              }
+
+              return (
+                <g>
+                <path d={path.print()} {...lineStyles} ></path>
+                  {this.renderCircle(currentStep, { ...circleStyles })}
+                </g>
+              )
+            }
+          }
+        </Motion>
+      </g>
+    )
+  }
 }
-
