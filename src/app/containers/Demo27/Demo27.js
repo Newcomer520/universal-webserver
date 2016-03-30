@@ -13,6 +13,7 @@ import SimulatorChart from 'components/SimulatorChart'
 import Select from 'react-select'
 import ReactCSSTransitionGroup  from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
+import selector from './selector'
 
 // actioncreators
 import { actions as filters, fetchActual } from 'actions/simulate-action'
@@ -92,7 +93,7 @@ function SimulateForm(props) {
 }
 
 @connect(
-  mapStateToProps,
+  state => selector(state),
   bindDispatchToActions
 )
 @CSSModules(styles)

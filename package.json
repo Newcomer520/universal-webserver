@@ -148,6 +148,7 @@
     "redux-saga": "^0.9.4",
     "replace": "^0.3.0",
     "request": "^2.67.0",
+    "reselect": "^2.2.1",
     "rx": "^4.0.7",
     "serialize-javascript": "^1.1.2"
   },
