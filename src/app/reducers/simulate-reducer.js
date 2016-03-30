@@ -45,7 +45,8 @@ export default function (state = initState, action) {
 			if (result && result.rows) {
 				actual = result.rows.reduce((prev, currRow) => {
 					// time is type of long, need to convert it to a number
-					prev[currRow.time.toNumber()] = { ...currRow, time: currRow.time.toNumber() }
+          const time = currRow.time.toNumber()
+					prev[time] = { ...currRow, time }
 					return prev
 				}, {})
 
@@ -56,7 +57,6 @@ export default function (state = initState, action) {
 			return state.merge({
 				requestActualStatus: action.type,
 				actual,
-				observor: state.get('selectedType'),
         actualFirstRecord
 			})
     }
@@ -69,6 +69,7 @@ export default function (state = initState, action) {
       result && result.rows && Array.isArray(result.rows) && (rows = result.rows.map(r => ({ ...r })))
       return state.merge({
         requestPredictStatus: action.type,
+        observor: state.get('selectedType'),
         predict: {
           startTime: predictStartTime,
           rows: rows

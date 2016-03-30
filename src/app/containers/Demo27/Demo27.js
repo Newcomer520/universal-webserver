@@ -21,15 +21,21 @@ import CSSModules from 'react-css-modules'
 
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
 
-// fakedata @todo: remember to remove it
-import { rawPts } from './fake-data'
-
+// @todo: need to refactor observorLabel & observorKey
 function observorLabel(observor) {
   switch (observor) {
     case TYPES.SIMULATE_TYPE_SBP:
       return 'SBP'
   }
 
+  return 'null'
+}
+
+function observorKey(observor) {
+  switch (observor) {
+    case TYPES.SIMULATE_TYPE_SBP:
+      return 'sbp'
+  }
   return 'null'
 }
 
@@ -47,12 +53,24 @@ function mapStateToProps(state) {
     selectedType: simulate.get('selectedType'),
     observor: simulate.get('observor'),
     obTime: simulate.get('obTime'),
+    obActual: '─',
+    obPredict: '─',
+    obDiff: '─',
     requestStatus: simulate.get('requestPredictStatus'),
     actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })),
-    predict
+    predict,
   }
+
   categories.forEach((label, key) => ret.categories.push({ label, value: key }))
   types && types.forEach((label, key) => ret.types.push({ label, value: key }))
+
+  if (ret.observor && ret.obTime) {
+    let tempData
+    tempData = simulate.get('actual').get(ret.obTime)
+    tempData && (ret.obActual = tempData.get(observorKey(ret.observor)))
+  } else {
+    ret.obTime = '─'
+  }
 
   return ret
 }
@@ -122,7 +140,7 @@ export default class extends Component {
   };
 
   renderSimulator = () => {
-    const { requestStatus, selectedType, observor, obTime } = this.props
+    const { requestStatus, selectedType, observor, obTime, obActual, obPredict, obDiff } = this.props
     if (requestStatus == null) {
       return null
     } else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
@@ -153,7 +171,9 @@ export default class extends Component {
             </div>
             <div styleName="body">
               <div styleName="row">
-
+                <div styleName="cell">{obActual}</div>
+                <div styleName="cell">{obPredict}</div>
+                <div styleName="cell">{obDiff}</div>
               </div>
             </div>
           </div>
@@ -184,59 +204,6 @@ export default class extends Component {
       // { "x": startTime1.add(30,'m').valueOf(), "y": 99},
       // { "x": startTime1.add(30,'m').valueOf(), "y": 106}
     ]
-
-    const xtimingarray = (
-      () => {
-        let inarr = []
-        let startTime = moment("2016-10-20 8:29", "YYYY-MM-DD HH:mm")
-        for(let i=0; i<300; i++){
-          inarr.push(startTime.add(1, 'm').valueOf())
-        }
-      return inarr
-      }
-    )()
-
-    const predictFitPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: xtimingarray[idx], y: point.fit}
-      return fitItem
-    })
-
-    const predictUprPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: xtimingarray[idx], y: point.upr}
-      return fitItem
-    })
-
-    const predictLwrPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: xtimingarray[idx], y: point.lwr}
-      return fitItem
-    })
-
-
-    const simtimingarray = (
-      () => {
-        let inarr = []
-        let startTime = moment("2016-10-20 10:29", "YYYY-MM-DD HH:mm")
-        for(let i=0; i<300; i++){
-          inarr.push(startTime.add(1,'m').valueOf())
-        }
-      return inarr
-      }
-    )()
-
-    const simFitPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: simtimingarray[idx], y: point.fit}
-      return fitItem
-    })
-
-    const simUprPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: simtimingarray[idx], y: point.upr}
-      return fitItem
-    })
-
-    const simLwrPoints = rawPts.map((point, idx, arr)=>{
-      let fitItem = { x: simtimingarray[idx], y: point.lwr}
-      return fitItem
-    })
 
     const svgHeight = 400
     const svgWidth = 800

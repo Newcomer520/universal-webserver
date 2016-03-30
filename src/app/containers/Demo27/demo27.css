@@ -6,180 +6,182 @@ $filter-bar-height: 50px;
 $right-column-width: 400px;
 
 .container {
-	position: relative;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	flex-wrap: wrap;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 .main {
-	width: 100%;
-	max-width: $appWidth;
-	margin-left: auto;
-	margin-right: auto;
-	display: flex;
-	flex: 1;
-	flex-direction: row;
-	flex-wrap: wrap;
-	justify-content: center;
-	/* background-color: rgba(219, 220, 221, 0.7); */
-	background-color: rgba(255, 255, 255, 0.8);
-	overflow: hidden;
-	border-radius: 5px;
-	@media (max-width: 992px) {
-		justify-content: flex-start;
-	}
+  width: 100%;
+  max-width: $appWidth;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  /* background-color: rgba(219, 220, 221, 0.7); */
+  background-color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  border-radius: 5px;
+  @media (max-width: 992px) {
+    justify-content: flex-start;
+  }
 }
 
 .content {
-	width: 100%;
-	@mixin flex-box row, flex-start, stretch;
-	flex-wrap: nowrap;
+  width: 100%;
+  @mixin flex-box row, flex-start, stretch;
+  flex-wrap: nowrap;
 }
 
 .column {
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	padding-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding-bottom: 20px;
 }
 
 .column-left {
-	flex: 1 1 0;
-	composes: column;
-	padding-top: $filter-bar-height;
-	padding-left: 5px;
-	padding-right: 5px;
-	margin-right: 2px;
-	/* border-right: 10px solid gray; */
-	box-shadow: 2px 0px 4px -2px gray;
-	/* min-height: 500px; */
-	/* background-color: pink; */
+  flex: 1 1 0;
+  composes: column;
+  padding-top: $filter-bar-height;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-right: 2px;
+  /* border-right: 10px solid gray; */
+  box-shadow: 2px 0px 4px -2px gray;
+  /* min-height: 500px; */
+  /* background-color: pink; */
 }
 
 .column-right {
-	composes: column;
-	position: relative;
-	overflow-x: hidden;
-	overflow-y: auto;
-	width: $right-column-width;
-	background: linear-gradient(to bottom, #dbdcdd 0%,#fcfaf9 50%,#f5f9fa 100%);
+  composes: column;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: $right-column-width;
+  background: linear-gradient(to bottom, #dbdcdd 0%,#fcfaf9 50%,#f5f9fa 100%);
 }
 
 .filter-bar {
-	position: absolute;
-	left: $padding-simulator;
-	right: $right-column-width;
-	height: $filter-bar-height;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	>div:first-child {
-		margin-right: 1rem;
-	}
+  position: absolute;
+  left: $padding-simulator;
+  right: $right-column-width;
+  height: $filter-bar-height;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  >div:first-child {
+    margin-right: 1rem;
+  }
 }
 
 .chart-container {
-	/* flex: 1; */
-	min-height: 400px;
+  /* flex: 1; */
+  min-height: 400px;
 }
 
 .simulator {
-	@mixin flex-box column, flex-start, center;
-	flex-wrap: nowrap;
-	flex-shrink: 0;
-	font-family: $fontFamily;
-	font-size: 1.2rem;
+  @mixin flex-box column, flex-start, center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  /* font-family: $fontFamily; */
+  font-size: 1.2rem;
 
-	>div {
-		@mixin flex-box row, center, center;
-		flex-shrink: 0;
-	}
+  >div {
+    flex-shrink: 0;
+  }
 }
 
 .time {
-	color: $lightgray-color;
-	height: 2.4rem;
-	padding-left: $padding-simulator;
-	padding-right: $padding-simulator;
-	align-self: flex-start;
+  @mixin flex-box row, center, center;
+  color: $lightgray-color;
+  height: 2.4rem;
+  padding-left: $padding-simulator;
+  padding-right: $padding-simulator;
+  align-self: flex-start;
 }
 
 .tag {
-	color: #fff;
-	height: $table-row-height;
-	padding-left: $padding-simulator;
-	padding-right: $padding-simulator;
-	align-self: stretch;
-	background: #3EADAD;
-	text-align: center;
+  color: #fff;
+  @mixin flex-box row, center, center;
+  height: $table-row-height;
+  padding-left: $padding-simulator;
+  padding-right: $padding-simulator;
+  align-self: stretch;
+  background: #3EADAD;
+  text-align: center;
 }
 
 .section {
-	padding: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
-	min-height: 2rem;
-	align-self: stretch;
+  @mixin flex-box row, center, flex-start;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 2rem;
+  align-self: stretch;
 }
 .section-form {
-	flex: 1 1 0;
-	composes: section;
-	overflow-y: auto;
+  flex: 1 1 0;
+  composes: section;
+  overflow-y: auto;
 }
 
 .comment-label {
-	display: block;
-	margin-left: 1rem;
-	margin-top: 1rem;
-	margin-bottom: 0.5rem;
+  display: block;
+  margin-left: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .comment {
-	font-size: 1.2rem;
-	margin-left: 1rem;
-	margin-right: 1rem;
-	border-radius: 5px;
-	flex: 1;
-	border: 1px solid black;
-	padding: 2rem;
-	background: #ffffff;
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  border-radius: 5px;
+  flex: 1;
+  border: 1px solid black;
+  padding: 2rem;
+  background: #ffffff;
 }
 
 .legend-container {
-	@mixin flex-box row, space-around;
-	flex: 1;
+  @mixin flex-box row, space-around;
+  flex: 1;
 }
 
 .legend {
-	@mixin flex-box row;
-	height: 30px;
-	/* default icon */
-	&:before {
-		margin-right: 0.5rem;
-		content: url('./images/i_g.png');
-	}
+  @mixin flex-box row;
+  height: 30px;
+  /* default icon */
+  &:before {
+    margin-right: 0.5rem;
+    content: url('./images/i_g.png');
+  }
 }
 
 .actual-legend {
-	composes: legend;
-	&:before {
-		content: url('./images/i_g.png');
-	}
+  composes: legend;
+  &:before {
+    content: url('./images/i_g.png');
+  }
 }
 
 .predict-legend {
-	composes: legend;
-	&:before {
-		content: url('./images/i_r.png');
-	}
+  composes: legend;
+  &:before {
+    content: url('./images/i_r.png');
+  }
 }
 
 .simulate-legend {
-	composes: legend;
-	&:before {
-		content: url('./images/i_b.png');
-	}
+  composes: legend;
+  &:before {
+    content: url('./images/i_b.png');
+  }
 }

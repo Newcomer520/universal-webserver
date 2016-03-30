@@ -1,7 +1,10 @@
 @import "app/css/variables.css";
 @import "app/css/mixins.css";
+@import "app/css/tables.css";
 
 $padding-space: 1rem;
+$tableCSS: "../../../css/tables.css";
+$single-row-height: 3rem;
 
 .container {
 	@mixin flex-box column, flex-start, stretch;
@@ -19,4 +22,57 @@ $padding-space: 1rem;
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
+}
+
+
+.row {
+  /*
+    now the post-import setting does not work
+    https://github.com/outpunk/postcss-modules/issues/13
+  */
+  line-height: $single-row-height;
+  border-bottom: none;
+  flex-wrap: wrap;
+  transition: max-height 0.5s, height 0.5s;
+  overflow: hidden;
+  max-height: calc($single-row-height + 0.5rem);
+}
+
+.row-error {
+  composes: row;
+  max-height: 10rem;
+}
+
+.cell {
+  /* composes: cell from $tableCSS; */
+}
+
+.error-box {
+  @mixin flex-box row, center, center;
+  color: red;
+  padding: 0.1rem;
+  position: relative;
+  margin: 1rem;
+  border-radius: 5px;
+  background: pink;
+  min-height: 4rem;
+  flex-basis: 100%;
+  font-size: 1rem;
+
+  &:before {
+    position: absolute;
+    right: 3rem;
+    top: -10px;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 10px solid pink;
+  }
+}
+
+.error-box-hidden {
+  composes: error-box;
+  visibility: hidden;
 }
