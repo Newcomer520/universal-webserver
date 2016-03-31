@@ -97,7 +97,7 @@ export default class SimulatorChart extends Component {
     const startTime = moment('20160101', 'YYYYDDMM').valueOf()
     let cActualPoints = [{ x: startTime, y: 0 }]
 
-    if (actualPoints && 'length' in actualPoints.rows &&
+    if (actualPoints && actualPoints.rows && 'length' in actualPoints.rows &&
         actualPoints.rows.length > 0 && 'x' in actualPoints.rows[0]) {
       cActualPoints = actualPoints.rows
     }
