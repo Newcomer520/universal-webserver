@@ -15,7 +15,7 @@ import UserBar from 'components/UserBar'
 import selector from './selector'
 
 // actioncreators
-import { actions as filters, fetchActual } from 'actions/simulate-action'
+import { actions as filters, fetchActual, setObTime } from 'actions/simulate-action'
 import TYPES from 'constants/action-types'
 import CSSModules from 'react-css-modules'
 
@@ -39,45 +39,9 @@ function observorKey(observor) {
   return 'null'
 }
 
-function mapStateToProps(state) {
-  const { simulate } = state
-  const categories = simulate.get('categories')
-  const types = simulate.get('types')
-  const actual = simulate.get('actual').toJS()
-  const predict = simulate.get('predict').toJS()
-
-  const ret = {
-    categories: [],
-    selectedCategory: simulate.get('selectedCategory'),
-    types: [],
-    selectedType: simulate.get('selectedType'),
-    observor: simulate.get('observor'),
-    obTime: simulate.get('obTime'),
-    obActual: '─',
-    obPredict: '─',
-    obDiff: '─',
-    requestStatus: simulate.get('requestPredictStatus'),
-    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })),
-    predict,
-  }
-
-  categories.forEach((label, key) => ret.categories.push({ label, value: key }))
-  types && types.forEach((label, key) => ret.types.push({ label, value: key }))
-
-  if (ret.observor && ret.obTime) {
-    let tempData
-    tempData = simulate.get('actual').get(ret.obTime)
-    tempData && (ret.obActual = tempData.get(observorKey(ret.observor)))
-  } else {
-    ret.obTime = '─'
-  }
-
-  return ret
-}
-
 function bindDispatchToActions(dispatch) {
   return {
-    actions: bindActionCreators({ ...filters }, dispatch)
+    actions: bindActionCreators({ ...filters, setObTime }, dispatch)
   }
 }
 
@@ -93,6 +57,7 @@ function SimulateForm(props) {
 
 @connect(
   state => selector(state),
+  // mapStateToProps,
   bindDispatchToActions
 )
 @CSSModules(styles)
@@ -189,7 +154,8 @@ export default class extends Component {
   };
 
   defaultContent = () => {
-    const { actualPoints, predict } = this.props
+    const { actual, predict } = this.props
+    const { actions: { setObTime } } = this.props
     const svgHeight = 400
     const svgWidth = 800
     return (
@@ -199,9 +165,10 @@ export default class extends Component {
             <SimulatorChart
                 height={svgHeight}
                 width={svgWidth}
-                actualPoints={actualPoints}
+                actualPoints={actual}
                 predictPoints={predict}
-                simulatePoints={null} />
+                simulatePoints={null}
+                clickTimeCallback={setObTime}/>
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">

@@ -1,10 +1,14 @@
 import { createSelector } from 'reselect'
+import d3 from 'd3'
+import TYPES from 'constants/action-types'
 
-const actualPointsSelector = createSelector(
+const actualSelector = createSelector(
   state => state.simulate.get('actual'),
   actual => {
     const obj = actual.toJS()
-    return Object.keys(obj).map(p => ({ x: obj[p].time, y: obj[p].sbp }))
+    obj.rows = Object.keys(obj.rows).map(p => ({ x: obj.rows[p].time, y: obj.rows[p].sbp })).sort((a, b) => (a.x - b.x))
+    return obj
+    // return Object.keys(obj).map(p => ({ x: obj[p].time, y: obj[p].sbp })).sort((a, b) => (a.x - b.x))
   }
 )
 
@@ -13,13 +17,15 @@ const predictSelector = createSelector(
   predict => predict.toJS()
 )
 
+
 export default createSelector(
   state => state.simulate,
-  actualPointsSelector,
+  actualSelector,
   predictSelector,
-  (simulate, actualPoints, predict) => {
+  (simulate, actual, predict) => {
     const categories = simulate.get('categories')
     const types = simulate.get('types')
+    const timeFormat = d3.time.format("%H:%M")
     const ret = {
       categories: [],
       selectedCategory: simulate.get('selectedCategory'),
@@ -31,7 +37,7 @@ export default createSelector(
       obPredict: '─',
       obDiff: '─',
       requestStatus: simulate.get('requestPredictStatus'),
-      actualPoints,
+      actual,
       predict,
     }
 
@@ -40,8 +46,25 @@ export default createSelector(
 
     if (ret.observor && ret.obTime) {
       let tempData
+      let idx
       tempData = simulate.get('actual').get(ret.obTime)
       tempData && (ret.obActual = tempData.get(observorKey(ret.observor)))
+      idx = (ret.obTime - simulate.get('predict').get('startTime')) / 60 / 1000
+      if (idx >= 0) {
+        tempData = simulate.get('predict').get('rows').get(idx)
+        if (tempData) {
+          ret.obPredict = parseInt(tempData.get('fit'))
+        }
+        tempData = simulate.get('actual').get(ret.obTime.toString())
+        if (tempData) {
+          ret.obActual = tempData.get(observorKey(ret.selectedType))
+        }
+        if (ret.obActual != '─' && ret.obPredict != '─') {
+          ret.obDiff = parseInt((ret.obPredict - ret.obActual) / ret.obActual * 100) + '%'
+        }
+      }
+
+      ret.obTime = timeFormat(new Date(ret.obTime))
     } else {
       ret.obTime = '─'
     }
@@ -49,3 +72,11 @@ export default createSelector(
     return ret
   }
 )
+
+function observorKey(observor) {
+  switch (observor) {
+    case TYPES.SIMULATE_TYPE_SBP:
+      return 'sbp'
+  }
+  return 'null'
+}
