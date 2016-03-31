@@ -13,6 +13,7 @@ import Select from 'react-select'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
 import selector from './selector'
+import bgTimeSeries from './images/GUI_0317_3xx-05.png'
 
 // actioncreators
 import { actions as filters, fetchActual, setObTime } from 'actions/simulate-action'
@@ -195,7 +196,11 @@ export default class extends Component {
   };
 
   timeSeriesContent = () => {
-    return <div styleName="content"></div>
+    return (
+      <div styleName="content-time-series">
+        <img src={bgTimeSeries}/>
+      </div>
+    )
   };
 
   renderMainContent = () => {

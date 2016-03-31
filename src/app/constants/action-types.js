@@ -5,6 +5,7 @@ export default constants([
   'UNIVERSAL_LOAD',
   // application level constants
   'APP_LOADING',
+  'LOCATION_CHANGE', // the LOCATION_CHANGED from react-router-redux is wired, will fire at first rendering time
 
   // fetch related
   'SAGA_FETCH_ACTION',
