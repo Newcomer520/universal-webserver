@@ -41,23 +41,30 @@ export default function (state = initState, action) {
 			let { result } = action
 			let actual
       let actualFirstRecord
+      let rows
 
 			if (result && result.rows) {
-				actual = result.rows.reduce((prev, currRow) => {
+				rows = result.rows.reduce((prev, currRow) => {
 					// time is type of long, need to convert it to a number
-					prev[currRow.time.toNumber()] = { ...currRow, time: currRow.time.toNumber() }
+          const time = currRow.time.toNumber()
+					prev[time] = { ...currRow, time }
 					return prev
 				}, {})
 
         // set first record
         result.rows[0] && result.rows[0].time && (actualFirstRecord = { ...result.rows[0], time: result.rows[0].time.toNumber() })
+
+        actual = {
+          key: new Date().valueOf(),
+          rows,
+        }
 			}
 
 			return state.merge({
 				requestActualStatus: action.type,
 				actual,
-				observor: state.get('selectedType'),
-        actualFirstRecord
+        actualFirstRecord,
+        obTime: null,
 			})
     }
     case TYPES.SIMULATE_PREDICT_SUCCESS: {
@@ -69,11 +76,20 @@ export default function (state = initState, action) {
       result && result.rows && Array.isArray(result.rows) && (rows = result.rows.map(r => ({ ...r })))
       return state.merge({
         requestPredictStatus: action.type,
+        observor: state.get('selectedType'),
         predict: {
+          key: new Date().valueOf(),
           startTime: predictStartTime,
-          rows: rows
-        }
+          rows: rows,
+        },
+        obTime: null,
       })
+    }
+    case TYPES.SIMULATE_SET_OB_TIME: {
+      return state.set('obTime', action.dValue)
+    }
+    case TYPES.SIMULATE_SIMULATE_SUCCESS: {
+      break
     }
 	}
 

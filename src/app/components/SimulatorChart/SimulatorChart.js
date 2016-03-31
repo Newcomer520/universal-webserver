@@ -15,9 +15,11 @@ export default class SimulatorChart extends Component {
   static propTypes = {
     width: PropTypes.number,
     height: PropTypes.number,
-    actualPoints: PropTypes.array,
+    actualPoints: PropTypes.object,
     predictPoints: PropTypes.object,
-    simulatePoints: PropTypes.object
+    simulatePoints: PropTypes.object,
+    clickTimeCallback: PropTypes.func,
+    currentTime: PropTypes.number,
   };
 
   constructor(props) {
@@ -95,9 +97,9 @@ export default class SimulatorChart extends Component {
     const startTime = moment('20160101', 'YYYYDDMM').valueOf()
     let cActualPoints = [{ x: startTime, y: 0 }]
 
-    if (actualPoints && 'length' in actualPoints &&
-        actualPoints.length > 0 && 'x' in actualPoints[0]) {
-      cActualPoints = actualPoints
+    if (actualPoints && 'length' in actualPoints.rows &&
+        actualPoints.rows.length > 0 && 'x' in actualPoints.rows[0]) {
+      cActualPoints = actualPoints.rows
     }
 
     return cActualPoints
@@ -138,6 +140,12 @@ export default class SimulatorChart extends Component {
 
     return { cPredictPoints: initPoints(predictPoints),
              cSimulatePoints: initPoints(simulatePoints) }
+  };
+
+  clickCallback = (d, i) => {
+    if (this.props.clickTimeCallback && typeof this.props.clickTimeCallback === 'function') {
+      this.props.clickTimeCallback(d, i)
+    }
   };
 
   render() {
@@ -243,16 +251,21 @@ export default class SimulatorChart extends Component {
     })
 
     //-------------------------------------------------------------------------
-    // Callback
-    //-------------------------------------------------------------------------
-    const clickCallback = (d, i) => {alert(d)}
-
-    //-------------------------------------------------------------------------
     // Generate Points
     //-------------------------------------------------------------------------
     const actualBloodPresures = cActualPoints.map((point) => (point.y))
     const scalePoints = this.genScalePoints(cActualPoints, cPredictPoints,
       cSimulatePoints, xScaleFunc, yScaleFunc)
+
+    const predictKey = this.props.predictPoints && this.props.predictPoints.key
+      ? `predict${this.props.predictPoints.key}`
+      : 'predict0'
+    const simulateKey = this.props.simulatePoints && this.props.simulatePoints.key
+      ? `simulate${this.props.simulatePoints.key}`
+      : 'simulate0'
+    const actualKey = this.props.actualPoints && this.props.actualPoints.key
+      ? `actual${this.props.actualPoints.key}`
+      : 'actual0'
 
     return (
       <svg width={widthOffset} height={heightOffset}>
@@ -260,18 +273,20 @@ export default class SimulatorChart extends Component {
           scale(${scaleRatioX}, ${scaleRatioY})`} >
           <XTimeAxis
             xScaleFunc={xScaleFunc} x={AXIS_OFFSET_X} y={heightOffset} times={cActualPoints}
-            callback={clickCallback} height={height} heightOffset={heightMargin} />
+            callback={this.clickCallback} height={height} heightOffset={heightMargin} />
           <YTimeAxis
             yScale={yScaleFunc} x={AXIS_OFFSET_X} y={AXIS_OFFSET_Y}
             upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND}/>
 
-          <PredictLine key={`predict${new Date().valueOf()}`}
+          <PredictLine
+            key={predictKey}
             fitPoints={scalePoints.predict.fit} uprPoints={scalePoints.predict.upr}
             lwrPoints={scalePoints.predict.lwr}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
 
-          <PredictLine key={`simulate${new Date().valueOf()}`}
+          <PredictLine
+            key={simulateKey}
             fitPoints={scalePoints.simulate.fit} uprPoints={scalePoints.simulate.upr}
             lwrPoints={scalePoints.simulate.lwr}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...blueLineStyles} />
@@ -282,7 +297,8 @@ export default class SimulatorChart extends Component {
             w={width} upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
 
-          <Line key={`actual${new Date().valueOf()}`}
+          <Line
+            key={actualKey}
             points={scalePoints.actual} values={actualBloodPresures}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...greenLineStyles} />
 

@@ -12,14 +12,16 @@ import SimulatorChart from 'components/SimulatorChart'
 import Select from 'react-select'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
+import selector from './selector'
 
 // actioncreators
-import { actions as filters, fetchActual } from 'actions/simulate-action'
+import { actions as filters, fetchActual, setObTime } from 'actions/simulate-action'
 import TYPES from 'constants/action-types'
 import CSSModules from 'react-css-modules'
 
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
 
+// @todo: need to refactor observorLabel & observorKey
 function observorLabel(observor) {
   switch (observor) {
     case TYPES.SIMULATE_TYPE_SBP:
@@ -29,33 +31,17 @@ function observorLabel(observor) {
   return 'null'
 }
 
-function mapStateToProps(state) {
-  const { simulate } = state
-  const categories = simulate.get('categories')
-  const types = simulate.get('types')
-  const actual = simulate.get('actual').toJS()
-  const predict = simulate.get('predict').toJS()
-
-  const ret = {
-    categories: [],
-    selectedCategory: simulate.get('selectedCategory'),
-    types: [],
-    selectedType: simulate.get('selectedType'),
-    observor: simulate.get('observor'),
-    obTime: simulate.get('obTime'),
-    requestStatus: simulate.get('requestPredictStatus'),
-    actualPoints: Object.keys(actual).map(p => ({ x: actual[p].time, y: actual[p].sbp })).sort((a, b) => (a.x - b.x)),
-    predict
+function observorKey(observor) {
+  switch (observor) {
+    case TYPES.SIMULATE_TYPE_SBP:
+      return 'sbp'
   }
-  categories.forEach((label, key) => ret.categories.push({ label, value: key }))
-  types && types.forEach((label, key) => ret.types.push({ label, value: key }))
-
-  return ret
+  return 'null'
 }
 
 function bindDispatchToActions(dispatch) {
   return {
-    actions: bindActionCreators({ ...filters }, dispatch)
+    actions: bindActionCreators({ ...filters, setObTime }, dispatch)
   }
 }
 
@@ -70,7 +56,8 @@ function SimulateForm(props) {
 }
 
 @connect(
-  mapStateToProps,
+  state => selector(state),
+  // mapStateToProps,
   bindDispatchToActions
 )
 @CSSModules(styles)
@@ -118,7 +105,7 @@ export default class extends Component {
   };
 
   renderSimulator = () => {
-    const { requestStatus, selectedType, observor, obTime } = this.props
+    const { requestStatus, selectedType, observor, obTime, obActual, obPredict, obDiff } = this.props
     if (requestStatus == null) {
       return null
     } else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
@@ -149,7 +136,9 @@ export default class extends Component {
             </div>
             <div styleName="body">
               <div styleName="row">
-
+                <div styleName="cell">{obActual}</div>
+                <div styleName="cell">{obPredict}</div>
+                <div styleName="cell">{obDiff}</div>
               </div>
             </div>
           </div>
@@ -165,7 +154,8 @@ export default class extends Component {
   };
 
   defaultContent = () => {
-    const { actualPoints, predict } = this.props
+    const { actual, predict, obRawTime } = this.props
+    const { actions: { setObTime } } = this.props
     const svgHeight = 400
     const svgWidth = 800
     return (
@@ -175,9 +165,12 @@ export default class extends Component {
             <SimulatorChart
                 height={svgHeight}
                 width={svgWidth}
-                actualPoints={actualPoints}
+                actualPoints={actual}
                 predictPoints={predict}
-                simulatePoints={null} />
+                simulatePoints={null}
+                clickTimeCallback={setObTime}
+                currentTime={obRawTime}
+                />
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">

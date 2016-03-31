@@ -17,24 +17,20 @@ export function fetchActual() {
 	return {
 		type: TYPES.SAGA_FETCH_ACTION,
 		fetch: apiActual(),
-		status: [SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED] }
+		status: [SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED],
+  }
 }
 
-
-/**
- * simulate the sbp value
- * @param  {[type]}    options.uf   [description]
- * @param  {[type]}    options.age  [description]
- * @param  {...[type]} options.rest [description]
- * @return {[type]}                 [description]
- */
-export function sbpSimulate({ uf, age, ...rest }) {
+export function fetchSimulate(data) {
 
 }
 
+export function setObTime(date) {
+  const dValue = date.valueOf()
+  return { type: TYPES.SIMULATE_SET_OB_TIME, dValue: dValue }
+}
 
 export const actions = {
 	selectCategory,
 	selectType,
-	sbpSimulate
 }
