@@ -48,7 +48,7 @@ export default createSelector(
     if (ret.observor && ret.obTime) {
       let tempData
       let idx
-      tempData = simulate.get('actual').get(ret.obTime)
+      tempData = simulate.get('actual').get('rows').get(ret.obTime.toString())
       tempData && (ret.obActual = tempData.get(observorKey(ret.observor)))
       idx = (ret.obTime - simulate.get('predict').get('startTime')) / 60 / 1000
       if (idx >= 0) {
