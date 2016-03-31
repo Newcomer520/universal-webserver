@@ -6,7 +6,7 @@ const actualSelector = createSelector(
   state => state.simulate.get('actual'),
   actual => {
     const obj = actual.toJS()
-    obj.rows = Object.keys(obj.rows).map(p => ({ x: obj.rows[p].time, y: obj.rows[p].sbp })).sort((a, b) => (a.x - b.x))
+    obj.rows && (obj.rows = Object.keys(obj.rows).map(p => ({ x: obj.rows[p].time, y: obj.rows[p].sbp })).sort((a, b) => (a.x - b.x)))
     return obj
     // return Object.keys(obj).map(p => ({ x: obj[p].time, y: obj[p].sbp })).sort((a, b) => (a.x - b.x))
   }
@@ -32,6 +32,7 @@ export default createSelector(
       types: [],
       selectedType: simulate.get('selectedType'),
       observor: simulate.get('observor'),
+      obRawTime: simulate.get('obTime'), // valueOf的值
       obTime: simulate.get('obTime'),
       obActual: '─',
       obPredict: '─',
