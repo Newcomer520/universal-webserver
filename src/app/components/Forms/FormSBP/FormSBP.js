@@ -6,11 +6,13 @@ import formStyle from './formSBP.css'
 import Button from 'components/Buttons/ButtonDefault'
 import { reduxForm } from 'redux-form'
 import CSSModules from 'react-css-modules'
-import { compose } from 'redux'
+import { compose, bindActionCreators } from 'redux'
 import cloneWithProps from 'react-addons-clone-with-props'
 import { connect } from 'react-redux'
 import validate from './validator'
+
 import selector, { fieldNames } from './selector'
+import { fetchSimulate } from 'actions/simulate-action'
 
 const styles = { ...componentStyle, ...formStyle }
 
@@ -45,16 +47,8 @@ const enhance = compose(
     validate,
   }),
   connect(
-    // ({ simulate }) => {
-    //   const time = simulate.get('obTime')
-    //   const currentActual = time? simulate.get('actual').get(time.toString()): null
-    //   const actuals = Object.keys(fieldNames).reduce((prevResult, currentField) => {
-    //     prevResult[currentField] = actualValueGenerator(currentField, currentActual)
-    //     return prevResult
-    //   }, {})
-    //   return { actuals, obTime: time }
-    // }
-    state => selector(state)
+    state => selector(state),
+    dispatch => ({ actions: bindActionCreators({ fetchSimulate }, dispatch) })
   ),
   CSSModules(styles)
 )
@@ -74,8 +68,11 @@ export default class FormSBP extends Component {
       return false
     }
 
-
-
+    const { actions: { fetchSimulate }, lastActual: { sbp, ...data }, obTime } = this.props
+    data.time = obTime
+    data.conductivity = parseFloat(this.props.fields.conductivity.value)
+    data.dia_temp_value = parseFloat(this.props.fields.dia_temp_value.value)
+    fetchSimulate(data)
     return false
   };
 
@@ -109,9 +106,9 @@ export default class FormSBP extends Component {
   };
 
   render() {
-    const { fields, actuals, obTime } = this.props
+    const { fields, actuals, obTime, lastActual } = this.props
     const btnStyle = { width: '150px' }
-    const disabled = !!obTime === false
+    const disabled = obTime < lastActual.time
 
     return (
       <form styleName="container" onSubmit={this.handleSubmit}>
@@ -126,8 +123,8 @@ export default class FormSBP extends Component {
           </div>
         </div>
         <div styleName="operations">
-          <Button onClick={this.handleReset} style={btnStyle} styleName="primary">清除</Button>
-          <Button onClick={this.handleSubmit} style={btnStyle} styleName="primary" disabled={disabled}>模擬</Button>
+          <Button type="button" onClick={this.handleReset} style={btnStyle} styleName="primary">清除</Button>
+          <Button type="submit" onClick={this.handleSubmit} style={btnStyle} styleName="primary" disabled={disabled}>模擬</Button>
         </div>
 
       </form>

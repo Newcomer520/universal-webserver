@@ -1,7 +1,7 @@
 import TYPES from 'constants/action-types'
 import fetchObject from '../utils/fetch'
 import Protos from 'common/protos'
-import { apiActual } from 'app/apis/simulate'
+import { apiActual, apiSimulate } from 'app/apis/simulate'
 
 export function selectCategory(selected) {
 	return { type: TYPES.SIMULATE_SELECT_CATEGORY, selectedCategory: selected.value }
@@ -22,7 +22,12 @@ export function fetchActual() {
 }
 
 export function fetchSimulate(data) {
-
+  const { SIMULATE_SIMULATE_FETCHING, SIMULATE_SIMULATE_SUCCESS, SIMULATE_SIMULATE_FAILED } = TYPES
+  return {
+    type: TYPES.SAGA_FETCH_ACTION,
+    fetch: apiSimulate(data),
+    status: [SIMULATE_SIMULATE_FETCHING, SIMULATE_SIMULATE_SUCCESS, SIMULATE_SIMULATE_FAILED],
+  }
 }
 
 export function setObTime(date) {
