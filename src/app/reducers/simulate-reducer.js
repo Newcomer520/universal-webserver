@@ -1,5 +1,6 @@
 import { fromJS, Map } from 'immutable'
 import TYPES from 'constants/action-types'
+import { LOCATION_CHANGE } from 'react-router-redux'
 
 const initState = fromJS({
 	categories: { 'LOW_BLOOD': '低血壓' },
@@ -103,6 +104,14 @@ export default function (state = initState, action) {
         },
       })
     }
+    case TYPES.LOCATION_CHANGE:
+      return state.merge({
+        selectedCategory: null,
+        selectedType: null,
+        types: null,
+        predict: {},
+        simulate: {}
+      })
 	}
 
 	return state
