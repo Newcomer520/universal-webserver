@@ -43,3 +43,7 @@ export function apiPredict(data) {
 
   return fetchObject(url, options)
 }
+
+export function apiSimulate(data) {
+  return apiPredict(data)
+}

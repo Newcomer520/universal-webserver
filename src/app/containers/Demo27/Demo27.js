@@ -154,7 +154,7 @@ export default class extends Component {
   };
 
   defaultContent = () => {
-    const { actual, predict } = this.props
+    const { actual, predict, obRawTime } = this.props
     const { actions: { setObTime } } = this.props
     const svgHeight = 400
     const svgWidth = 800
@@ -168,7 +168,9 @@ export default class extends Component {
                 actualPoints={actual}
                 predictPoints={predict}
                 simulatePoints={null}
-                clickTimeCallback={setObTime}/>
+                clickTimeCallback={setObTime}
+                currentTime={obRawTime}
+                />
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">

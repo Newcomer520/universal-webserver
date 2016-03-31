@@ -19,6 +19,7 @@ export default class SimulatorChart extends Component {
     predictPoints: PropTypes.object,
     simulatePoints: PropTypes.object,
     clickTimeCallback: PropTypes.func,
+    currentTime: PropTypes.number,
   };
 
   constructor(props) {
@@ -265,9 +266,7 @@ export default class SimulatorChart extends Component {
     const actualKey = this.props.actualPoints && this.props.actualPoints.key
       ? `actual${this.props.actualPoints.key}`
       : 'actual0'
-// key={`predict${new Date().valueOf()}`}
-// key={`simulate${new Date().valueOf()}`}
-// key={`actual${new Date().valueOf()}`}
+
     return (
       <svg width={widthOffset} height={heightOffset}>
         <g transform={`translate(${MARGIN.LEFT}, ${MARGIN.TOP})
