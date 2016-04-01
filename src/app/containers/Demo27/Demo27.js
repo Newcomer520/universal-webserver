@@ -156,7 +156,7 @@ export default class extends Component {
   };
 
   defaultContent = () => {
-    const { actual, predict, obRawTime } = this.props
+    const { actual, predict, simulate, obRawTime } = this.props
     const { actions: { setObTime } } = this.props
     const svgHeight = 400
     const svgWidth = 800
@@ -169,7 +169,7 @@ export default class extends Component {
               width={svgWidth}
               actualPoints={actual}
               predictPoints={predict}
-              simulatePoints={null}
+              simulatePoints={simulate}
               predictTSPoints={null}
               clickTimeCallback={setObTime}
               currentTime={obRawTime} />

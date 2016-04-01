@@ -17,12 +17,18 @@ const predictSelector = createSelector(
   predict => predict.toJS()
 )
 
+const simulatorSelector = createSelector(
+  state => state.simulate.get('simulate'),
+  simulator => simulator.toJS()
+)
+
 
 export default createSelector(
   state => state.simulate,
   actualSelector,
   predictSelector,
-  (simulate, actual, predict) => {
+  simulatorSelector,
+  (simulate, actual, predict, simulator) => {
     const categories = simulate.get('categories')
     const types = simulate.get('types')
     const timeFormat = d3.time.format("%H:%M")
@@ -40,6 +46,7 @@ export default createSelector(
       requestStatus: simulate.get('requestPredictStatus'),
       actual,
       predict,
+      simulate: simulator,
     }
 
     categories.forEach((label, key) => ret.categories.push({ label, value: key }))

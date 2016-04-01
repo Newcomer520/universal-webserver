@@ -1,5 +1,6 @@
 import { fromJS, Map } from 'immutable'
 import TYPES from 'constants/action-types'
+import { LOCATION_CHANGE } from 'react-router-redux'
 
 const initState = fromJS({
 	categories: { 'LOW_BLOOD': '低血壓' },
@@ -34,7 +35,7 @@ export default function (state = initState, action) {
 			break
 		case TYPES.SIMULATE_SELECT_TYPE:
 			if (action.selectedType && state.get('types').has(action.selectedType)) {
-				return state.merge({ selectedType: action.selectedType })
+				return state.merge({ selectedType: action.selectedType, simulate: {} })
 			}
 			break
 		case TYPES.SIMULATE_ACTUAL_SUCCESS: {
@@ -53,7 +54,6 @@ export default function (state = initState, action) {
 
         // set first record
         result.rows[0] && result.rows[0].time && (actualFirstRecord = { ...result.rows[0], time: result.rows[0].time.toNumber() })
-
         actual = {
           key: new Date().valueOf(),
           rows,
@@ -89,8 +89,29 @@ export default function (state = initState, action) {
       return state.set('obTime', action.dValue)
     }
     case TYPES.SIMULATE_SIMULATE_SUCCESS: {
-      break
+      const { result } = action
+      let simulateStartTime
+      let rows
+
+      result && result.time && (simulateStartTime = result.time.toNumber())
+      result && result.rows && Array.isArray(result.rows) && (rows = result.rows.map(r => ({ ...r })))
+      return state.merge({
+        simulateStatus: action.type,
+        simulate: {
+          key: new Date().valueOf(),
+          startTime: simulateStartTime,
+          rows: rows,
+        },
+      })
     }
+    case TYPES.LOCATION_CHANGE:
+      return state.merge({
+        selectedCategory: null,
+        selectedType: null,
+        types: null,
+        predict: {},
+        simulate: {}
+      })
 	}
 
 	return state

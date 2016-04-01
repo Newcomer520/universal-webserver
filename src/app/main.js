@@ -16,16 +16,16 @@ injectTapEventPlugin()
 // const createHistory = __UNIVERSAL__ === false ? require('history/lib/createHashHistory') : require('history/lib/createBrowserHistory')
 
 const store = createStore(window.__reduxState__) // __reduxState__ will be valid if universal rendering
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(browserHistory, store, { adjustUrlOnReplay: false })
 const component = (
-	<Provider store={store}>
-		<Router history={history} render={renderRouterContext(store)}>
-			{routes}
-		</Router>
-	</Provider>
+  <Provider store={store}>
+    <Router history={history} render={renderRouterContext(store)}>
+      {routes}
+    </Router>
+  </Provider>
 )
 
 ReactDOM.render(
-	component,
-	document.getElementById('react-container')
+  component,
+  document.getElementById('react-container')
 )

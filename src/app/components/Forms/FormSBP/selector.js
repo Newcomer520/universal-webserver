@@ -18,20 +18,37 @@ export const fieldNames = {
   bdMedian: null
 }
 
+const lastActualSelector = createSelector(
+  state => state.simulate.get('actual'),
+  actual => {
+    const obj = actual.toJS()
+    obj.rows && (obj.rows = Object.keys(obj.rows).map(p => ({ x: obj.rows[p].time, y: obj.rows[p].sbp })).sort((a, b) => (a.x - b.x)))
+    const last = obj.rows && obj.rows.length > 0
+      ? actual.get('rows').get(obj.rows[obj.rows.length - 1].x.toString()).toJS()
+      : {}
+    return last
+  }
+)
+
 export default createSelector(
   state => state.simulate,
-  (simulate) => {
+  lastActualSelector,
+  (simulate, lastActual) => {
     const time = simulate.get('obTime')
     const currentActual = time? simulate.get('actual').get('rows').get(time.toString()): null
     const actuals = Object.keys(fieldNames).reduce((prevResult, currentField) => {
       prevResult[currentField] = actualValueGenerator(currentField, currentActual)
       return prevResult
     }, {})
-    return { actuals, obTime: time }
+    return {
+      actuals,
+      lastActual,
+      obTime: time,
+    }
   }
 )
 
-function actualValueGenerator(key, actualData) {
+export function actualValueGenerator(key, actualData) {
   if (!actualData) {
     return '─'
   }
@@ -48,6 +65,6 @@ function actualValueGenerator(key, actualData) {
     case 'fakePressure':
       return Math.round((-400 + 750 * Math.random())).toString()
     default:
-      return actualData.get(key)
+      return actualData.get? actualData.get(key): actualData[key]
   }
 }
