@@ -7,7 +7,7 @@ import YGridLine from 'components/Svg/YGridLine'
 import moment from 'moment'
 import d3 from 'd3'
 import { merge } from 'lodash'
-
+import ReactFauxDOM from 'react-faux-dom'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
 
 export default class SimulatorChart extends Component {
@@ -18,6 +18,7 @@ export default class SimulatorChart extends Component {
     actualPoints: PropTypes.object,
     predictPoints: PropTypes.object,
     simulatePoints: PropTypes.object,
+    predictTSPoints: PropTypes.object,
     clickTimeCallback: PropTypes.func,
     currentTime: PropTypes.number,
   };
@@ -27,16 +28,22 @@ export default class SimulatorChart extends Component {
     this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
   }
 
-  genScalePoints = (actualDataSet, predictDataSet, simulateDataSet, xScaleFunc, yScaleFunc) => {
+  state = {
+    currentX: -100
+  };
+
+  genScalePoints = (actualDataSet, predictDataSet, simulateDataSet, predictTSDataSet, xScaleFunc, yScaleFunc) => {
     const rawPoints = {
       actual: actualDataSet,
+      predictTS: predictTSDataSet,
       predict: { fit: [], upr: [], lwr: [] },
-      simulate: { fit: [], upr: [], lwr: [] }
+      simulate: { fit: [], upr: [], lwr: [] },
     }
     const scalePoints = {
       actual: [],
+      predictTS: [],
       predict: { fit: [], upr: [], lwr: [] },
-      simulate: { fit: [], upr: [], lwr: [] }
+      simulate: { fit: [], upr: [], lwr: [] },
     }
 
     //-------------------------------------------------------------------------
@@ -62,6 +69,7 @@ export default class SimulatorChart extends Component {
     // if dataset not fulfill, return empty array
     //-------------------------------------------------------------------------
     scalePoints.actual = getScalePoints(rawPoints.actual)
+    scalePoints.predictTS = getScalePoints(rawPoints.predictTS)
 
     for (const key in predictDataSet.rows[0]) {
       if (key in simulateDataSet.rows[0]) {
@@ -92,17 +100,25 @@ export default class SimulatorChart extends Component {
   // return syntax : [{ x: startTime, y: 0 }, {x:, y:}...]
   //-------------------------------------------------------------------------
   initActualPoints = () => {
-    const { actualPoints } = this.props
+    const { actualPoints, predictTSPoints } = this.props
 
     const startTime = moment('20160101', 'YYYYDDMM').valueOf()
-    let cActualPoints = [{ x: startTime, y: 0 }]
+    const rows = [{ x: startTime, y: 0 }]
 
-    if (actualPoints && actualPoints.rows && 'length' in actualPoints.rows &&
-        actualPoints.rows.length > 0 && 'x' in actualPoints.rows[0]) {
-      cActualPoints = actualPoints.rows
+    const initPoints = (points) => {
+      let cPoints = rows
+      if (points && points.rows && 'length' in points.rows &&
+          points.rows.length > 0 && 'x' in points.rows[0]) {
+        cPoints = points.rows
+      }
+
+      return cPoints
     }
 
-    return cActualPoints
+    return {
+      cActualPoints: initPoints(actualPoints),
+      cPredictTSPoints: initPoints(predictTSPoints),
+    }
   };
 
   //-------------------------------------------------------------------------
@@ -139,11 +155,15 @@ export default class SimulatorChart extends Component {
     }
 
     return { cPredictPoints: initPoints(predictPoints),
-             cSimulatePoints: initPoints(simulatePoints) }
+             cSimulatePoints: initPoints(simulatePoints), }
   };
 
+  //-------------------------------------------------------------------------
+  // Simulate callback
+  //-------------------------------------------------------------------------
   clickCallback = (d, i) => {
-    if (this.props.clickTimeCallback && typeof this.props.clickTimeCallback === 'function') {
+    const { clickTimeCallback } = this.props
+    if (clickTimeCallback && typeof clickTimeCallback === 'function') {
       this.props.clickTimeCallback(d, i)
     }
   };
@@ -153,21 +173,21 @@ export default class SimulatorChart extends Component {
     // Blood Presure Constant Values
     //-------------------------------------------------------------------------
     const UPPER_BLOOD_PRESURE_WARNING_BOUND = 140
-    const LOWER_BLOOD_PRESURE_WARNING_BOUND = 70
-    const MAX_BLOOD_PRESURE_BOUND = 200
-    const MIN_BLOOD_PRESURE_BOUND = 0
+    const LOWER_BLOOD_PRESURE_WARNING_BOUND = 110
+    const MAX_BLOOD_PRESURE_BOUND = UPPER_BLOOD_PRESURE_WARNING_BOUND + 10
+    const MIN_BLOOD_PRESURE_BOUND = LOWER_BLOOD_PRESURE_WARNING_BOUND - 10
 
     //-------------------------------------------------------------------------
     // Props
     //-------------------------------------------------------------------------
-    const { width, height } = this.props
+    const { width, height, currentTime } = this.props
 
     //-------------------------------------------------------------------------
     // Correct dataset
     //-------------------------------------------------------------------------
     // if('startTime' in predictDataSet && 'rows' in predictDataSet &&
     //  ( predictDataSet|| ))
-    const cActualPoints = this.initActualPoints()
+    const { cActualPoints, cPredictTSPoints } = this.initActualPoints()
     const ACTUAL_START_TIME = cActualPoints[0].x
     const { cPredictPoints, cSimulatePoints } = this.initPredcitSimulatePoints()
 
@@ -230,24 +250,24 @@ export default class SimulatorChart extends Component {
       circleStyles: { r: 0, strokeWidth: 2, stroke: '#e61673', fill: '#fff' },
       lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#e61673',
                     strokeDasharray: 'none' },
-      fillStyles: { stroke: '#e61673', opacity: 0.1 }
+      fillStyles: { stroke: '#e61673', opacity: 0.1 },
     }
 
     const greenLineStyles = merge({}, defaultStyles, {
       circleStyles: { r: 6, stroke: '#50b4aa' },
-      lineStyles: { stroke: '#50b4aa' }
+      lineStyles: { stroke: '#50b4aa' },
     })
 
     const redLineStyles = merge({}, defaultStyles, {
       circleStyles: { stroke: '#e61673' },
       lineStyles: { stroke: '#e61673' },
-      fillStyles: { stroke: '#e61673', opacity: 0.1 }
+      fillStyles: { stroke: '#e61673', opacity: 0.1 },
     })
 
     const blueLineStyles = merge({}, defaultStyles, {
       circleStyles: { stroke: '#00a0e9' },
       lineStyles: { stroke: '#00a0e9' },
-      fillStyles: { stroke: '#00a0e9', opacity: 0.5 }
+      fillStyles: { stroke: '#00a0e9', opacity: 0.5 },
     })
 
     //-------------------------------------------------------------------------
@@ -255,7 +275,7 @@ export default class SimulatorChart extends Component {
     //-------------------------------------------------------------------------
     const actualBloodPresures = cActualPoints.map((point) => (point.y))
     const scalePoints = this.genScalePoints(cActualPoints, cPredictPoints,
-      cSimulatePoints, xScaleFunc, yScaleFunc)
+      cSimulatePoints, cPredictTSPoints, xScaleFunc, yScaleFunc)
 
     const predictKey = this.props.predictPoints && this.props.predictPoints.key
       ? `predict${this.props.predictPoints.key}`
@@ -266,42 +286,50 @@ export default class SimulatorChart extends Component {
     const actualKey = this.props.actualPoints && this.props.actualPoints.key
       ? `actual${this.props.actualPoints.key}`
       : 'actual0'
+    const predictTSKey = this.props.predictTSPoints && this.props.predictTSPoints.key
+      ? `predictTS${this.props.predictTSPoints.key}`
+      : 'predictTS0'
+
 
     return (
-      <svg width={widthOffset} height={heightOffset}>
+      <svg width={widthOffset} height={heightOffset} >
         <g transform={`translate(${MARGIN.LEFT}, ${MARGIN.TOP})
           scale(${scaleRatioX}, ${scaleRatioY})`} >
+
           <XTimeAxis
             xScaleFunc={xScaleFunc} x={AXIS_OFFSET_X} y={heightOffset} times={cActualPoints}
-            callback={this.clickCallback} height={height} heightOffset={heightMargin} />
+            callback={this.clickCallback} width={width} height={height} heightOffset={heightMargin}
+            currentTime={currentTime} />
           <YTimeAxis
             yScale={yScaleFunc} x={AXIS_OFFSET_X} y={AXIS_OFFSET_Y}
             upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
-            lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND}/>
+            lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
 
           <PredictLine
             key={predictKey}
             fitPoints={scalePoints.predict.fit} uprPoints={scalePoints.predict.upr}
             lwrPoints={scalePoints.predict.lwr}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
-
           <PredictLine
             key={simulateKey}
             fitPoints={scalePoints.simulate.fit} uprPoints={scalePoints.simulate.upr}
             lwrPoints={scalePoints.simulate.lwr}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...blueLineStyles} />
-
           <YGridLine
             xScaleFunc={xScaleFunc} yScaleFunc={yScaleFunc}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y}
             w={width} upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
-
           <Line
             key={actualKey}
+            callback={this.clickCallback} times={cActualPoints}
             points={scalePoints.actual} values={actualBloodPresures}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...greenLineStyles} />
-
+          <Line
+            key={predictTSKey}
+            callback={this.clickCallback} times={cActualPoints}
+            points={scalePoints.predictTS}
+            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
           <Bound95Text
             enable={(scalePoints.predict.fit.length > 1) ? true : false}
             fill={redLineStyles.circleStyles.stroke}
@@ -327,7 +355,7 @@ class Bound95Text extends Component {
     textUp: PropTypes.string,
     xLow: PropTypes.number,
     yLow: PropTypes.number,
-    textLow: PropTypes.string
+    textLow: PropTypes.string,
   };
 
   constructor(props) {

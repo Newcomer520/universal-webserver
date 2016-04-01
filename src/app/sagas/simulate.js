@@ -25,15 +25,9 @@ function* requestPredict() {
     try {
       const { selectedType: type } = yield take(TYPES.SIMULATE_SELECT_TYPE)
       const simulate = yield select(state => state.simulate)
-
-      yield call(getPredict, type)
-      // if (simulate.get('requestStatus') !== TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS) {
-      //  yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_FETCHING })
-      //  const { actual, predict } = yield call(actualAndPredict, type)
-      //  yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS, actual, predict })
-      // } else {
-      //  yield put({ type: TYPES.SIMULATE_ACTUAL_PREDICT_SUCCESS })
-      // }
+      if (simulate.get('requestPredictStatus') !== TYPES.SIMULATE_PREDICT_SUCCESS) {
+        yield call(getPredict)
+      }
     } catch (ex) {
       console.error(ex)
       yield put({ type: TYPES.SIMULATE_PREDICT_FAILED })

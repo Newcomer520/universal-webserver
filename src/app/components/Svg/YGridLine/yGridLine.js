@@ -11,7 +11,7 @@ export default class YGridLine extends Component {
     upperBound: PropTypes.number,
     lowerBound: PropTypes.number,
     xOffset: PropTypes.number,
-    yOffset: PropTypes.number
+    yOffset: PropTypes.number,
   };
 
   constructor(props) {
