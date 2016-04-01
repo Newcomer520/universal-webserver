@@ -115,6 +115,8 @@ export default function (state = initState, action) {
         requestPredictStatus: null,
         simulateStatus: null,
       })
+    case TYPES.SIMULATE_SET_OBSERVOR:
+      return state.set('observor', state.get('selectedType'))
 	}
 
 	return state

@@ -11,7 +11,7 @@ export default class UserBar extends Component {
 				<div styleName="user-info-container">
 					<div styleName="user-info">
 						<div>
-							姓名：陳o佑  年齡：40  病歷號碼：A1256890  透析床號：B02  其他相關系統性疾病：糖尿病、高血壓常態症狀高血壓常態症狀高血壓常態症狀
+							姓名：方大同  年齡：40  病歷號碼：A1256890  透析床號：B02  其他相關系統性疾病：糖尿病、高血壓常態症狀高血壓常態症狀高血壓常態症狀
 						</div>
 					</div>
 				</div>

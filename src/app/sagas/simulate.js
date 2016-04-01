@@ -27,6 +27,8 @@ function* requestPredict() {
       const simulate = yield select(state => state.simulate)
       if (simulate.get('requestPredictStatus') !== TYPES.SIMULATE_PREDICT_SUCCESS) {
         yield call(getPredict)
+      } else {
+        yield put({ type: TYPES.SIMULATE_SET_OBSERVOR })
       }
     } catch (ex) {
       console.error(ex)
