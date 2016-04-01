@@ -215,7 +215,7 @@ export default class extends Component {
       { x: startTime.add(30, 'm').valueOf(), y: 100 },
       { x: startTime.add(30, 'm').valueOf(), y: 100 },
       { x: startTime.add(30, 'm').valueOf(), y: 100 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 }
+      { x: startTime.add(30, 'm').valueOf(), y: 100 },
     ]
 
     const predictTS = { key: startTime.valueOf(), rows: points}

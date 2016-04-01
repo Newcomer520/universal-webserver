@@ -20,7 +20,7 @@ export default class SimulatorChart extends Component {
     simulatePoints: PropTypes.object,
     predictTSPoints: PropTypes.object,
     clickTimeCallback: PropTypes.func,
-    currentTime: PropTypes.number
+    currentTime: PropTypes.number,
   };
 
   constructor(props) {
@@ -37,13 +37,13 @@ export default class SimulatorChart extends Component {
       actual: actualDataSet,
       predictTS: predictTSDataSet,
       predict: { fit: [], upr: [], lwr: [] },
-      simulate: { fit: [], upr: [], lwr: [] }
+      simulate: { fit: [], upr: [], lwr: [] },
     }
     const scalePoints = {
       actual: [],
       predictTS: [],
       predict: { fit: [], upr: [], lwr: [] },
-      simulate: { fit: [], upr: [], lwr: [] }
+      simulate: { fit: [], upr: [], lwr: [] },
     }
 
     //-------------------------------------------------------------------------
@@ -117,7 +117,7 @@ export default class SimulatorChart extends Component {
 
     return {
       cActualPoints: initPoints(actualPoints),
-      cPredictTSPoints: initPoints(predictTSPoints)
+      cPredictTSPoints: initPoints(predictTSPoints),
     }
   };
 
@@ -155,23 +155,18 @@ export default class SimulatorChart extends Component {
     }
 
     return { cPredictPoints: initPoints(predictPoints),
-             cSimulatePoints: initPoints(simulatePoints) }
+             cSimulatePoints: initPoints(simulatePoints), }
   };
 
+  //-------------------------------------------------------------------------
+  // Simulate callback
+  //-------------------------------------------------------------------------
   clickCallback = (d, i) => {
     const { clickTimeCallback } = this.props
     if (clickTimeCallback && typeof clickTimeCallback === 'function') {
       this.props.clickTimeCallback(d, i)
     }
   };
-
-  //-------------------------------------------------------------------------
-  // verticle line display current time
-  //-------------------------------------------------------------------------
-  // mouseMove = (e) => {
-  //   console.log(this.refs.svg)
-  //   this.setState({ currentX: e.clientX })
-  // }
 
   render() {
     //-------------------------------------------------------------------------
@@ -255,24 +250,24 @@ export default class SimulatorChart extends Component {
       circleStyles: { r: 0, strokeWidth: 2, stroke: '#e61673', fill: '#fff' },
       lineStyles: { strokeWidth: 2, fill: 'none', stroke: '#e61673',
                     strokeDasharray: 'none' },
-      fillStyles: { stroke: '#e61673', opacity: 0.1 }
+      fillStyles: { stroke: '#e61673', opacity: 0.1 },
     }
 
     const greenLineStyles = merge({}, defaultStyles, {
       circleStyles: { r: 6, stroke: '#50b4aa' },
-      lineStyles: { stroke: '#50b4aa' }
+      lineStyles: { stroke: '#50b4aa' },
     })
 
     const redLineStyles = merge({}, defaultStyles, {
       circleStyles: { stroke: '#e61673' },
       lineStyles: { stroke: '#e61673' },
-      fillStyles: { stroke: '#e61673', opacity: 0.1 }
+      fillStyles: { stroke: '#e61673', opacity: 0.1 },
     })
 
     const blueLineStyles = merge({}, defaultStyles, {
       circleStyles: { stroke: '#00a0e9' },
       lineStyles: { stroke: '#00a0e9' },
-      fillStyles: { stroke: '#00a0e9', opacity: 0.5 }
+      fillStyles: { stroke: '#00a0e9', opacity: 0.5 },
     })
 
     //-------------------------------------------------------------------------
@@ -295,34 +290,20 @@ export default class SimulatorChart extends Component {
       ? `predictTS${this.props.predictTSPoints.key}`
       : 'predictTS0'
 
-    //-------------------------------------------------------------------------
-    // Overlay VDOM, get the current x position
-    //-------------------------------------------------------------------------
-    const overlayVdom = ReactFauxDOM.createElement('rect')
-    d3.select(overlayVdom)
-    .attr("class", "overlay")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("opacity", 0)
-    .on("mousemove", () => {
-      this.setState({ currentX: d3.mouse(this.refs.svg)[0] })
-    })
-
 
     return (
-      <svg ref={"svg"} width={widthOffset} height={heightOffset} >
+      <svg width={widthOffset} height={heightOffset} >
         <g transform={`translate(${MARGIN.LEFT}, ${MARGIN.TOP})
-          scale(${scaleRatioX}, ${scaleRatioY})`}>
-          {overlayVdom.toReact()}
+          scale(${scaleRatioX}, ${scaleRatioY})`} >
+
           <XTimeAxis
             xScaleFunc={xScaleFunc} x={AXIS_OFFSET_X} y={heightOffset} times={cActualPoints}
             callback={this.clickCallback} width={width} height={height} heightOffset={heightMargin}
-            currentTime={currentTime}
-            currentX={(this.state.currentX - MARGIN.LEFT - AXIS_OFFSET_X) / scaleRatioX} />
+            currentTime={currentTime} />
           <YTimeAxis
             yScale={yScaleFunc} x={AXIS_OFFSET_X} y={AXIS_OFFSET_Y}
             upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
-            lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND}/>
+            lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
 
           <PredictLine
             key={predictKey}
@@ -341,12 +322,12 @@ export default class SimulatorChart extends Component {
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
           <Line
             key={actualKey}
-            callback={this.clickCallback} xScaleFunc={xScaleFunc} times={cActualPoints}
+            callback={this.clickCallback} times={cActualPoints}
             points={scalePoints.actual} values={actualBloodPresures}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...greenLineStyles} />
           <Line
             key={predictTSKey}
-            callback={this.clickCallback} xScaleFunc={xScaleFunc} times={cActualPoints}
+            callback={this.clickCallback} times={cActualPoints}
             points={scalePoints.predictTS}
             xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
           <Bound95Text
@@ -374,7 +355,7 @@ class Bound95Text extends Component {
     textUp: PropTypes.string,
     xLow: PropTypes.number,
     yLow: PropTypes.number,
-    textLow: PropTypes.string
+    textLow: PropTypes.string,
   };
 
   constructor(props) {

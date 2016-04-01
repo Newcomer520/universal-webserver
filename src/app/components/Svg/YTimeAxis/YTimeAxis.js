@@ -11,7 +11,7 @@ export default class YTimeAxis extends Component {
     y: PropTypes.number,
     yScale: PropTypes.func,
     upperBound: PropTypes.number,
-    lowerBound: PropTypes.number
+    lowerBound: PropTypes.number,
   };
 
   constructor(props) {

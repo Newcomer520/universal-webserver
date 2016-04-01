@@ -13,8 +13,7 @@ export default class XTimeAxis extends Component {
     callback: PropTypes.func,
     height: PropTypes.number,
     heightOffset: PropTypes.number,
-    currentTime: PropTypes.number,
-    currentX: PropTypes.number
+    currentTime: PropTypes.number
   };
 
   constructor(props) {
@@ -23,7 +22,7 @@ export default class XTimeAxis extends Component {
   }
 
   render() {
-    const { x, y, xScaleFunc, callback, height, heightOffset, currentTime, currentX } = this.props
+    const { x, y, xScaleFunc, callback, height, heightOffset, currentTime } = this.props
 
     const xAxis = d3.svg.axis()
     .scale(xScaleFunc)
@@ -43,17 +42,6 @@ export default class XTimeAxis extends Component {
     d3.select(vdom).selectAll('.tick')
     .filter((d) => (d.valueOf() === currentTime))
     .attr('className', styles.currentTime)
-
-    // dynamic vertical dash line
-    if (currentX > 0) {
-      d3.select(vdom).append('line')
-      .attr('className', styles.currentLine)
-        .attr('x1', currentX)
-        .attr('x2', currentX)
-        .attr('y1', 0)
-        .attr('y2', -height + heightOffset)
-    }
-
 
     return <g className={styles.xAxis} >{vdom.toReact()}</g>
   }

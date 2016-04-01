@@ -10,7 +10,7 @@ export default class PredictLine extends Component {
     uprPoints: PropTypes.array,
     lwrPoints: PropTypes.array,
     lineStyles: PropTypes.object,
-    fillStyles: PropTypes.object
+    fillStyles: PropTypes.object,
   };
 
   constructor(props) {

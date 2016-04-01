@@ -12,7 +12,7 @@ export default class FillArea extends Component {
     pointsBottom: PropTypes.array,
     xOffset: PropTypes.number,
     yOffset: PropTypes.number,
-    fillStyles: PropTypes.object
+    fillStyles: PropTypes.object,
   };
 
   constructor(props) {

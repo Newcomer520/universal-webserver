@@ -16,7 +16,7 @@ export default class Line extends Component {
     xOffset: PropTypes.number,
     yOffset: PropTypes.number,
     callback: PropTypes.func,
-    times: PropTypes.array
+    times: PropTypes.array,
   };
 
   constructor(props) {
@@ -164,7 +164,7 @@ class Tooltip extends Component {
     value: PropTypes.number,
     idx: PropTypes.number,
     callback: PropTypes.func,
-    times: PropTypes.array
+    times: PropTypes.array,
   };
 
   constructor(props) {
@@ -187,7 +187,7 @@ class Tooltip extends Component {
   leave = () => {
     this.setState({
       r: this.props.styles.r,
-      fontSize: 14
+      fontSize: 14,
     })
   };
 
