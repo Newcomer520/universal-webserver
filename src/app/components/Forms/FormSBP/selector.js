@@ -30,16 +30,25 @@ const lastActualSelector = createSelector(
   }
 )
 
-export default createSelector(
-  state => state.simulate,
-  lastActualSelector,
-  (simulate, lastActual) => {
-    const time = simulate.get('obTime')
-    const currentActual = time? simulate.get('actual').get('rows').get(time.toString()): null
+const actualsSelector = createSelector(
+  state => state.simulate.get('obTime'),
+  state => state.simulate.get('actual'),
+  (time, actual) => {
+    // const time = simulate.get('obTime')
+    const currentActual = time? actual.get('rows').get(time.toString()): null
     const actuals = Object.keys(fieldNames).reduce((prevResult, currentField) => {
       prevResult[currentField] = actualValueGenerator(currentField, currentActual)
       return prevResult
     }, {})
+    return actuals
+  }
+)
+export default createSelector(
+  state => state.simulate,
+  actualsSelector,
+  lastActualSelector,
+  (simulate, actuals, lastActual) => {
+    const time = simulate.get('obTime')
     return {
       actuals,
       lastActual,

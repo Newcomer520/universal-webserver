@@ -35,7 +35,7 @@ export default function (state = initState, action) {
 			break
 		case TYPES.SIMULATE_SELECT_TYPE:
 			if (action.selectedType && state.get('types').has(action.selectedType)) {
-				return state.merge({ selectedType: action.selectedType, simulate: {} })
+				return state.merge({ selectedType: action.selectedType, simulate: {}, obTime: null })
 			}
 			break
 		case TYPES.SIMULATE_ACTUAL_SUCCESS: {

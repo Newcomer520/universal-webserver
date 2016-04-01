@@ -200,9 +200,8 @@ export default class extends Component {
     const { actual, predict, obRawTime } = this.props
     const { actions: { setObTime } } = this.props
     const svgHeight = 400
-    const svgWidth = 800
+    const svgWidth = 1000
 
-    // console.log(actual)
     const startTime = moment(actual.rows[0].x, 'x')
 
     const points = [
@@ -218,33 +217,19 @@ export default class extends Component {
       { x: startTime.add(30, 'm').valueOf(), y: 100 },
     ]
 
-    const predictTS = { key: startTime.valueOf(), rows: points}
+    const predictTS = { key: startTime.valueOf(), rows: points }
 
     return (
-      <div styleName="content">
-        <div styleName="column-left">
-          <div styleName="chart-container">
-            <SimulatorChart
-              height={svgHeight}
-              width={svgWidth}
-              actualPoints={actual}
-              predictPoints={null}
-              simulatePoints={null}
-              predictTSPoints={predictTS}
-              clickTimeCallback={setObTime}
-              currentTime={obRawTime} />
-          </div>
-        </div>
-        <div styleName="column-right">
-          <ReactCSSTransitionGroup
-            transitionAppear={true}
-            transitionName={transitionStyle}
-            transitionAppearTimeout={500}
-            transitionEnterTimeout={500}
-            transitionLeaveTimeout={500}>
-            {this.renderSimulator()}
-          </ReactCSSTransitionGroup>
-        </div>
+      <div styleName="content-time-series">
+        <SimulatorChart
+          height={svgHeight}
+          width={svgWidth}
+          actualPoints={actual}
+          predictPoints={null}
+          simulatePoints={null}
+          predictTSPoints={predictTS}
+          clickTimeCallback={setObTime}
+          currentTime={obRawTime} />
       </div>
     )
   };
