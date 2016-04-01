@@ -109,6 +109,7 @@ export default function (state = initState, action) {
         selectedCategory: null,
         selectedType: null,
         types: null,
+        actual: {},
         predict: {},
         simulate: {},
         requestActualStatus: null, // user 欲查詢所選的category & type
