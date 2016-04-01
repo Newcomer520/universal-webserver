@@ -105,17 +105,18 @@ export default function (state = initState, action) {
       })
     }
     case TYPES.LOCATION_CHANGE:
-      return state.merge({
-        selectedCategory: null,
-        selectedType: null,
-        types: null,
-        actual: {},
-        predict: {},
-        simulate: {},
-        requestActualStatus: null, // user 欲查詢所選的category & type
-        requestPredictStatus: null,
-        simulateStatus: null,
-      })
+      return initState
+      // return state.merge({
+      //   selectedCategory: null,
+      //   selectedType: null,
+      //   types: null,
+      //   actual: {},
+      //   predict: {},
+      //   simulate: {},
+      //   requestActualStatus: null, // user 欲查詢所選的category & type
+      //   requestPredictStatus: null,
+      //   simulateStatus: null,
+      // })
     case TYPES.SIMULATE_SET_OBSERVOR:
       return state.set('observor', state.get('selectedType'))
 	}
