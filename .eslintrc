@@ -8,7 +8,7 @@
 	"rules": {
 		"jsx-quotes": [1, "prefer-double"],
     "jsx-closing-bracket-location": [1, {"selfClosing": "after-props", "nonEmpty": "after-props"}],
-    "no-multi-comp": [0],
+    "no-multi-comp": 0,
 		"no-trailing-spaces": [2, { "skipBlankLines": true }],
 		"semi": [2, "never"],
 		"indent": [2, 2, { "SwitchCase": 1 }],

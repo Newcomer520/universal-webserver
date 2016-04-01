@@ -3,7 +3,8 @@ import { Motion, spring } from 'react-motion'
 import Path from 'paths-js/path'
 import PureRenderMixin from 'react-addons-pure-render-mixin'
 import { linearInterpolator } from '../hack-spring100-to-linear'
-
+import transitionStyle from './transition.css'
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 export default class Line extends Component {
 
   static propTypes = {
@@ -13,7 +14,9 @@ export default class Line extends Component {
     pointsDisplay: PropTypes.bool,
     values: PropTypes.array, // before scale (y values)
     xOffset: PropTypes.number,
-    yOffset: PropTypes.number
+    yOffset: PropTypes.number,
+    callback: PropTypes.func,
+    times: PropTypes.array
   };
 
   constructor(props) {
@@ -78,12 +81,24 @@ export default class Line extends Component {
   renderCircle = (currentStep, styles) => {
     const circles = []
     const { points, values } = this.props
+    const { callback, times } = this.props
     if (values) {
       for (let idx = 1; idx <= currentStep; idx++) {
         circles.push(
           <g key={`circle-${idx}`}>
-            <text x={points[idx].x - 14} y={points[idx].y - 14} >{parseInt(values[idx], 10)}</text>
-            <circle key={`circle${idx}`} cx={points[idx].x} cy={points[idx].y} {...styles} />
+            <ReactCSSTransitionGroup
+              component="g"
+              transitionAppear={true}
+              transitionName={transitionStyle}
+              transitionAppearTimeout={500}
+              transitionEnterTimeout={500}
+              transitionLeaveTimeout={500}>
+              <Tooltip
+                cx={points[idx].x} cy={points[idx].y} idx={idx}
+                callback={callback} times={times}
+                styles={{ ...styles }} value={parseInt(values[idx], 10)}/>
+            </ReactCSSTransitionGroup>
+
           </g>)
       }
     }
@@ -135,6 +150,72 @@ export default class Line extends Component {
             }
           }
         </Motion>
+      </g>
+    )
+  }
+}
+
+class Tooltip extends Component {
+
+  static propTypes = {
+    styles: PropTypes.object,
+    cx: PropTypes.number,
+    cy: PropTypes.number,
+    value: PropTypes.number,
+    idx: PropTypes.number,
+    callback: PropTypes.func,
+    times: PropTypes.array
+  };
+
+  constructor(props) {
+    super(props)
+    this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this)
+  }
+
+  state = {
+    r: this.props.styles.r,
+    fontSize: 14
+  };
+
+  enter = () => {
+    this.setState({
+      r: 10,
+      fontSize: 18
+    })
+  };
+
+  leave = () => {
+    this.setState({
+      r: this.props.styles.r,
+      fontSize: 14
+    })
+  };
+
+  click = () => {
+    const { idx, callback, times } = this.props
+    callback(new Date(times[idx].x), idx)
+  };
+
+  render() {
+    const { cx, cy, value, styles, idx } = this.props
+    const { fontSize } = this.state
+
+    // Prevent text label overlap
+    const textX = cx - fontSize
+    const textY = (idx % 2 === 0) ? (cy + 2 * fontSize) : (cy - fontSize)
+
+    return (
+      <g>
+        <text
+          x={textX} y={textY}
+          fontSize={fontSize} >{value}</text>
+        <circle
+          cx={cx} cy={cy}
+          onClick={this.click}
+          onMouseEnter={this.enter}
+          onMouseLeave={this.leave}
+          {...styles}
+          r={this.state.r} />
       </g>
     )
   }

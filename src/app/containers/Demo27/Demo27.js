@@ -19,6 +19,8 @@ import { actions as filters, fetchActual, setObTime } from 'actions/simulate-act
 import TYPES from 'constants/action-types'
 import CSSModules from 'react-css-modules'
 
+import moment from 'moment'
+
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
 
 // @todo: need to refactor observorLabel & observorKey
@@ -163,14 +165,14 @@ export default class extends Component {
         <div styleName="column-left">
           <div styleName="chart-container">
             <SimulatorChart
-                height={svgHeight}
-                width={svgWidth}
-                actualPoints={actual}
-                predictPoints={predict}
-                simulatePoints={null}
-                clickTimeCallback={setObTime}
-                currentTime={obRawTime}
-                />
+              height={svgHeight}
+              width={svgWidth}
+              actualPoints={actual}
+              predictPoints={predict}
+              simulatePoints={null}
+              predictTSPoints={null}
+              clickTimeCallback={setObTime}
+              currentTime={obRawTime} />
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">
@@ -195,7 +197,56 @@ export default class extends Component {
   };
 
   timeSeriesContent = () => {
-    return <div styleName="content"></div>
+    const { actual, predict, obRawTime } = this.props
+    const { actions: { setObTime } } = this.props
+    const svgHeight = 400
+    const svgWidth = 800
+
+    // console.log(actual)
+    const startTime = moment(actual.rows[0].x, 'x')
+
+    const points = [
+      { x: startTime.valueOf(), y: 80 },
+      { x: startTime.add(30, 'm').valueOf(), y: 100 },
+      { x: startTime.add(28, 'm').valueOf(), y: 100 },
+      { x: startTime.add(32, 'm').valueOf(), y: 100 },
+      { x: startTime.add(15, 'm').valueOf(), y: 100 },
+      { x: startTime.add(45, 'm').valueOf(), y: 100 },
+      { x: startTime.add(30, 'm').valueOf(), y: 100 },
+      { x: startTime.add(30, 'm').valueOf(), y: 100 },
+      { x: startTime.add(30, 'm').valueOf(), y: 100 },
+      { x: startTime.add(30, 'm').valueOf(), y: 100 }
+    ]
+
+    const predictTS = { key: startTime.valueOf(), rows: points}
+
+    return (
+      <div styleName="content">
+        <div styleName="column-left">
+          <div styleName="chart-container">
+            <SimulatorChart
+              height={svgHeight}
+              width={svgWidth}
+              actualPoints={actual}
+              predictPoints={null}
+              simulatePoints={null}
+              predictTSPoints={predictTS}
+              clickTimeCallback={setObTime}
+              currentTime={obRawTime} />
+          </div>
+        </div>
+        <div styleName="column-right">
+          <ReactCSSTransitionGroup
+            transitionAppear={true}
+            transitionName={transitionStyle}
+            transitionAppearTimeout={500}
+            transitionEnterTimeout={500}
+            transitionLeaveTimeout={500}>
+            {this.renderSimulator()}
+          </ReactCSSTransitionGroup>
+        </div>
+      </div>
+    )
   };
 
   renderMainContent = () => {
