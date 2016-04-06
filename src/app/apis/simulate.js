@@ -1,7 +1,7 @@
 /**
  * demo 2-7, 模擬page相關的api
  */
-import fetchObject, { fetch } from '../utils/fetch'
+import fetchObject from '../utils/fetch'
 import Protos from 'common/protos'
 
 const { SimulateActual: actualProto, SimulatePredict: predictProto } = Protos
@@ -12,7 +12,7 @@ export function apiActual() {
       'Content-Type': 'application/octet-stream'
     },
     transform: actualProto.response.transform,
-    method: 'get'
+    method: 'get',
   })
 }
 

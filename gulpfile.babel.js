@@ -26,6 +26,8 @@ let serverInitialized = false
 const devServerEnv = {
   NODE_ENV: 'development/server',
   port: process.env['port'] || '8008',
+  radiusip: '210.200.13.224',
+  radiusport: '10000',
 }
 
 

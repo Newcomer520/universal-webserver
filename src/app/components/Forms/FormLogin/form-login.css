@@ -1,0 +1,54 @@
+@import "app/css/variables.css";
+@import "app/css/mixins.css";
+/* @import "app/css/tables.css"; */
+
+.form-login {
+  @mixin flex-box column, space-around, flex-start;
+  min-width: 300px;
+  min-height: 200px;
+  font-size: 1.2rem;
+}
+
+.circle {
+  width: 100%;
+  outline: 0;
+  border: none;
+  height: 3rem;
+  border-radius: 1.5rem;
+  min-width: 100px;
+  border: none;
+  border: 5px solid rgba(255, 255, 255, .2);
+  background-clip: padding-box;
+  text-align: center;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  &:focus {
+    border: 5px solid color($primary-green alpha(-30%));
+    /* border: 5px solid $primary-green; */
+    /* box-shadow: 0px 0px 1px 2px $primary-green inset; */
+  }
+}
+
+.input {
+   composes: circle;
+}
+
+.row-buttons {
+  align-self: stretch;
+  @mixin flex-box row, space-around;
+}
+
+.button {
+  composes: circle;
+  max-width: 120px;
+  color: white;
+  background-color: $primary-green;
+  &:focus {
+    background-color: color($primary-green blackness(+ 10%));
+  }
+  &:active {
+    background-color: color($primary-green blackness(+ 20%));
+  }
+}
+

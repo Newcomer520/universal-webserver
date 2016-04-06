@@ -12,6 +12,8 @@ import frontendRouter from './middlewares/router-middleware'
 import co from 'co'
 import timeout from 'koa-timeout'
 import router from 'koa-router'
+import passport from 'koa-passport'
+import PassportHelper from './helpers/passport'
 
 // application level init
 co(function *() {
@@ -22,13 +24,16 @@ co(function *() {
   // error handling asap
   app.use(errorHandler)
   app.use(timeout(1000 * 20))
-  // app.use(slackReportBot)
   app.use(logger())
   app.use(morganLogger)
   app.use(bodyParser({
     onerror: (err, ctx) => ctx.throw('body parse error', 422)
   }))
   app.use(helmet())
+
+  // passport setting
+  PassportHelper.loginLocal(passport)
+  app.use(passport.initialize())
 
   const apidoc = koa()
   apidoc.use(serve(path.join(__dirname, '../..', 'apidoc')))
@@ -38,12 +43,11 @@ co(function *() {
   app.use(mount('/static', statics))
 
   const appRouter = new router()
-
   appRouter.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
-  // mainly rendering
-  app.use(mount('/', frontendRouter))
   app.use(appRouter.routes())
   app.use(appRouter.allowedMethods())
+  // mainly rendering
+  app.use(mount('/', frontendRouter))
 
   if (global.__DEV__) {
     app.use(mount('/apidoc', apidoc))
