@@ -10,12 +10,10 @@ import errorHandler, { slackReportBot } from './middlewares/error-handler'
 import morganLogger from './middlewares/logger'
 import routerMiddleware from './middlewares/router-middleware'
 import co from 'co'
-// import { initRedis } from './utils/redis'
 import timeout from 'koa-timeout'
 
 // application level init
 co(function *() {
-  // yield initRedis()
 
   // initial server setting
 
@@ -39,7 +37,10 @@ co(function *() {
   app.use(mount('/static', statics))
 
   app.use(mount('/api', apiRouter))
-  app.use(mount('/apidoc', apidoc))
+
+  if (global.__DEV__) {
+    app.use(mount('/apidoc', apidoc))
+  }
 
   // mainly rendering
   app.use(mount(routerMiddleware))
