@@ -2,7 +2,6 @@
  * server side 相關的認證function
  */
 import crypto from 'crypto'
-import redisClient from '../utils/redis'
 import jwt from 'jsonwebtoken'
 import uuid from 'node-uuid'
 import { initState as authInitState } from 'reducers/auth-reducer'
@@ -12,6 +11,7 @@ export const COOKIE_AUTH_TOKEN = 'auth-token'
 export const TOKEN_EXPIERED_ERROR = 'TokenExpiredError'
 export const TTL = 1 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
 
+// @todo: remove the redis completely
 export default class authHelper {
 	static recoverToken(token) {
 		let state = { ...authInitState, password: null }
@@ -48,9 +48,9 @@ export default class authHelper {
 		}
 		const refreshToken = uuid.v4()
 		try {
-			oldJti && typeof oldJti === 'string' && await redisClient.del(oldJti)
-			await redisClient.set(jwtObject.jti, refreshToken)
-			await redisClient.expire(jwtObject.jti, 60 * 60 * 24 * 7) // 7 days
+			// oldJti && typeof oldJti === 'string' && await redisClient.del(oldJti)
+			// await redisClient.set(jwtObject.jti, refreshToken)
+			// await redisClient.expire(jwtObject.jti, 60 * 60 * 24 * 7) // 7 days
 		} catch (err) {
 			err.status = 500
 			throw err
@@ -80,8 +80,8 @@ export default class authHelper {
 	static async verifyRefreshToken(jti, refreshToken) {
 		let value
 		try {
-			value = await redisClient.getAsync(jti)
-			console.log('await redis: ', value)
+			// value = await redisClient.getAsync(jti)
+			// console.log('await redis: ', value)
 		} catch (err) {
 			console.log(err)
 		}
@@ -101,7 +101,7 @@ export default class authHelper {
 	}
 	static async logout(token = '') {
 		let decoded = authHelper.jwtDecode(token)
-		await redisClient.del(decoded.jti)
+		// await redisClient.del(decoded.jti)
 		console.log('delete jti: ', decoded.jti)
 	}
 }
