@@ -6,16 +6,15 @@ import routes from 'app/routes'
 import createStore, { sagaMiddleware } from 'app/create-store'
 import { Provider } from 'react-redux'
 import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
-import koa from 'koa'
 import authenticator from './authenticator'
 import fs from 'fs'
 import serverRender from '../utils/server-render'
 import { initState as universalState } from 'reducers/universal-reducer'
 import { setServerFetched } from 'actions/universal-action'
-
+import koa from 'koa'
 const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
 
-const frontend = koa()
+const frontend = new koa()
 frontend.use(authenticator)
 frontend.use(initStore)
 global.config.universal === true ? frontend.use(universalRender): frontend.use(nonUniversalRender)
@@ -38,6 +37,12 @@ function *initStore(next) {
 }
 
 function *universalRender(next) {
+  // avoid the api path
+  if (/^\/api/.test(this.path)) {
+    yield next
+    return
+  }
+
 	const { store } = this.state
 	const { token } = this.state
 	const { auth } = store.getState()

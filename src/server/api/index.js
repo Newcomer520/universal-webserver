@@ -6,8 +6,8 @@ import logoutRouter from './logout'
 import statusRouter from './status'
 import simulateRouter from './simulate'
 
-const apis = koa()
-const apiRouter = router()
+const apis = new koa()
+const apiRouter = new router()
 
 apiRouter.use('/login', loginRouter.routes(), loginRouter.allowedMethods())
 apiRouter.use('/logout', logoutRouter.routes())
@@ -15,11 +15,6 @@ apiRouter.use('/refreshtoken', refreshTokenRouter.routes())
 apiRouter.use('/status', statusRouter.routes(), statusRouter.allowedMethods())
 
 // simulate
-apiRouter.use('/simulate', simulateRouter.routes(), simulateRouter.allowedMethods())
+apiRouter.use('/simulate', simulateRouter.routes(), simulateRouter.allowedMethods({ throw: true }))
 
-
-apis.use(apiRouter.routes(), apiRouter.allowedMethods())
-
-
-
-export default apis
+export default apiRouter

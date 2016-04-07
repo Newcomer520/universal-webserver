@@ -8,25 +8,25 @@ const apiUrl = 'http://210.200.13.224:10080/predict'
 const predictRouter = new router()
 
 predictRouter.post('/', function* (next) {
-	try {
-		const body = yield getRawBody(this.req)		
-		const options = { method: 'post', body }
-		const result = yield fetchProto(apiUrl, options)
-		this.body = result		
-	} catch (ex) {
-		// console.error(ex)
-		this.throw(ex)
-	}
+  try {
+    const body = yield getRawBody(this.req)
+    const options = { method: 'post', body }
+    const result = yield fetchProto(apiUrl, options)
+    this.body = result
+  } catch (ex) {
+    // console.error(ex)
+    this.throw(ex)
+  }
 })
 
 const fetchPredict = (body) => {
-	const options = {
-		headers: {
-			'Content-Type': 'application/octet-stream'
-		},
-		method: 'post',
-		body
-	}
+  const options = {
+    headers: {
+      'Content-Type': 'application/octet-stream'
+    },
+    method: 'post',
+    body
+  }
 }
 
 export default predictRouter
