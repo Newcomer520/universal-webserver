@@ -8,9 +8,10 @@ import serve from 'koa-static'
 import apiRouter from './api/index'
 import errorHandler, { slackReportBot } from './middlewares/error-handler'
 import morganLogger from './middlewares/logger'
-import routerMiddleware from './middlewares/router-middleware'
+import frontendRouter from './middlewares/router-middleware'
 import co from 'co'
 import timeout from 'koa-timeout'
+import router from 'koa-router'
 
 // application level init
 co(function *() {
@@ -36,14 +37,19 @@ co(function *() {
   statics.use(serve(path.join(__dirname, '../..', 'build/public')))
   app.use(mount('/static', statics))
 
-  app.use(mount('/api', apiRouter))
+  const appRouter = new router()
+
+  appRouter.use('/api', apiRouter.routes(), apiRouter.allowedMethods())
+  // mainly rendering
+  app.use(mount('/', frontendRouter))
+  app.use(appRouter.routes())
+  app.use(appRouter.allowedMethods())
 
   if (global.__DEV__) {
     app.use(mount('/apidoc', apidoc))
   }
 
-  // mainly rendering
-  app.use(mount(routerMiddleware))
+
 
   const server = app.listen(global.config.port, () => {
     const host = server.address().address
