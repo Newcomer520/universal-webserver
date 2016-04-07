@@ -22,18 +22,19 @@ export default class XTimeAxis extends Component {
   }
 
   render() {
-    const { x, y, xScaleFunc, callback, height, heightOffset, currentTime } = this.props
+    const { xScaleFunc, callback, width, height, currentTime } = this.props
 
     const xAxis = d3.svg.axis()
     .scale(xScaleFunc)
     .orient("bottom")
     .tickFormat(d3.time.format("%H:%M"))
-    .tickSize(-height + heightOffset, 0)
-    .tickPadding(12)
+    .tickSize(-height, 0)
+    .tickPadding(17)
     const vdom = ReactFauxDOM.createElement('g')
     const g = d3.select(vdom)
     .attr('className', 'xAxis')
-    .attr("transform", `translate(${x}, ${y})`)
+    // .attr("transform", `translate(${x}, ${y})`)
+    // .attr("viewBox", `${0} ${0} ${800-100} ${400}`)
     .call(xAxis)
     .selectAll(".tick")
     .on("click", (d, i) => {

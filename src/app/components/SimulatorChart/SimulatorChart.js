@@ -32,6 +32,14 @@ export default class SimulatorChart extends Component {
     currentX: -100
   };
 
+  //-------------------------------------------------------------------------
+  // round the time
+  //-------------------------------------------------------------------------
+  roundTime = (time) => {
+    const t = moment(time, 'x')
+    return t.add(- (t.minute() % 30), 'm')
+  };
+
   genScalePoints = (actualDataSet, predictDataSet, simulateDataSet, predictTSDataSet, xScaleFunc, yScaleFunc) => {
     const rawPoints = {
       actual: actualDataSet,
@@ -52,9 +60,16 @@ export default class SimulatorChart extends Component {
     // generate predict and simulate points arrays
     const genRawPoints = (dataset, pointType) => {
       const time = moment(dataset.startTime, 'x').add(-1, 'm')
-      return dataset.rows.map((point) => (
-        { x: time.add(1, 'm').valueOf(), y: point[pointType] }
-      ))
+      const points = []
+      dataset.rows.forEach((point) => {
+        points.push({ x: time.add(1, 'm').valueOf(), y: point[pointType] })
+      })
+
+      if (points.length === 0) {
+        points.push({ x: time.add(1, 'm').valueOf(), y: 0 })
+      }
+      return points
+      // skip the points time later than the round time of end time
     }
     // trans points from Raw => Scaled
     const getScalePoints = (originalPoints) => (
@@ -63,6 +78,13 @@ export default class SimulatorChart extends Component {
         )
       )
     )
+
+    const filterRawPoints = (points, endTime) => {
+      if (points.length > 1) {
+        return points.filter((point) => (point.x <= endTime))
+      }
+      return points
+    }
 
     //-------------------------------------------------------------------------
     // Generate Raw arrays, then convert to Scaled arrays
@@ -73,12 +95,27 @@ export default class SimulatorChart extends Component {
 
     for (const key in predictDataSet.rows[0]) {
       if (key in simulateDataSet.rows[0]) {
+        const predictEndTime = this.roundTime(
+          moment(predictDataSet.startTime, 'x')
+          .add(predictDataSet.rows.length, 'm')
+          .valueOf()
+        )
+        const simulateStartTime = moment(simulateDataSet.startTime, 'x')
+        const hourOffset = moment(predictEndTime, 'x').hour() - simulateStartTime.hour()
+        const minuteOffset = moment(predictEndTime, 'x').minute() - simulateStartTime.minute()
+        const simulateEndTime = this.roundTime(
+          simulateStartTime
+          .add(hourOffset * 60 + minuteOffset, 'm')
+          .valueOf()
+        )
         // predict raw points
-        rawPoints.predict[key] = genRawPoints(predictDataSet, key)
+        rawPoints.predict[key] =
+          filterRawPoints(genRawPoints(predictDataSet, key), predictEndTime)
         // predict scaled points
         scalePoints.predict[key] = getScalePoints(rawPoints.predict[key])
         // simulate raw points
-        rawPoints.simulate[key] = genRawPoints(simulateDataSet, key)
+        rawPoints.simulate[key] =
+          filterRawPoints(genRawPoints(simulateDataSet, key), simulateEndTime)
         // simulate scaled points
         scalePoints.simulate[key] = getScalePoints(rawPoints.simulate[key])
       }
@@ -174,8 +211,9 @@ export default class SimulatorChart extends Component {
     //-------------------------------------------------------------------------
     const UPPER_BLOOD_PRESURE_WARNING_BOUND = 140
     const LOWER_BLOOD_PRESURE_WARNING_BOUND = 110
-    const MAX_BLOOD_PRESURE_BOUND = UPPER_BLOOD_PRESURE_WARNING_BOUND + 10
-    const MIN_BLOOD_PRESURE_BOUND = LOWER_BLOOD_PRESURE_WARNING_BOUND - 10
+    const BLOOD_PRESURE_OFFSET = 20
+    const MAX_BLOOD_PRESURE_BOUND = UPPER_BLOOD_PRESURE_WARNING_BOUND + BLOOD_PRESURE_OFFSET
+    const MIN_BLOOD_PRESURE_BOUND = LOWER_BLOOD_PRESURE_WARNING_BOUND - BLOOD_PRESURE_OFFSET
 
     //-------------------------------------------------------------------------
     // Props
@@ -194,44 +232,27 @@ export default class SimulatorChart extends Component {
     //-------------------------------------------------------------------------
     // Layout Configuration and Layout Constants Values
     //-------------------------------------------------------------------------
-    const MARGIN = { TOP: 20, RIGHT: 10, BOTTOM: 30, LEFT: 30 }
-
-    const AXIS_OFFSET_X = 20
-    const AXIS_OFFSET_Y = 0
-    const Y_MAX_OFFSET = 20
-    // the radius of points will make the scale ratio different, cut it
-
-    const widthMargin = MARGIN.LEFT + MARGIN.RIGHT
-    const heightMargin = MARGIN.TOP + MARGIN.BOTTOM
-    const widthOffset = width - widthMargin - AXIS_OFFSET_X
-    const heightOffset = height - heightMargin + AXIS_OFFSET_Y
+    const X_LABEL_FONT_HEIGHT = 16
+    const MARGIN = { TOP: 20, RIGHT: 10, BOTTOM: X_LABEL_FONT_HEIGHT, LEFT: 60 }
 
     const PERIOD_300_MINS = 320 * 60 * 1000
 
-
-    // round the time
-    const roundTime = (time) => {
-      const t = moment(time, 'x')
-      return t.add(- (t.minute() % 30), 'm')
-    }
-
     // actually, we don't need to new Date(), d3 time scale accept unix ms as domain
     // new Date(ACTUAL_START_TIME + PERIOD_300_MINS)
-    const xMax = roundTime(ACTUAL_START_TIME) + PERIOD_300_MINS
-    const xMin = roundTime(ACTUAL_START_TIME)
+    const xMax = this.roundTime(ACTUAL_START_TIME) + PERIOD_300_MINS
+    const xMin = this.roundTime(ACTUAL_START_TIME)
 
-    const yMax = MAX_BLOOD_PRESURE_BOUND + Y_MAX_OFFSET
-    const yMin = MIN_BLOOD_PRESURE_BOUND - Y_MAX_OFFSET
+    const yMax = MAX_BLOOD_PRESURE_BOUND
+    const yMin = MIN_BLOOD_PRESURE_BOUND
 
-    // for svg scale (transform scale, node value scale)
-    const scaleRatioX = (widthOffset / width)
-    const scaleRatioY = (heightOffset / height)
+    const aspectRatioW = width / (width - MARGIN.LEFT - MARGIN.RIGHT)
+    const aspectRatioH = height / (height - MARGIN.BOTTOM)
 
     //-------------------------------------------------------------------------
     // for D3
     //-------------------------------------------------------------------------
-    const xRange = d3.time.scale().range([0, widthOffset])
-    const yRange = d3.scale.linear().range([0, heightOffset])
+    const xRange = d3.time.scale().range([0, width])
+    const yRange = d3.scale.linear().range([0, height])
 
     // d3 scale function
     const xScaleFunc = xRange.domain([xMin, xMax])
@@ -284,56 +305,66 @@ export default class SimulatorChart extends Component {
       ? `predictTS${this.props.predictTSPoints.key}`
       : 'predictTS0'
 
-
     return (
-      <svg width={widthOffset} height={heightOffset} >
-        <g transform={`translate(${MARGIN.LEFT}, ${MARGIN.TOP})
-          scale(${scaleRatioX}, ${scaleRatioY})`} >
-
+      <svg
+        width={width} height={height}
+        viewBox={`-${MARGIN.LEFT} -${0} ${width * aspectRatioW} ${height * aspectRatioH}`}
+        preserveAspectRatio = "xMinYMax meet" >
+        <g transform={`translate(0, ${height - MARGIN.BOTTOM})`}>
           <XTimeAxis
-            xScaleFunc={xScaleFunc} x={AXIS_OFFSET_X} y={heightOffset} times={cActualPoints}
-            callback={this.clickCallback} width={width} height={height} heightOffset={heightMargin}
+            xScaleFunc={xScaleFunc} times={cActualPoints}
+            callback={this.clickCallback}
+            width={width} height={height}
             currentTime={currentTime} />
+        </g>
+        <g
+          transform={`translate(0, ${-MARGIN.BOTTOM})`}
+          clipPath={`url(#chartMask)`}>
           <YTimeAxis
-            yScale={yScaleFunc} x={AXIS_OFFSET_X} y={AXIS_OFFSET_Y}
+            yScale={yScaleFunc} x={0} y={-height}
             upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
-
           <PredictLine
             key={predictKey}
-            fitPoints={scalePoints.predict.fit} uprPoints={scalePoints.predict.upr}
+            fitPoints={scalePoints.predict.fit}
+            uprPoints={scalePoints.predict.upr}
             lwrPoints={scalePoints.predict.lwr}
-            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
+            {...redLineStyles} />
           <PredictLine
             key={simulateKey}
-            fitPoints={scalePoints.simulate.fit} uprPoints={scalePoints.simulate.upr}
+            fitPoints={scalePoints.simulate.fit}
+            uprPoints={scalePoints.simulate.upr}
             lwrPoints={scalePoints.simulate.lwr}
-            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...blueLineStyles} />
+            {...blueLineStyles} />
           <YGridLine
             xScaleFunc={xScaleFunc} yScaleFunc={yScaleFunc}
-            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y}
             w={width} upperBound={UPPER_BLOOD_PRESURE_WARNING_BOUND}
             lowerBound={LOWER_BLOOD_PRESURE_WARNING_BOUND} />
           <Line
             key={actualKey}
             callback={this.clickCallback} times={cActualPoints}
             points={scalePoints.actual} values={actualBloodPresures}
-            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...greenLineStyles} />
+            {...greenLineStyles} />
           <Line
             key={predictTSKey}
             callback={this.clickCallback} times={cActualPoints}
             points={scalePoints.predictTS}
-            xOffset={AXIS_OFFSET_X} yOffset={AXIS_OFFSET_Y} {...redLineStyles} />
+            {...redLineStyles} />
           <Bound95Text
             enable={(scalePoints.predict.fit.length > 1) ? true : false}
             fill={redLineStyles.circleStyles.stroke}
-            xUp={scalePoints.predict.fit[0].x + AXIS_OFFSET_X + 3}
-            yUp={scalePoints.predict.fit[0].y - 20}
+            xUp={scalePoints.predict.fit[0].x  + 3}
+            yUp={scalePoints.predict.fit[0].y - 15}
             textUp={'95% UB'}
-            xLow={scalePoints.predict.fit[0].x + AXIS_OFFSET_X + 3}
-            yLow={scalePoints.predict.fit[0].y + 40}
+            xLow={scalePoints.predict.fit[0].x  + 3}
+            yLow={scalePoints.predict.fit[0].y + 30}
             textLow={'95% LB'} />
         </g>
+        <clipPath id="chartMask">
+          <rect x={- MARGIN.LEFT } y={- MARGIN.BOTTOM}
+            width={width * aspectRatioW}
+            height={height * aspectRatioH} />
+        </clipPath>
       </svg>
     )
   }
