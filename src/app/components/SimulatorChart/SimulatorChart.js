@@ -212,13 +212,7 @@ export default class SimulatorChart extends Component {
     // round the time
     const roundTime = (time) => {
       const t = moment(time, 'x')
-      let roundResult = t
-      if (t.minute() % 30 < 15) {
-        roundResult = t.add(- (t.minute() % 30), 'm')
-      } else {
-        roundResult = t.add(30 - (t.minute() % 30), 'm')
-      }
-      return roundResult
+      return t.add(- (t.minute() % 30), 'm')
     }
 
     // actually, we don't need to new Date(), d3 time scale accept unix ms as domain

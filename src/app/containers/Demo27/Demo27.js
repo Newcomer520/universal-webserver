@@ -23,6 +23,7 @@ import moment from 'moment'
 
 const styles = { ...tableStyle, ...componentStyle, ...demo27Styles }
 
+// @todo: THIS LABEL HAS BEEN REMOVE
 // @todo: need to refactor observorLabel & observorKey
 function observorLabel(observor) {
   switch (observor) {
@@ -124,26 +125,7 @@ export default class extends Component {
     return (
       <div key={observor} styleName="simulator" style={s}>
         <div styleName="time">
-          <span>Time: {obTime}</span>
-        </div>
-        <div styleName="tag">
-          <span>{observorLabel(observor)}</span>
-        </div>
-        <div styleName="section">
-          <div styleName="table-default">
-            <div styleName="header">
-              <div styleName="cell">實際</div>
-              <div styleName="cell">預測</div>
-              <div styleName="cell">誤差</div>
-            </div>
-            <div styleName="body">
-              <div styleName="row">
-                <div styleName="cell">{obActual}</div>
-                <div styleName="cell">{obPredict}</div>
-                <div styleName="cell">{obDiff}</div>
-              </div>
-            </div>
-          </div>
+          <span>時間: {obTime}</span>
         </div>
         <div styleName="tag">
           <span>Value</span>
@@ -176,10 +158,11 @@ export default class extends Component {
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">
-            胰島素可增加葡萄糖的利用，加速葡萄糖的無氧酵解和有氧氧化，抑制糖元分解和糖異生而降低血糖，
-            臨床上主要用于胰島素依賴型糖尿病以及部分非胰島素依賴型糖尿病的治療也可用於細胞內缺鉀的治療
-            ，抑制糖元分解和糖異生而降低血糖，臨床上用於胰島素依賴型糖尿病以及部分非胰島素依賴型糖尿病
-            的治療。
+            在SBP最低點欲提高5mmHg，可調整<br/>
+            1. 電解質濃度 3.4412<br/>
+            2. 機器溫度  -2.2411<br/>
+            3. 脫水係數  -4.3975<br/>
+            (數值為調整之最大值，實際需參考當時患者之機器參數設定)
           </p>
         </div>
         <div styleName="column-right">
