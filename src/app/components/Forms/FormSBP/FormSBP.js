@@ -70,8 +70,10 @@ export default class FormSBP extends Component {
 
     const { actions: { fetchSimulate }, lastActual: { sbp, ...data }, obTime } = this.props
     data.time = obTime
+    // only fields below are affected
     data.conductivity = parseFloat(this.props.fields.conductivity.value)
     data.dia_temp_value = parseFloat(this.props.fields.dia_temp_value.value)
+    data.uf = parseFloat(this.props.fields.uf.value)
     fetchSimulate(data)
     return false
   };

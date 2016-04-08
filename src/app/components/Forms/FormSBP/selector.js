@@ -3,7 +3,7 @@ import { createSelector } from 'reselect'
 export const fieldNames = {
   conductivity: '電解質濃度', // 12 - 16
   dia_temp_value: '機器溫度', // 32 - 40
-  fakeDryWater: '脫水率', // 0 - 3
+  uf: '脫水率', // 0 - 3
   fakeBloodSpeed: '血液流速', // (mL/min) 0 - 400
   fakeLiquidDensity: '透析液濃度', // 2.5, 3.5, 4.5
   fakeLiquidSpeed: '透析液流速',
@@ -14,7 +14,6 @@ export const fieldNames = {
   dw_weight_ratio: null,
   time: null,
   age: null,
-  uf: null,
   bdMedian: null
 }
 
@@ -63,8 +62,8 @@ export function actualValueGenerator(key, actualData) {
   }
 
   switch (key) {
-    case 'fakeDryWater':
-      return (Math.random()*3).toFixed(2)
+    // case 'fakeDryWater':
+    //   return (Math.random()*3).toFixed(2)
     case 'fakeBloodSpeed':
       return Math.round((Math.random()*400))
     case 'fakeLiquidDensity':

@@ -3,7 +3,7 @@ export default values => {
   return {
     ...validateConductivity(values),
     ...validateDiaTempValue(values),
-    ...validateDryWater(values),
+    ...validateUf(values),
     ...validateBloodSpeed(values),
     ...validateLiquidDensity(values),
     ...validateLiquidSpeed(values),
@@ -43,9 +43,9 @@ function validateDiaTempValue(values) {
   return validateRequired(values, field, errors, errMsg)
 }
 
-function validateDryWater(values) {
+function validateUf(values) {
   const errors = {}
-  const field = 'fakeDryWater'
+  const field = 'uf'
   const errMsg = '脫水率 should be between 0 and 3'
   validateMinMax(values, field, 0, 3, errors, errMsg)
   return validateRequired(values, field, errors, errMsg)
