@@ -10,8 +10,6 @@ export default class YGridLine extends Component {
     yScaleFunc: PropTypes.func,
     upperBound: PropTypes.number,
     lowerBound: PropTypes.number,
-    xOffset: PropTypes.number,
-    yOffset: PropTypes.number,
   };
 
   constructor(props) {
@@ -20,12 +18,12 @@ export default class YGridLine extends Component {
   }
 
   render() {
-    const { w, xOffset, yOffset, yScaleFunc, upperBound, lowerBound } = this.props
+    const { w, yScaleFunc, upperBound, lowerBound } = this.props
 
     const smax = yScaleFunc(upperBound)
     const smin = yScaleFunc(lowerBound)
-    const maxLinePts = [{ x: xOffset, y: smax + yOffset }, { x: w - xOffset, y: smax + yOffset }]
-    const minLinePts = [{ x: xOffset, y: smin + yOffset }, { x: w - xOffset, y: smin + yOffset }]
+    const maxLinePts = [{ x: 0, y: smax }, { x: w, y: smax }]
+    const minLinePts = [{ x: 0, y: smin }, { x: w, y: smin }]
 
     const vdom = ReactFauxDOM.createElement('g')
 

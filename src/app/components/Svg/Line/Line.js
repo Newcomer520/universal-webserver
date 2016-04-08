@@ -13,8 +13,6 @@ export default class Line extends Component {
     points: PropTypes.array, // after scale ( x and y values)
     pointsDisplay: PropTypes.bool,
     values: PropTypes.array, // before scale (y values)
-    xOffset: PropTypes.number,
-    yOffset: PropTypes.number,
     callback: PropTypes.func,
     times: PropTypes.array,
   };
@@ -83,7 +81,7 @@ export default class Line extends Component {
     const { points, values } = this.props
     const { callback, times } = this.props
     if (values) {
-      for (let idx = 1; idx <= currentStep; idx++) {
+      for (let idx = 0; idx <= currentStep; idx++) {
         circles.push(
           <g key={`circle-${idx}`}>
             <ReactCSSTransitionGroup
@@ -96,7 +94,7 @@ export default class Line extends Component {
               <Tooltip
                 cx={points[idx].x} cy={points[idx].y} idx={idx}
                 callback={callback} times={times}
-                styles={{ ...styles }} value={parseInt(values[idx], 10)}/>
+                styles={{ ...styles }} value={parseInt(values[idx], 10)} />
             </ReactCSSTransitionGroup>
 
           </g>)
@@ -106,7 +104,7 @@ export default class Line extends Component {
   };
 
   render() {
-    const { points, xOffset, yOffset } = this.props
+    const { points } = this.props
 
     const lineFunctions = this.genLineFunctions()
     const xArray = this.getXArray()
@@ -121,7 +119,7 @@ export default class Line extends Component {
     const { lineStyles, circleStyles } = this.props
 
     return (
-      <g transform={`translate(${xOffset}, ${yOffset})`} >
+      <g  >
         <Motion
           defaultStyle={{ x: 0 }}
           style={{ x: spring(100, { stiffness: 100 }) }} >

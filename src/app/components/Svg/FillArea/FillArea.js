@@ -10,8 +10,6 @@ export default class FillArea extends Component {
   static propTypes = {
     pointsUp: PropTypes.array,
     pointsBottom: PropTypes.array,
-    xOffset: PropTypes.number,
-    yOffset: PropTypes.number,
     fillStyles: PropTypes.object,
   };
 
@@ -35,7 +33,7 @@ export default class FillArea extends Component {
   };
 
   render() {
-    const { pointsUp, pointsBottom, xOffset, yOffset, fillStyles } = this.props
+    const { pointsUp, pointsBottom, fillStyles } = this.props
     const xArray = this.getXArray()
     let currentStep = 0
     return (
@@ -74,7 +72,6 @@ export default class FillArea extends Component {
             .y1((d) => (d.up))
 
             d3.select(vdom)
-            .attr('transform', `translate(${xOffset}, ${yOffset})`)
             .append('path')
             .datum(points)
             .attr('className', 'fillArea')
