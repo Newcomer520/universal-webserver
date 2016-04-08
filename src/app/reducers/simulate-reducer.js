@@ -4,10 +4,14 @@ import { LOCATION_CHANGE } from 'react-router-redux'
 
 const initState = fromJS({
 	categories: { 'LOW_BLOOD': '低血壓' },
-	types: null, //SBP1
-	selectedCategory: null,
-	selectedType: null,
-	observor: null,
+  // types: null,
+	types: {
+    [TYPES.SIMULATE_TYPE_SBP]: 'SBP',
+    [TYPES.SIMULATE_TYPE_TIME_SERIES]: 'Time Series'
+  }, //null, //SBP1
+	selectedCategory: 'LOW_BLOOD', // null,
+	selectedType: TYPES.SIMULATE_TYPE_SBP,
+	observor: TYPES.SIMULATE_TYPE_SBP,
 	obTime: null,
 	// data
   actualFirstRecord: null,
@@ -106,17 +110,6 @@ export default function (state = initState, action) {
     }
     case TYPES.LOCATION_CHANGE:
       return initState
-      // return state.merge({
-      //   selectedCategory: null,
-      //   selectedType: null,
-      //   types: null,
-      //   actual: {},
-      //   predict: {},
-      //   simulate: {},
-      //   requestActualStatus: null, // user 欲查詢所選的category & type
-      //   requestPredictStatus: null,
-      //   simulateStatus: null,
-      // })
     case TYPES.SIMULATE_SET_OBSERVOR:
       return state.set('observor', state.get('selectedType'))
 	}

@@ -14,7 +14,18 @@ function protoObject(protoContent, requestMessage, responseMessage = requestMess
 	return {
 		request: {
 			...getEnDn(ProtoRequest),
-			transform: data => new ProtoRequest(data).toArrayBuffer()
+			transform: data => {
+        if (canUseDOM) {
+          return new ProtoRequest(data).toArrayBuffer()
+        } else if (!__CLIENT__) {
+          const stream = require('stream')
+          const buffer = new ProtoRequest(data).toBuffer()
+          const bufferStream = new stream.PassThrough()
+          bufferStream.end(buffer)
+          return bufferStream
+        }
+
+      }
 		},
 		response: {
 			...getEnDn(ProtoResponse),

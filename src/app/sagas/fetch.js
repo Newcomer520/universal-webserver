@@ -45,30 +45,47 @@ export function* fetchSaga() {
 export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects) {
   try {
     yield put({ type: TYPES.APP_LOADING, isBusy: true })
-    yield put({ type: REQUESTING })
-    // generate the fetching jobs
-    const tasks = fetchObjects.map(fo => {
-      const { url, options } = fo
-      return call(decoratedFetch, url, options)
-    })
+    if (REQUESTING) {
+      yield put({ type: REQUESTING })
+    }
 
+    // generate the fetching jobs
+    let tasks = fetchObjects
+      .filter(fo => fo.url)
+      .map(fo => {
+        const { url, options } = fo
+        return call(decoratedFetch, url, options)
+      })
+
+    // fetching task is not the normal way => perform the provided custom task
+    const customTasks = fetchObjects
+      .filter(fo => fo.customTask && typeof fo.customTask === 'function')
+      .map(fo => {
+        return call(fo.customTask, authState)
+      })
+
+    tasks = tasks.concat(customTasks)
     const refreshOnce = canUseDOM && fetchObjects.reduce((prev, curr) => prev || (curr.options && curr.options.refreshOnce), false)
 
     // the token is possibly expired, try to refresh the token first
     if (refreshOnce && authState.tokenValid && authState.expiresIn < Date.now()) {
       yield call(refreshTokenTask)
     }
-
     const results = yield tasks
     const reduxResult = results && results.length == 1? results[0]: results
-    yield put({ type: SUCCESS, result: reduxResult })
+    if (SUCCESS) {
+      yield put({ type: SUCCESS, result: reduxResult })
+    }
     yield put({ type: TYPES.APP_LOADING, isBusy: false })
+
     return reduxResult
 
   } catch (ex) {
     console.error(ex)
     if (!(ex instanceof SagaCancellationException)) {
-      yield put({ type: FAILURE, message: ex.message, error: ex })
+      if (FAILURE) {
+        yield put({ type: FAILURE, message: ex.message, error: ex })
+      }
       return Promise.reject(ex)
     } else {
       yield put({ type: CANCELLATION, message: ex.message, error: ex })

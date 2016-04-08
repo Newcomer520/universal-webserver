@@ -2,6 +2,7 @@ import TYPES from 'constants/action-types'
 import fetchObject from '../utils/fetch'
 import Protos from 'common/protos'
 import { apiActual, apiSimulate } from 'app/apis/simulate'
+import { actualAndPredictTask } from 'sagas/simulate'
 
 export function selectCategory(selected) {
 	return { type: TYPES.SIMULATE_SELECT_CATEGORY, selectedCategory: selected.value }
@@ -18,6 +19,16 @@ export function fetchActual() {
 		type: TYPES.SAGA_FETCH_ACTION,
 		fetch: apiActual(),
 		status: [SIMULATE_ACTUAL_FETCHING, SIMULATE_ACTUAL_SUCCESS, SIMULATE_ACTUAL_FAILED],
+  }
+}
+
+export function fetchActualAndPredict() {
+  return {
+    type: TYPES.SAGA_FETCH_ACTION,
+    status: [],
+    fetch: {
+      customTask: actualAndPredictTask
+    }
   }
 }
 

@@ -91,6 +91,7 @@ $right-column-width: 400px;
 .chart-container {
   /* flex: 1; */
   min-height: 400px;
+  @mixin flex-box column center, center;
 }
 
 .simulator {
