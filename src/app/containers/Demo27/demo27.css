@@ -39,6 +39,7 @@ $right-column-width: 400px;
 }
 
 .content-time-series {
+  min-height: 500px;
   composes: content;
   flex: 1;
   align-items: center;
@@ -159,12 +160,14 @@ $right-column-width: 400px;
 }
 
 .legend-container {
-  @mixin flex-box row, space-around;
+  margin-left: 2rem;
+  @mixin flex-box row, flex-start;
   flex: 1;
 }
 
 .legend {
   @mixin flex-box row;
+  margin-right: 2rem;
   height: 30px;
   /* default icon */
   &:before {

@@ -41,6 +41,11 @@ export function fetchSimulate(data) {
   }
 }
 
+
+export function clearSimulateData() {
+  return { type: TYPES.SIMULATE_CLEAR_SIMULATE_DATA }
+}
+
 export function setObTime(date) {
   const dValue = date.valueOf()
   return { type: TYPES.SIMULATE_SET_OB_TIME, dValue: dValue }

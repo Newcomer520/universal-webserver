@@ -7,7 +7,7 @@ import styles from './patient.css'
 export default class Patient extends Component {
 	render() {
     const style = {
-      width: '90%',
+      width: '100%',
     }
 		return (
       <div styleName="container">
