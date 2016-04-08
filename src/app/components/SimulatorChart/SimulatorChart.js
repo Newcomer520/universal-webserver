@@ -60,16 +60,7 @@ export default class SimulatorChart extends Component {
     // generate predict and simulate points arrays
     const genRawPoints = (dataset, pointType) => {
       const time = moment(dataset.startTime, 'x').add(-1, 'm')
-      const points = []
-      dataset.rows.forEach((point) => {
-        points.push({ x: time.add(1, 'm').valueOf(), y: point[pointType] })
-      })
-
-      if (points.length === 0) {
-        points.push({ x: time.add(1, 'm').valueOf(), y: 0 })
-      }
-      return points
-      // skip the points time later than the round time of end time
+      return dataset.rows.map((point) => ({ x: time.add(1, 'm').valueOf(), y: point[pointType] }))
     }
     // trans points from Raw => Scaled
     const getScalePoints = (originalPoints) => (
@@ -78,13 +69,6 @@ export default class SimulatorChart extends Component {
         )
       )
     )
-
-    const filterRawPoints = (points, endTime) => {
-      if (points.length > 1) {
-        return points.filter((point) => (point.x <= endTime))
-      }
-      return points
-    }
 
     //-------------------------------------------------------------------------
     // Generate Raw arrays, then convert to Scaled arrays
@@ -95,27 +79,12 @@ export default class SimulatorChart extends Component {
 
     for (const key in predictDataSet.rows[0]) {
       if (key in simulateDataSet.rows[0]) {
-        const predictEndTime = this.roundTime(
-          moment(predictDataSet.startTime, 'x')
-          .add(predictDataSet.rows.length, 'm')
-          .valueOf()
-        )
-        const simulateStartTime = moment(simulateDataSet.startTime, 'x')
-        const hourOffset = moment(predictEndTime, 'x').hour() - simulateStartTime.hour()
-        const minuteOffset = moment(predictEndTime, 'x').minute() - simulateStartTime.minute()
-        const simulateEndTime = this.roundTime(
-          simulateStartTime
-          .add(hourOffset * 60 + minuteOffset, 'm')
-          .valueOf()
-        )
         // predict raw points
-        rawPoints.predict[key] =
-          filterRawPoints(genRawPoints(predictDataSet, key), predictEndTime)
+        rawPoints.predict[key] = genRawPoints(predictDataSet, key)
         // predict scaled points
         scalePoints.predict[key] = getScalePoints(rawPoints.predict[key])
         // simulate raw points
-        rawPoints.simulate[key] =
-          filterRawPoints(genRawPoints(simulateDataSet, key), simulateEndTime)
+        rawPoints.simulate[key] = genRawPoints(simulateDataSet, key)
         // simulate scaled points
         scalePoints.simulate[key] = getScalePoints(rawPoints.simulate[key])
       }
