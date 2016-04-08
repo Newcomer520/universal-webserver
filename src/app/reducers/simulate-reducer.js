@@ -112,6 +112,8 @@ export default function (state = initState, action) {
       return initState
     case TYPES.SIMULATE_SET_OBSERVOR:
       return state.set('observor', state.get('selectedType'))
+    case TYPES.SIMULATE_CLEAR_SIMULATE_DATA:
+      return state.set('simulate', Map({}))
 	}
 
 	return state

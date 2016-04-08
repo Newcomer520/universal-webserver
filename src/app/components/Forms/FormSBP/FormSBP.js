@@ -12,7 +12,7 @@ import { connect } from 'react-redux'
 import validate from './validator'
 
 import selector, { fieldNames } from './selector'
-import { fetchSimulate } from 'actions/simulate-action'
+import { fetchSimulate, clearSimulateData } from 'actions/simulate-action'
 
 const styles = { ...componentStyle, ...formStyle }
 
@@ -48,7 +48,7 @@ const enhance = compose(
   }),
   connect(
     state => selector(state),
-    dispatch => ({ actions: bindActionCreators({ fetchSimulate }, dispatch) })
+    dispatch => ({ actions: bindActionCreators({ fetchSimulate, clearSimulateData }, dispatch) })
   ),
   CSSModules(styles)
 )
@@ -80,7 +80,10 @@ export default class FormSBP extends Component {
 
   handleReset = e => {
     e.preventDefault()
-    this.setState({ submitted: false }, () => this.props.resetForm())
+    this.setState({ submitted: false }, () => {
+      this.props.resetForm()
+      this.props.actions.clearSimulateData()
+    })
     return false
   };
 

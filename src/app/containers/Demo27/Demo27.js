@@ -13,6 +13,7 @@ import Select from 'react-select'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import UserBar from 'components/UserBar'
 import selector from './selector'
+import tsFake from './time-series-fake-data'
 
 // actioncreators
 import { actions as filters, fetchActual, setObTime, fetchActualAndPredict } from 'actions/simulate-action'
@@ -95,14 +96,14 @@ export default class extends Component {
           options={this.props.types}
           value={this.props.selectedType}
           onChange={this.handleSelectType}/>
-          {
-            (selectedType === TYPES.SIMULATE_TYPE_SBP) &&
-            <div styleName="legend-container">
-              <div styleName="actual-legend">實際血壓</div>
-              <div styleName="predict-legend">預測範圍</div>
+          <div styleName="legend-container">
+            <div styleName="actual-legend">實際血壓</div>
+            <div styleName="predict-legend">預測範圍</div>
+            {
+              (selectedType === TYPES.SIMULATE_TYPE_SBP) &&
               <div styleName="simulate-legend">模擬範圍</div>
-            </div>
-          }
+            }
+          </div>
       </div>
     )
   };
@@ -112,7 +113,6 @@ export default class extends Component {
     if (requestStatus == null) {
       return null
     } else if (observor == TYPES.SIMULATE_TYPE_TIME_SERIES) {
-      console.log('time series')
       return null
     }
     const s = {
@@ -184,23 +184,11 @@ export default class extends Component {
     const { actions: { setObTime } } = this.props
     const svgHeight = 400
     const svgWidth = 1000
+    const points = tsFake.map((f, i) => {
+      return { x: actual.rows[0].x + 1000 * 60 * i, y: f.y }
+    })
 
-    const startTime = moment(actual.rows[0].x, 'x')
-
-    const points = [
-      { x: startTime.valueOf(), y: 80 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 },
-      { x: startTime.add(28, 'm').valueOf(), y: 100 },
-      { x: startTime.add(32, 'm').valueOf(), y: 100 },
-      { x: startTime.add(15, 'm').valueOf(), y: 100 },
-      { x: startTime.add(45, 'm').valueOf(), y: 100 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 },
-      { x: startTime.add(30, 'm').valueOf(), y: 100 },
-    ]
-
-    const predictTS = { key: startTime.valueOf(), rows: points }
+    const predictTS = { key: actual.rows[0].x, rows: points }
 
     return (
       <div styleName="content-time-series">
