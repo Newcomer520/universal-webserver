@@ -2,10 +2,23 @@ import React, { Component } from 'react'
 import CSSModules from 'react-css-modules'
 import DatePicker from 'components/DatePicker'
 import styles from './user-bar.css'
+import moment from 'moment'
 
 @CSSModules(styles)
 export default class UserBar extends Component {
+  clickTimeCallback = (d, i) => {
+    console.log(d, i)
+  }
 	render() {
+    const date = [
+      moment().valueOf(),
+      moment().add(1, 'd').valueOf(),
+      moment().add(2, 'd').valueOf(),
+      moment().add(3, 'd').valueOf(),
+      moment().add(4, 'd').valueOf(),
+      moment().add(5, 'd').valueOf(),
+      moment().add(6, 'd').valueOf(),
+    ]
 		return (
 			<div styleName="user-bar">
 				<div styleName="user-info-container">
@@ -15,7 +28,7 @@ export default class UserBar extends Component {
 						</div>
 					</div>
 				</div>
-				<DatePicker/>
+				<DatePicker date={date} clickTimeCallback={this.clickTimeCallback}/>
 			</div>
 		)
 	}

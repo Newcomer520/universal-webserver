@@ -1,9 +1,8 @@
 @import "app/css/variables.css";
 @import "app/css/mixins.css";
-
 .date-picker {
 	@mixin flex-box row, center;
-	width: 200px;
+	width: 220px;
 	height: $componentSingleLineHeight;
 	padding-left: 1em;
 	padding-right: 1em;
@@ -16,11 +15,6 @@
 		cursor: pointer;
 	}
 
-	&__current-pick {
-		flex: 1;
-		text-align: center;
-		font-family: $fontFamily;
-	}
 	:global(.icon) {
 		transform: translate3d(0, 0, 0) scale(1);
 		transition: transform 0.3s, scale 0.3s;
@@ -32,4 +26,59 @@
 			transform: translate3d(0.1em, 0, 0) scale(1.1);
 		}
 	}
+}
+
+.current-pick {
+  flex: 1;
+  text-align: center;
+  font-family: $fontFamily;
+  z-index: 1;
+}
+
+.select-value {
+  /*select conrtrol*/
+  > div:nth-child(2) {
+    > div:nth-child(1) {
+      > span {
+        color: #fff !important;
+      }
+    }
+    /* select arrow*/
+    > span:nth-child(3) {
+      display: none;
+    }
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+
+  }
+
+  > div:nth-child(2):focus {
+    background-color: transparent;
+  }
+
+  /*drop down menu*/
+  > div:nth-child(3) {
+    margin-top: 3px;
+    margin-left: -37px;
+    width: 190px;
+    opacity: 0.9;
+    border: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    > div:nth-child(1){
+      > div {
+        color: #fff;
+        background-color: #345274;
+      }
+      /* hover effect*/
+      > div:hover {
+        background-color:#333;
+      }
+    }
+  }
+}
+
+/* fixed the origin style have different shadow color */
+:global(.is-focused:not(.is-open)) > :global(.Select-control) {
+  box-shadow: none;
 }
