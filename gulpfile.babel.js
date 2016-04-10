@@ -79,7 +79,10 @@ gulp.task('initWebpack', (cb) => {
   const webpackConfig = require('./tools/webpack.config')[0]
   webpackConfig.plugins.push(new OnBuildPlugin(stats => {
     if (serverInitialized) {
-      setTimeout(nodemon.restart, 1000)
+      setTimeout(() => {
+        gutil.log('server restarting due to app codes changed....')
+        nodemon.restart()
+      }, 500)
     }
   }))
 

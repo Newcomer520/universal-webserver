@@ -158,10 +158,10 @@ export default class extends Component {
           </div>
           <div styleName="comment-label">提醒</div>
           <p styleName="comment">
-            在SBP最低點欲提高5mmHg，可調整<br/>
-            1. 電解質濃度 3.4412<br/>
-            2. 機器溫度 -2.2411<br/>
-            3. 脫水係數 -4.3975<br/>
+            在SBP最低點欲提高1mmHg，可調整<br/>
+            1. 電解質濃度 -0.68<br/>
+            2. 機器溫度 0.48<br/>
+            3. 脫水係數 0.87<br/>
             (數值為調整之最大值，實際需參考當時患者之機器參數設定)
           </p>
         </div>
