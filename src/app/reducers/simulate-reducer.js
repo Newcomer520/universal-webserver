@@ -6,7 +6,7 @@ const initState = fromJS({
 	categories: { 'LOW_BLOOD': '低血壓' },
   // types: null,
 	types: {
-    [TYPES.SIMULATE_TYPE_SBP]: 'SBP',
+    [TYPES.SIMULATE_TYPE_SBP]: 'ΔSBP',
     [TYPES.SIMULATE_TYPE_TIME_SERIES]: 'Time Series'
   }, //null, //SBP1
 	selectedCategory: 'LOW_BLOOD', // null,
