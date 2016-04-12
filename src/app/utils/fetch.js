@@ -14,12 +14,6 @@ export const canUseDOM = !!(
   window.document && window.document.createElement)
 )
 
-export function login(username, password, gRecaptchaResponse) {
-  const url = '/api/login'
-  const options = { method: 'post', body: JSON.stringify({ username, password, gRecaptchaResponse }), refreshOnce: false }
-  return fetchObj(url, options)
-}
-
 export function logout() {
   const url = '/api/logout'
   const options = { method: 'post', refreshOnce: false }

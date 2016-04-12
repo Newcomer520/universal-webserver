@@ -12,7 +12,11 @@ export default constants([
   'SAGA_PRELOAD_ACTION',
   'REFRESH_TOKEN_DONE',
 
-  //
+  // login related
+  'LOGIN_REQUESTING',
+  'LOGIN_SUCCESS',
+  'LOGIN_FAILED',
+
   // simulate page
   'SIMULATE_SELECT_CATEGORY',
   'SIMULATE_SELECT_TYPE',

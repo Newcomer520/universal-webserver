@@ -1,7 +1,7 @@
 import TYPES from 'constants/action-types'
 import { fromJS } from 'immutable'
 const initState = fromJS({
-  isBusy: false
+  isBusy: false,
 })
 
 export default function appReducer(state = initState, action) {

@@ -9,12 +9,12 @@ const { secret, privateKey, publicKey, refreshTokenKey } = global.config
 const algorithm = 'aes-256-ctr' // alogorithm for encrypting password, NOT for jwt
 export const COOKIE_AUTH_TOKEN = 'auth-token'
 export const TOKEN_EXPIERED_ERROR = 'TokenExpiredError'
-export const TTL = 100 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
+export const TTL = 1 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
 
 // @todo: remove the redis completely
 export default class authHelper {
   static recoverToken(token) {
-    let state = { ...authInitState, password: null }
+    let state = { ...authInitState }
     if (!token || token === '') {
       return state
     }

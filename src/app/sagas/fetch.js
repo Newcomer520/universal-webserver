@@ -86,11 +86,12 @@ export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CAN
       if (FAILURE) {
         yield put({ type: FAILURE, message: ex.message, error: ex })
       }
+      yield put({ type: TYPES.APP_LOADING, isBusy: false })
       return Promise.reject(ex)
     } else {
       yield put({ type: CANCELLATION, message: ex.message, error: ex })
+      yield put({ type: TYPES.APP_LOADING, isBusy: false })
     }
-    yield put({ type: TYPES.APP_LOADING, isBusy: false })
   }
 
 }

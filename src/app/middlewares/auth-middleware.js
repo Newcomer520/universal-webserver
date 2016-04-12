@@ -1,9 +1,9 @@
-import { TYPES as login_actions } from 'actions/login-action'
 import { TYPES as logout_actions } from 'actions/logout-action'
 import { REFRESH_TOKEN_DONE, KEY_REFRESH_TOKEN } from 'app/utils/fetch'
 import { browserHistory } from 'react-router'
+import TYPES from 'constants/action-types'
 
-const { LOGIN_SUCCESS } = login_actions
+const { LOGIN_SUCCESS } = TYPES
 const { LOGOUT_SUCCESS } = logout_actions
 
 // auth-middleware will trigger only when login success

@@ -39,22 +39,19 @@ const { secret, recaptchaSecret } = global.config
 const loginRouter = router()
 loginRouter.post('/', function* (next) {
   const ctx = this
-  ctx.cookies.set(COOKIE_AUTH_TOKEN, undefined)
-  console.log(COOKIE_AUTH_TOKEN, '123333',ctx.cookies.get(COOKIE_AUTH_TOKEN))
   yield passport.authenticate('login-local', function* (err, user, info) {
     if (err) {
       throw err
     }
-
     if (user === false) {
       ctx.status = 401
+      ctx.cookies.set(COOKIE_AUTH_TOKEN, null)
       ctx.body = { success: false, message: info }
     } else {
       const { accessToken, refreshToken } = authHelper.jwtSign(user.username, user.permissions, TTL)
       ctx.cookies.set(COOKIE_AUTH_TOKEN, accessToken, { signed: false }) //, expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 8)
       ctx.body = { accessToken, refreshToken }
     }
-
   }).call(this, next)
 })
 // loginRouter.use(recaptchaMiddleware)

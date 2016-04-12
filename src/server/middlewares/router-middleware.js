@@ -45,6 +45,7 @@ function* initStore(next) {
     },
     universal: universalState
   }
+  console.log(initState.auth)
   this.state.store = createStore(initState)
   yield next
 }
