@@ -3,6 +3,7 @@ import constants from 'flux-constants'
 export default constants([
   // universal
   'UNIVERSAL_LOAD',
+  'UNIVERSAL_SET_TOKEN',
   // application level constants
   'APP_LOADING',
   'LOCATION_CHANGE', // the LOCATION_CHANGED from react-router-redux is wired, will fire at first rendering time
@@ -16,6 +17,7 @@ export default constants([
   'LOGIN_REQUESTING',
   'LOGIN_SUCCESS',
   'LOGIN_FAILED',
+  'AUTH_UNAUTHENTICATED',
 
   // simulate page
   'SIMULATE_SELECT_CATEGORY',

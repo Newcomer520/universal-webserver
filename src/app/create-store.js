@@ -14,29 +14,30 @@ export const sagaMiddleware = createSagaMiddleware(...sagas)
 /**
  * function to create a redux store
  * history   {object}               from some createHistroy()
- * initState {object}								initial state passed to this store
+ * initState {object}               initial state passed to this store
  * @return   {object}               return a redux store
  */
 export default function(initState) {
-	if (canUseDOM && initState) {
-		// @todo: pass refresh token
-		// initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
+  if (canUseDOM && initState) {
+    // @todo: pass refresh token
+    // initState = merge({}, initState, { auth: { refreshToken: localStorage.getItem(KEY_REFRESH_TOKEN) } })
 
-		// need to serialize
-		initState.app && (initState.app = fromJS(initState.app))
-		initState.simulate && (initState.simulate = fromJS(initState.simulate))
-	}
-	const finalCreateStore = compose(
-		applyMiddleware(...middlewares, sagaMiddleware),
-		__DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
-	)(createStore)
-	const store = finalCreateStore(reducer, initState)
-	if (__DEV__ && module.hot) {
-		// Enable Webpack hot module replacement for reducers
-		module.hot.accept('./reducers', () => {
-			const nextRootReducer = require('reducers/reducer').default
-			store.replaceReducer(nextRootReducer)
-		})
-	}
-	return store
+    // need to serialize
+    initState.app && (initState.app = fromJS(initState.app))
+    initState.auth && (initState.auth = fromJS(initState.auth))
+    initState.simulate && (initState.simulate = fromJS(initState.simulate))
+  }
+  const finalCreateStore = compose(
+    applyMiddleware(...middlewares, sagaMiddleware),
+    __DEV__ && typeof window === 'object' && typeof window.devToolsExtension !== 'undefined' ? window.devToolsExtension() : f => f
+  )(createStore)
+  const store = finalCreateStore(reducer, initState)
+  if (__DEV__ && module.hot) {
+    // Enable Webpack hot module replacement for reducers
+    module.hot.accept('./reducers', () => {
+      const nextRootReducer = require('reducers/reducer').default
+      store.replaceReducer(nextRootReducer)
+    })
+  }
+  return store
 }

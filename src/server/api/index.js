@@ -9,12 +9,12 @@ import simulateRouter from './simulate'
 const apis = new koa()
 const apiRouter = new router()
 
-apiRouter.use('/login', loginRouter.routes(), loginRouter.allowedMethods())
+apiRouter.use('/login', loginRouter.routes())
 apiRouter.use('/logout', logoutRouter.routes())
 apiRouter.use('/refreshtoken', refreshTokenRouter.routes())
-apiRouter.use('/status', statusRouter.routes(), statusRouter.allowedMethods())
+apiRouter.use('/status', statusRouter.routes())
 
 // simulate
-apiRouter.use('/simulate', simulateRouter.routes(), simulateRouter.allowedMethods({ throw: true }))
+apiRouter.use('/simulate', simulateRouter.routes())
 
 export default apiRouter

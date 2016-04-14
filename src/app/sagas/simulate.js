@@ -63,12 +63,13 @@ function* getPredict() {
  * get the actual result first, then the predict points.
  * @yield {[type]} [description]
  */
-export function* actualAndPredictTask(authState = {}) {
+export function* actualAndPredictTask() {
   const requestActual = fetchActual()
-  const actual = yield call(fetchingTask, authState, [], requestActual.fetch)
+  const actual = yield call(fetchingTask,  [], requestActual.fetch)
   let tasks = []
+  let fetches = []
   if (actual && actual.rows && Array.isArray(actual.rows) && actual.rows.length > 0) {
-    tasks = actual.rows
+    fetches = actual.rows
       .sort((a, b) => a.time.toNumber() > b.time.toNumber())
       .map((a, i) => {
         let { sbp, ...data } = a
@@ -76,10 +77,10 @@ export function* actualAndPredictTask(authState = {}) {
           let time = data.time.toNumber()
           data.time = Math.floor(time / 1000 / 60 / 30) * 1000 * 30 * 60
         }
-
-
-        return call(fetchingTask, authState, [], apiPredict(data))
+        return apiPredict(data)
+        // return call(fetchingTask, [], apiPredict(data))
       })
+    tasks = call(fetchingTask, [], ...fetches)
   }
   const predictIntervals = yield tasks
   let predict = {}

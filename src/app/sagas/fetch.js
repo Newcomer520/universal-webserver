@@ -20,9 +20,8 @@ export function* fetchSaga() {
       } = yield take(SAGA_FETCH_ACTION)
       console.log('capture fetch in fetch saga')
       // check if token exist, if so, attach token to the option
-      const authState = yield select(state => state.auth)
-      const fetchObjects = (Array.isArray(fetch)? fetch: [fetch]).map(fo => ({ token: authState.token, ...fo }) )
-      const task = yield fork(fetchingTask, authState, [REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects)
+      const fetchObjects = (Array.isArray(fetch)? fetch: [fetch])
+      const task = yield fork(fetchingTask, [REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects)
       if (CANCELLATION) {
         yield take(CANCELLATION)
         yield cancel(task)
@@ -42,11 +41,19 @@ export function* fetchSaga() {
  * @param {...[type]} fetchObjects  dynamic fetching, if so => fetching in parallel
  * @yield {[type]}    [description]
  */
-export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects) {
+export function* fetchingTask([REQUESTING, SUCCESS, FAILURE, CANCELLATION], ...fetchObjects) {
   try {
     yield put({ type: TYPES.APP_LOADING, isBusy: true })
     if (REQUESTING) {
       yield put({ type: REQUESTING })
+    }
+
+    let authState = yield select(state => state.auth)
+
+    const refreshOnce = canUseDOM && fetchObjects.reduce((prev, curr) => prev || (curr.options && curr.options.refreshOnce), false)
+    // the token is possibly expired, try to refresh the token first
+    if (refreshOnce && authState.get('tokenValid') && authState.get('expiresIn') < Date.now()) {
+      yield call(refreshTokenTask)
     }
 
     // generate the fetching jobs
@@ -56,21 +63,15 @@ export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CAN
         const { url, options } = fo
         return call(decoratedFetch, url, options)
       })
-
     // fetching task is not the normal way => perform the provided custom task
     const customTasks = fetchObjects
       .filter(fo => fo.customTask && typeof fo.customTask === 'function')
       .map(fo => {
-        return call(fo.customTask, authState)
+        return call(fo.customTask, fo.options)
       })
 
     tasks = tasks.concat(customTasks)
-    const refreshOnce = canUseDOM && fetchObjects.reduce((prev, curr) => prev || (curr.options && curr.options.refreshOnce), false)
 
-    // the token is possibly expired, try to refresh the token first
-    if (refreshOnce && authState.tokenValid && authState.expiresIn < Date.now()) {
-      yield call(refreshTokenTask)
-    }
     const results = yield tasks
     const reduxResult = results && results.length == 1? results[0]: results
     if (SUCCESS) {
@@ -81,12 +82,18 @@ export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CAN
     return reduxResult
 
   } catch (ex) {
-    console.error(ex)
     if (!(ex instanceof SagaCancellationException)) {
       if (FAILURE) {
         yield put({ type: FAILURE, message: ex.message, error: ex })
       }
       yield put({ type: TYPES.APP_LOADING, isBusy: false })
+      if (canUseDOM && ex.status == 401) {
+        const currentUrl = yield select(state => state.routing.locationBeforeTransitions.pathname || '/')
+        // only if current location not at /login => redirect to /login
+        if (!/^\/login/.test(currentUrl)) {
+          yield put({ type: TYPES.AUTH_UNAUTHENTICATED })
+        }
+      }
       return Promise.reject(ex)
     } else {
       yield put({ type: CANCELLATION, message: ex.message, error: ex })
@@ -97,6 +104,7 @@ export function* fetchingTask(authState = {}, [REQUESTING, SUCCESS, FAILURE, CAN
 }
 
 function* refreshTokenTask() {
+  // @todo refresh token should be from store
   const refreshToken = localStorage.getItem(KEY_REFRESH_TOKEN)
   if (!refreshToken) {
     console.warn('refresh token is null, cannot execute refresh-token task')
@@ -104,6 +112,7 @@ function* refreshTokenTask() {
   }
   try {
     const url = REFRESH_TOKEN_URL
+    const token = yield select(state => state.auth.get('token'))
     const options = {
       ...DEFAULT_OPTIONS,
       method: 'post',
@@ -111,11 +120,10 @@ function* refreshTokenTask() {
       body: JSON.stringify({ refreshToken })
     }
     console.log('start refresh task')
-    const { refreshToken: newRefreshToken } = yield call(fetch, url, options)
-    yield put({ type: REFRESH_TOKEN_DONE, newToken: newRefreshToken })
+    const { refreshToken: newRefreshToken, accessToken } = yield call(fetch, url, options)
+    yield put({ type: REFRESH_TOKEN_DONE, refreshToken: newRefreshToken, accessToken })
   } catch (ex) {
     console.error(`error occurs while refreshing token: ${ex.message}`)
-    console.error(ex)
     return Promise.reject(ex)
   }
 }
@@ -132,14 +140,15 @@ function* refreshTokenTask() {
 
 function* decoratedFetch(url, { refreshOnce, ...options } ) {
   try {
-    const result = yield call(fetch, url, options)
+    const token = yield select(state => state.auth.get('token'))
+    const result = yield call(fetch, url, { ...options, token })
     return result
   } catch (ex) {
     if (canUseDOM && ex.status == 401 && refreshOnce) {
       yield call(refreshTokenTask)
       // after refreshing token, try to request again,
       // if it still fails this time, there should be an error.
-      const result = yield call(fetch, url, options, transform)
+      const result = yield call(fetch, url, options)
       return result
     }
     // cannot throw error!! user Promise.reject instead

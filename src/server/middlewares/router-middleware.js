@@ -10,54 +10,74 @@ import authenticator from './authenticator'
 import fs from 'fs'
 import serverRender from '../utils/server-render'
 import { initState as universalState } from 'reducers/universal-reducer'
-import { setServerFetched } from 'actions/universal-action'
+import { setServerFetched, setAccessToken } from 'actions/universal-action'
 import koa from 'koa'
+import passport from 'koa-passport'
+import router from 'koa-router'
+import { fromJS } from 'immutable'
+
 const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
+const loginUrl = '/login'
 
 const frontend = new koa()
+
 frontend.use(function* (next) {
   if (/^\/api/.test(this.path)) {
     yield next
   } else {
-    const middlewares = [authenticator, initStore, global.config.universal? universalRender: nonUniversalRender]
-    let composed
-    for (let i = middlewares.length - 1; i >= 0; i--) {
-      if (!composed) {
-        composed = middlewares[i].call(this, next)
-      } else {
-        composed = middlewares[i].call(this, composed)
-      }
-    }
-    yield composed
+    yield composeMiddleware(this, next, authenticate, initStore, global.config.universal? universalRender: nonUniversalRender)
   }
 })
 
-function* initStore(next) {
-  const { userInfo } = this.state
-  const initState = {
-    auth: {
-      isAuthenticated: userInfo.isAuthenticated,
-      startAt: userInfo.startAt,
-      expiresIn: userInfo.expiresIn,
-      username: userInfo.username,
-      tokenValid: userInfo.tokenValid,
-      tokenExpired: userInfo.tokenExpired
-    },
-    universal: universalState
+function composeMiddleware(ctx, next, ...middlewares) {
+  let composed
+  for (let i = middlewares.length - 1; i >= 0; i--) {
+    if (!composed) {
+      composed = middlewares[i].call(ctx, next)
+    } else {
+      composed = middlewares[i].call(ctx, composed)
+    }
   }
-  console.log(initState.auth)
+  return composed
+}
+
+function* authenticate(next) {
+  const ctx = this
+  yield passport.authenticate('app', { session: false }, function* (err, user, info) {
+    if (err) {
+      this.throw(err)
+      return
+    }
+
+    if (/^\/login/.test(ctx.originalUrl)) {
+      yield next
+    } else if (user === false) {
+      ctx.redirect(`${loginUrl}?to=${ctx.originalUrl}`)
+    } else {
+      ctx.state.user = user
+      ctx.state.token = ctx.cookies.get(COOKIE_AUTH_TOKEN)
+      yield next
+    }
+  }).call(this, next)
+}
+
+function* initStore(next) {
+  const initState = {
+    auth: fromJS({ ...this.state.user, token: this.state.token }),
+    universal: universalState,
+  }
   this.state.store = createStore(initState)
   yield next
 }
 
 function *universalRender(next) {
   const { store } = this.state
-  const { token } = this.state
+  const { token, isAuthenticated } = this.state
   const { auth } = store.getState()
-  const loginUrl = '/login'
   const userAgent = this.request.headers['user-agent']
   try {
     const component = yield matchRoutes(this.originalUrl, store, token)
+    store.dispatch(setAccessToken(null))
     // material ui use js inline style, need to mock a navigator
     global.navigator = { userAgent: userAgent }
     this.body = renderToHtml(assets, component, store)
@@ -66,7 +86,6 @@ function *universalRender(next) {
       this.throw(ex, ex.status || 500)
       // this.throw(ex.message || 'interval server ERROR', ex.status || 500)
     }
-
     this.redirect(`${loginUrl}?to=${this.originalUrl}`)
   }
 }
@@ -99,18 +118,18 @@ const matchRoutes = (url, store, token) => done => {
       // ctx.redirect(redirectLocation.pathname + redirectLocation.search)
     } else if (renderProps) {
       const { auth: authState } = store.getState()
-      serverRender(authState, renderProps, { token })
+      serverRender(renderProps)
         .then(isFetch => {
           const component =
             <Provider store={store}>
               <RouterContext {...renderProps}/>
             </Provider>
-          if (isFetch) {
+          if (isFetch === true) {
             // need to notify serverFetch is done => do not fetch at client side as startup
             store.dispatch(setServerFetched())
             return done(null, component)
           }
-          else if ( authState.tokenValid && authState.tokenExpired) { // token valid but expired, need to fetch data at client side(refresh token)
+          else if (authState.get('tokenValid')) { // token valid but expired, need to fetch data at client side(refresh token)
             return done(null, component)
           }
           // failed to fetch data ... should check the auth state

@@ -32,7 +32,10 @@ co(function *() {
   app.use(helmet())
 
   // passport setting
-  PassportHelper.loginLocal(passport)
+  passport.use('login', PassportHelper.loginStrategy)
+  passport.use('app', PassportHelper.appStrategy)
+  passport.use('api', PassportHelper.apiStrategy)
+
   app.use(passport.initialize())
 
   const apidoc = koa()

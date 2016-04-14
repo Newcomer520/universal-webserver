@@ -6,8 +6,8 @@ import { call, put, take, fork } from 'redux-saga/effects'
 import { Provider } from 'react-redux'
 import { findPreloaderTasks } from 'app/utils/universal'
 
-export default (authState, renderProps, options) => new Promise((resolve, reject) => {
-	const preloaderTasks = findPreloaderTasks(authState, renderProps.components, renderProps.params, options)
+export default (renderProps, options) => new Promise((resolve, reject) => {
+	const preloaderTasks = findPreloaderTasks(renderProps.components, renderProps.params, options)
 	sagaMiddleware.run(serverStartupSaga(preloaderTasks))
 		.done
 		.then((isFetch) => resolve(isFetch))
@@ -31,8 +31,10 @@ const serverStartupSaga = (preloaderTasks) => function* () {
 	} catch (ex) {
 		if (ex.status != '401') {
 			ex.status = 500
+      throw ex
 		}
-		console.log('serverStartupSaga', ex.message)
-		throw ex
+    console.log('return 401')
+		return 401
+
 	}
 }

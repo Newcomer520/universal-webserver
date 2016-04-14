@@ -9,7 +9,7 @@ const { secret, privateKey, publicKey, refreshTokenKey } = global.config
 const algorithm = 'aes-256-ctr' // alogorithm for encrypting password, NOT for jwt
 export const COOKIE_AUTH_TOKEN = 'auth-token'
 export const TOKEN_EXPIERED_ERROR = 'TokenExpiredError'
-export const TTL = 1 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
+export const TTL = 10 * 60 * 1000 // the lifetime of json web token: min * sec * milli-secs
 
 // @todo: remove the redis completely
 export default class authHelper {
@@ -41,10 +41,10 @@ export default class authHelper {
     return state
   }
   // static async jwtSign(username, encryptedPassword, ttlMS, oldJti) {
-  static jwtSign(username, permissions, ttlMS) {
+  static jwtSign(username, scope, ttlMS) {
     const jwtObject = {
       username,
-      permissions,
+      scope,
       jti: uuid.v4(),
     }
     // const refreshToken = uuid.v4()
@@ -59,9 +59,10 @@ export default class authHelper {
     }
     return {
       accessToken: jwt.sign(jwtObject, privateKey, { expiresIn: `${ttlMS} ms`, algorithm: 'RS256' }),
-      refreshToken: jwt.sign({ }, jwtObject.jti.substring(5, 12) + refreshTokenKey, { algorithm: 'HS256' }),
+      refreshToken: jwt.sign({}, authHelper.prefixRefresTokenKey(jwtObject.jti) + refreshTokenKey, { algorithm: 'HS256' }),
     }
   }
+
   static jwtVerify(token) {
     let decoded = { verified: false }
     try {
@@ -72,6 +73,7 @@ export default class authHelper {
     }
     return decoded
   }
+
   static jwtDecode(token, ...what) {
     const decoded = jwt.decode(token)
     what = what.length == 0? Object.keys(decoded): what
@@ -79,15 +81,21 @@ export default class authHelper {
     what.forEach(p => ret[p] = decoded[p])
     return ret
   }
+
+  static prefixRefresTokenKey(jti) {
+    return jti.substring(5, 12)
+  }
+
   static async verifyRefreshToken(jti, refreshToken) {
-    let value
+    const options = { algorithms: ['HS256'] }
+
     try {
-      // value = await redisClient.getAsync(jti)
-      // console.log('await redis: ', value)
+      jwt.verify(refreshToken, authHelper.prefixRefresTokenKey(jti) + refreshTokenKey, options)
+      return true
     } catch (err) {
       console.log(err)
+      return false
     }
-    return value === refreshToken
   }
   // static encrypt(text) {
   //  const cipher = crypto.createCipher(algorithm, secret)

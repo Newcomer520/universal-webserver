@@ -56,7 +56,7 @@ export default function fetchObj(url, { refreshOnce = true, transform = 'json', 
  */
 export function fetch(url, { token, refreshOnce, transform = 'json', ...options }) {
   if (typeof token === 'string' && token.trim() !== '') {
-    options = merge({}, { headers: { Authorization: `Bearer ${token}` } }, options)
+    options = merge({}, { headers: { Authorization: `JWT ${token}` } }, options)
   }
 
   const promise = originalFetch(url, options)
