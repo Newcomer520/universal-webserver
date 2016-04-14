@@ -1,0 +1,74 @@
+@import "app/css/variables.css";
+@import "app/css/mixins.css";
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+:global(.circular-rect) {
+	height: 3rem;
+	border-radius: 1em !important;
+	min-width: 100px;
+	border: none;
+	box-shadow: 0px -2px 2px -2px inset !important;
+	@mixin flex-box;
+  font-size: 1.2rem !important;
+	/* padding: 0px !important; */
+}
+
+:global(.ui) {
+	&.primary {
+		color: #fff;
+		background-color: $primary-green;
+
+		&:focus:not(:active) {
+			color: #fff !important;
+			background-color: $primary-green--hover !important;
+		}
+		&:hover:not(:active) {
+			color: #fff !important;
+			background-color: $primary-green--hover !important;
+		}
+
+		&:active {
+			color: #fff !important;
+			background-color: $primary-green--active !important;
+		}
+	}
+}
+
+.dropdown {
+	:global(.Select-control) {
+		border-radius: 1.5rem;
+	}
+
+	:global(.Select-menu-outer) {
+		top: calc(100% + 3px);
+		border-radius: $normal-border-radius;
+		background-color: white;
+	}
+
+	:global(.Select-option) {
+
+		&:first-child {
+			border-radius: $normal-border-radius;
+		}
+
+		&:last-child {
+			border-radius: $normal-border-radius;
+		}
+
+		&:global(.is-focused) {
+
+		}
+
+	}
+
+	text-align: center;
+	width: 150px;
+}

@@ -1,0 +1,6 @@
+@import "app/css/mixins.css";
+
+.container {
+  @mixin flex-box column;
+  height: 100%;
+}

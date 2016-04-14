@@ -1,0 +1,35 @@
+@import "app/css/variables.css";
+@import "app/css/mixins.css";
+
+.date-picker {
+	@mixin flex-box row, center;
+	width: 200px;
+	height: $componentSingleLineHeight;
+	padding-left: 1em;
+	padding-right: 1em;
+	position: relative;
+	border: $border-thin solid $whiteBorderColor;
+	border-radius: 1.5em;
+	color: #fff;
+
+	> * {
+		cursor: pointer;
+	}
+
+	&__current-pick {
+		flex: 1;
+		text-align: center;
+		font-family: $fontFamily;
+	}
+	:global(.icon) {
+		transform: translate3d(0, 0, 0) scale(1);
+		transition: transform 0.3s, scale 0.3s;
+
+		&:global(.left):hover {
+			transform: translate3d(-0.1em, 0, 0) scale(1.1);
+		}
+		&:global(.right):hover {
+			transform: translate3d(0.1em, 0, 0) scale(1.1);
+		}
+	}
+}

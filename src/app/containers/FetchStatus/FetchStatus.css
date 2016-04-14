@@ -1,0 +1,11 @@
+.FetchStatus {
+	width: 100%;
+	max-width: 1024px;
+	margin: auto;
+	padding-bottom: 5%;
+
+	&__buttonsWrapper {
+		text-align: right;
+		margin-right: 10%;
+	}
+}

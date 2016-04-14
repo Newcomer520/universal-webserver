@@ -1,0 +1,6 @@
+{
+  "name": "FetchStatus",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./FetchStatus.js"
+}

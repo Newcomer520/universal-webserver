@@ -1,0 +1,7 @@
+@import "app/css/mixins.css";
+
+.container {
+  @mixin flex-box column, flex-start;
+  flex: 1;
+  padding-top: 2rem;
+}

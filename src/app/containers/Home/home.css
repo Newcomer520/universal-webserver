@@ -1,0 +1,27 @@
+@import "app/css/variables.css";
+
+.base {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100vh;
+}
+
+.transition-container {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+.content {
+	/* width: 100%; */
+	width: $appWidth;
+	margin-left: auto;
+	margin-right: auto;
+	min-height: 100%;
+	padding-bottom: 20px;
+	display: flex;
+}
