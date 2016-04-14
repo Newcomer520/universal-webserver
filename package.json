@@ -1,6 +1,6 @@
 {
   "name": "universal-webserver",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "description": "A universal webserver",
   "main": "index.js",
   "scripts": {
