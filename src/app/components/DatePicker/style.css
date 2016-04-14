@@ -65,15 +65,45 @@
     opacity: 0.9;
     border: none;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    background-color: #345274;
     > div:nth-child(1){
       > div {
-        color: #fff;
+        color: #ddd;
         background-color: #345274;
       }
-      /* hover effect*/
+      /* high light previous selected item */
+      :global(.is-selected) {
+        color: #fff;
+        background-color: #333;
+      }
+      /* hover effect */
       > div:hover {
         background-color:#333;
       }
+      > .selected {
+        color: #fff;
+        background-color: #fc0;
+      }
+    }
+    /* custom scrollbar */
+    ::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      border-radius: 8px;
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar
+    {
+      width: 10px;
+      background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb
+    {
+      border-radius: 8px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color: #444;
     }
   }
 }

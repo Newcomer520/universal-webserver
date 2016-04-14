@@ -12,13 +12,26 @@ export default class DatePicker extends Component {
     clickTimeCallback: PropTypes.func,
   };
 
-  state = {
-    currentTime: { value: this.props.date[0] },
-    dateCount: this.props.date.length,
-    dateArray: this.props.date.map((date) => (
-      { value: date, label: moment(date, 'x').format('YYYY-MM-DD') }
-    ))
-  };
+  constructor(props) {
+    super(props)
+    if ('date' in props && props.date.length > 0) {
+      this.state = {
+        currentTime: { value: this.props.date[0] },
+        dateCount: this.props.date.length,
+        dateArray: this.props.date.map((date) => (
+          { value: date, label: moment(date, 'x').format('YYYY-MM-DD') }
+        ))
+      }
+    } else {
+      console.warn('No date has been provided to the DatePicker component')
+      const date = moment()
+      this.state = {
+        currentTime: { value: date.valueOf() },
+        dateCount: 1,
+        dateArray: [{ value: date.valueOf(), label: date.format('YYYY-MM-DD') }]
+      }
+    }
+  }
 
   //-------------------------------------------------------------------------
   // arrow of both side for change to previous and next date
