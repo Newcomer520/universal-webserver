@@ -4,7 +4,6 @@ import { Router, Route, IndexRoute } from 'react-router'
 // containers
 import Root from 'containers/Root'
 import Home from 'containers/Home'
-import FetchStatus from 'containers/FetchStatus'
 import Login from 'containers/Login'
 import Demo27 from 'containers/Demo27'
 import NoMatch from 'containers/NoMatch'
