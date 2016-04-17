@@ -7,7 +7,8 @@ import ExtractTextPlugin from 'extract-text-webpack-plugin'
 import config from '../config'
 const { output, postcss, ...webpackConfigUniversal } = require('./webpack.config.universal')
 const DEBUG = process.env.NODE_ENV === 'development'
-const VERBOSE = process.argv.includes('--verbose')
+const VERBOSE = false
+// const VERBOSE = process.argv.includes('--verbose')
 const WATCH = DEBUG //global.WATCH === undefined ? false : global.WATCH
 
 

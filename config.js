@@ -1,8 +1,8 @@
 var path = require('path')
 var fs = require('fs')
 
-var privateKey = fs.readFileSync('keys/key_rsa', { encoding: 'utf-8' })
-var publicKey = fs.readFileSync('keys/key_rsa.pub', { encoding: 'utf-8' })
+var privateKey = fs.readFileSync(path.join(__dirname, 'keys/key_rsa'), { encoding: 'utf-8' })
+var publicKey = fs.readFileSync(path.join(__dirname, 'keys/key_rsa.pub'), { encoding: 'utf-8' })
 
 /**
  * default server setting

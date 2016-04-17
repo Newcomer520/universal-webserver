@@ -78,7 +78,7 @@ gulp.task('initWebpack', (cb) => {
     }
   })
 
-  const webpackConfig = require('./tools/webpack.config')[0]
+  const webpackConfig = require('./tools/webpack.config.babel')[0]
   webpackConfig.plugins.push(new OnBuildPlugin(stats => {
     if (serverInitialized) {
       setTimeout(() => {
@@ -109,10 +109,10 @@ gulp.task('dev-server', cb => {
     // execMap: { js: 'node --debug' },
     // nodeArgs: ['--debug'],
     // nodemon our expressjs server
-    script: 'tools/server-preloader.js',
+    script: 'src/server/server-preloader.js',
     ext: 'js',
     // watch core server file(s) that require server restart on change
-    watch: ["src/server/**/*.*", "tools/server-preloader.js"],
+    watch: ["src/server/**/*.*"],
     // watch: ['src/**/*.js'],
     env: devServerEnv,
     stdout: false // must be false so that we could catch the stdout/stderr to ensure when the server is ready

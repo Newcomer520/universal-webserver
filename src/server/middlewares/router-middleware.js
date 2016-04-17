@@ -15,8 +15,9 @@ import koa from 'koa'
 import passport from 'koa-passport'
 import router from 'koa-router'
 import { fromJS } from 'immutable'
+import path from 'path'
 
-const assets = JSON.parse(fs.readFileSync('./build/assets.json', 'utf-8'))
+const assets = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../build/assets.json'), 'utf-8'))
 const loginUrl = '/login'
 
 const frontend = new koa()
