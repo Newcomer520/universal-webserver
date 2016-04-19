@@ -5,14 +5,52 @@
   "main": "index.js",
   "scripts": {
     "dev": "gulp dev",
-    "build": "gulp build",
-    "start-server": "pm2 start tools/server-preloader.js --no-daemon",
-    "production": "npm run build && npm run start-server",
-    "babel-node": "babel-node --stage 0",
+    "clean": "rm -rf build",
+    "copy": "better-npm-run copy",
+    "bundle": "better-npm-run bundle",
+    "client-build": "npm run clean && npm run copy && npm run bundle",
+    "server-build": "better-npm-run server-build",
+    "build": "npm run client-build && npm run server-build",
+    "deploy": "pm2 start tools/server-preloader.js --no-daemon",
+    "start-server": "better-npm-run start-server",
     "eslint": "better-npm-run eslint",
-    "test": "gulp mocha",
+    "test": "ROOT=$(pwd) better-npm-run test",
+    "win-test": "ava.sh",
     "test-watch": "mocha --compilers js:babel-core/register --require babel-polyfill -w --recursive",
     "test-cover": "babel-node ./node_modules/isparta/bin/isparta cover --report lcov --report text --report html ./node_modules/mocha/bin/_mocha -- ./test/demo-testing.js"
+  },
+  "betterScripts": {
+    "copy": {
+      "command": "mkdir build && cp -r src/app/public/ build/"
+    },
+    "bundle": {
+      "command": "webpack -p --config tools/webpack.config.babel.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "test": {
+      "command": "ava",
+      "env": {
+        "NODE_ENV": "test",
+        "radiusip": "210.200.13.224",
+        "radiusport": "10000"
+      }
+    },
+    "server-build": {
+      "command": "babel src -d build --copy-files",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    },
+    "start-server": {
+      "command": "node build/server/server-preloader.js",
+      "env": {
+        "NODE_ENV": "production",
+        "radiusip": "210.200.13.224",
+        "radiusport": "10000"
+      }
+    }
   },
   "keywords": [
     "react",
@@ -31,14 +69,17 @@
   "devDependencies": {
     "apidoc": "^0.14.0",
     "assets-webpack-plugin": "^3.2.0",
+    "ava": "^0.14.0",
     "babel-cli": "^6.4.5",
+    "babel-core": "^6.4.5",
     "babel-eslint": "^6.0.0",
     "babel-loader": "^6.2.1",
     "babel-plugin-add-module-exports": "^0.1.2",
-    "babel-plugin-module-alias": "^1.1.1",
+    "babel-plugin-module-alias": "^1.3.0",
     "babel-plugin-react-transform": "^2.0.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-webpack-loaders": "0.2.1",
+    "babel-polyfill": "^6.3.14",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-react": "^6.3.13",
     "babel-preset-react-hmre": "^1.0.1",
@@ -56,7 +97,7 @@
     "extract-text-webpack-plugin": "^0.9.1",
     "file-loader": "^0.8.5",
     "gaze": "^0.5.2",
-    "gulp": "^3.9.0",
+    "gulp": "3.9.0",
     "gulp-apidoc": "^0.2.2",
     "gulp-env": "^0.4.0",
     "gulp-mocha": "^2.2.0",
@@ -92,15 +133,12 @@
     "stylelint": "^3.2.3",
     "stylelint-config-standard": "^0.2.0",
     "stylelint-selector-bem-pattern": "^0.2.0",
-    "url-loader": "^0.5.7",
     "vinyl-paths": "^2.1.0",
     "webpack": "^1.12.9",
     "webpack-dev-middleware": "^1.4.0",
     "webpack-hot-middleware": "^2.6.0"
   },
   "dependencies": {
-    "babel-core": "^6.4.5",
-    "babel-polyfill": "^6.3.14",
     "bluebird": "^3.1.1",
     "classnames": "^2.2.3",
     "co": "^4.6.0",
@@ -109,6 +147,7 @@
     "file-stream-rotator": "0.0.6",
     "flux-constants": "^0.2.2",
     "history": "1.13.1",
+    "immutable": "^3.8.0",
     "isomorphic-fetch": "^2.2.0",
     "jsonwebtoken": "^5.4.1",
     "koa": "^1.1.2",
@@ -120,15 +159,15 @@
     "koa-passport": "^1.3.0",
     "koa-router": "^5.4.0",
     "koa-static": "^2.0.0",
+    "lodash": "^4.11.1",
     "lodash.merge": "^3.3.2",
-    "material-ui": "^0.14.1",
     "moment": "^2.12.0",
-    "mongoose": "^4.4.6",
     "node-uuid": "^1.4.7",
     "passport": "^0.3.2",
     "passport-jwt": "^2.0.0",
     "passport-local": "^1.0.0",
     "paths-js": "^0.4.4",
+    "pm2": "^1.1.2",
     "postcss-mixins": "^4.0.1",
     "protobufjs": "^5.0.1",
     "radclient": "^1.0.0",
@@ -136,6 +175,7 @@
     "react": "^0.14.8",
     "react-addons-clone-with-props": "^0.14.7",
     "react-addons-css-transition-group": "^0.14.6",
+    "react-addons-pure-render-mixin": "^0.14.8",
     "react-css-modules": "^3.7.6",
     "react-dom": "^0.14.6",
     "react-faux-dom": "^2.4.0",
@@ -155,10 +195,26 @@
     "request": "^2.67.0",
     "reselect": "^2.2.1",
     "rx": "^4.0.7",
-    "serialize-javascript": "^1.1.2"
+    "serialize-javascript": "^1.1.2",
+    "url-loader": "^0.5.7"
   },
   "apidoc": {
     "title": "APIs of Elasticsearch Status",
     "url": "/api"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.js"
+    ],
+    "source": [
+      "src/**/*.{js,jsx}"
+    ],
+    "failFast": true,
+    "tap": true,
+    "require": [
+      "babel-core/register",
+      "babel-polyfill"
+    ],
+    "babel": "inherit"
   }
 }
