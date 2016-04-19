@@ -1,6 +1,6 @@
 {
   "name": "wiprognosis-web-portal",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Wiprognosis web portal v2, made of universal architecutre",
   "main": "index.js",
   "scripts": {
