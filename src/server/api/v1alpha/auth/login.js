@@ -1,43 +1,14 @@
-import router from 'koa-router'
 import crypto from 'crypto'
-import authHelper, { COOKIE_AUTH_TOKEN, TTL } from '../helpers/server-auth-helper'
+import authHelper, { COOKIE_AUTH_TOKEN, TTL } from 'server/helpers/server-auth-helper'
 import fetch from 'isomorphic-fetch'
 import passport from 'koa-passport'
 
 const { secret, recaptchaSecret } = global.config
 
-/**
- * @api {post} /login User Login
- * @apiName Login
- * @apiGroup Authentication
- *
- * @apiParam {String} username Username
- * @apiParam {String} password Password
- * @apiParam {String} gRecaptchaResponse Response of google recaptcha
- *
- * @apiSuccess {String} username
- * @apiSuccess {String} refreshToken Refresh token
- * @apiSuccess {number} expiresIn When the access token is expired. In other words, one should use refreshToken to get the new ones
- *
- * @apiSuccessExample {json} Response
- * {
- *  "username": "user02",
- *  "refreshToken": "9c507d8d-9c6c-4ba9-87ce-c6af2afd88c6",
- *  "expiresIn": "2016-01-14T03:18:03.157Z"
- * }
- *
- * @apiError (Error 400) MissingParams The <code>username</code> or <code>password</code> of the User was not provided.
- * @apiErrorExample {json} MissingParams
- * HTTP/1.1 400 Bad Request
- * "username or password should be provided."
- *
- * @apiError (Error 400) InvalidRecaptcha <code>gRecaptchaResponse</code> is either not valid or missed.
- * @apiErrorExample {json} InvalidRecaptcha
- * HTTP/1.1 400 Bad Request
- * "invalid recaptcha response"
- */
-const loginRouter = router()
-loginRouter.post('/', function* (next) {
+const Login = module.exports = function() {}
+
+//TODO how to use apidoc here
+Login.prototype.jwt = function* (next) {
   const ctx = this
   yield passport.authenticate('login', function* (err, user, info) {
     if (err) {
@@ -53,7 +24,7 @@ loginRouter.post('/', function* (next) {
       ctx.body = { accessToken, refreshToken, username: user.username, expiresIn: Date.now().valueOf() + TTL }
     }
   }).call(this, next)
-})
+}
 // loginRouter.use(recaptchaMiddleware)
 // loginRouter.post('/', function *(next) {
 
@@ -75,5 +46,3 @@ loginRouter.post('/', function* (next) {
   //  }
   // }
 // })
-
-export default loginRouter

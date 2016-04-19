@@ -1,7 +1,7 @@
 import router from 'koa-router'
 import fetch from 'isomorphic-fetch'
 import { resolveBuffer } from 'common/protos'
-import fetchProto from '../../utils/fetch-proto'
+import fetchProto from 'server/utils/fetch-proto'
 
 const apiUrl = 'http://210.200.13.224:10080/actual'
 const actualRouter = new router()

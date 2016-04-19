@@ -1,6 +1,6 @@
 import router from 'koa-router'
-import authHelper, { COOKIE_AUTH_TOKEN, TOKEN_EXPIERED_ERROR, TTL } from '../helpers/server-auth-helper'
-import authenticator from '../middlewares/authenticator'
+import authHelper, { COOKIE_AUTH_TOKEN, TOKEN_EXPIERED_ERROR, TTL } from 'server/helpers/server-auth-helper'
+import authenticator from 'server/middlewares/authenticator'
 import passport from 'koa-passport'
 
 const refreshRouter = new router()

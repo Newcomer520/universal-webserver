@@ -1,6 +1,6 @@
 import router from 'koa-router'
-import authenticator from '../middlewares/authenticator'
-import authHelper, { COOKIE_AUTH_TOKEN } from '../helpers/server-auth-helper'
+import authenticator from 'server/middlewares/authenticator'
+import authHelper, { COOKIE_AUTH_TOKEN } from 'server/helpers/server-auth-helper'
 
 /**
  * @api {post} /logout User Logout
