@@ -1,15 +1,29 @@
-# Wiprognosis V2sssss
+# Wiprognosis V2
 [![build statussss](https://gitlab.mrd3.openlab.tw/jenkins/project/wiprognosis-web-portal/status.png?ref=develop)](https://gitlab.mrd3.openlab.tw/jenkins/project/wiprognosis-web-portal?ref=develop)
 ## Installation
 ```
 $ npm install
-```s
+```
 
 ## Running development server
 ```
 $ npm run dev
 ```
 and then visit http://localhost:3000
+## Test code
+### Linux, OSX
+```
+$ npm run test
+```
+### Windows (Win7 confirmed)
+```
+$ npm run win-test
+```
+### With watch
+If you want to watch your code with test, append ```-- --watch```. Take the test run in Linux for eaxample:
+```
+$ npm run test -- --watch
+```
 
 ## Universal rendering
 ### Main libraries to help us do universal rendering
