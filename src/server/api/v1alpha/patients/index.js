@@ -14,17 +14,17 @@ const patients = new Patients()
 patientsRouter.get('/:p_id', patients.list)
 
 const summaries = new Summaries()
-patientsRouter.get('/summaries', summaries.fetch)
+patientsRouter.get('/:p_id/summaries', summaries.fetch)
 
 const records = new Records()
-patientsRouter.get('/records', records.list)
-patientsRouter.get('/records/:r_id', records.fetch)
+patientsRouter.get('/:p_id/records', records.list)
+patientsRouter.get('/:p_id/records/:r_id', records.fetch)
 
 const examReports = new ExamReports()
-patientsRouter.get('/exam_reports', examReports.list)
-patientsRouter.get('/exam_reports/:er_id', examReports.fetch)
+patientsRouter.get('/:p_id/exam_reports', examReports.list)
+patientsRouter.get('/:p_id/exam_reports/:er_id', examReports.fetch)
 
 const examItems = new ExamItems()
-patientsRouter.get('/exam_items/:ei_id', examItems.fetch)
+patientsRouter.get('/:p_id/exam_items/:ei_id', examItems.fetch)
 
 export default patientsRouter
