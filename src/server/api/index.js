@@ -1,20 +1,10 @@
-import koa from 'koa'
 import router from 'koa-router'
-import loginRouter from './login'
-import refreshTokenRouter from './refresh-token'
-import logoutRouter from './logout'
-import statusRouter from './status'
-import simulateRouter from './simulate'
+import apiRouterV0 from './v0/index'
+import apiRouterV1 from './v1alpha/index'
 
-const apis = new koa()
 const apiRouter = new router()
 
-apiRouter.use('/login', loginRouter.routes())
-apiRouter.use('/logout', logoutRouter.routes())
-apiRouter.use('/refreshtoken', refreshTokenRouter.routes())
-apiRouter.use('/status', statusRouter.routes())
-
-// simulate
-apiRouter.use('/simulate', simulateRouter.routes())
+apiRouter.use('/v0', apiRouterV0.routes(), apiRouterV0.allowedMethods())
+apiRouter.use('/v1alpha', apiRouterV1.routes(), apiRouterV1.allowedMethods())
 
 export default apiRouter

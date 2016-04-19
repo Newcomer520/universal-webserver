@@ -1,5 +1,5 @@
 import router from 'koa-router'
-import authenticator from '../middlewares/authenticator'
+import authenticator from 'server/middlewares/authenticator'
 const { secret } = global.config
 
 /**
