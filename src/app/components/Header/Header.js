@@ -17,7 +17,10 @@ const NavItem = (props) => (
 )
 
 @connect(
-  state => ({ username: state.auth.get('username') })
+  state => ({
+    username: state.auth.get('username'),
+    currentTime: moment(state.app.get('currentTime')).format('YYYY-MM-DD HH:mm a'),
+  })
 )
 @CSSModules(styles)
 export default class extends Component {
@@ -48,12 +51,12 @@ export default class extends Component {
   };
 
   renderRightSection = () => {
-    const currentDate = moment().format('YYYY-MM-DD HH:mm a')
+    const { currentTime } = this.props
     return (
       <div styleName="right-section">
         <div styleName="info">
           <span>{this.props.username}</span>
-          <span>{currentDate}</span>
+          <span>{currentTime}</span>
         </div>
         <img styleName="setting"/>
       </div>

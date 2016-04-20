@@ -6,6 +6,7 @@ export default constants([
   'UNIVERSAL_SET_TOKEN',
   // application level constants
   'APP_LOADING',
+  'APP_UPDATE_TIME',
   'LOCATION_CHANGE', // the LOCATION_CHANGED from react-router-redux is wired, will fire at first rendering time
 
   // fetch related

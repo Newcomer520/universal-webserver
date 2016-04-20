@@ -16,6 +16,7 @@ import passport from 'koa-passport'
 import router from 'koa-router'
 import { fromJS } from 'immutable'
 import path from 'path'
+import { initState as appInitState } from 'reducers/app-reducer'
 
 const assets = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../build/assets.json'), 'utf-8'))
 const loginUrl = '/login'
@@ -64,6 +65,7 @@ function* authenticate(next) {
 
 function* initStore(next) {
   const initState = {
+    app: appInitState(),
     auth: fromJS({ ...this.state.user, token: this.state.token }),
     universal: universalState,
   }
