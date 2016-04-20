@@ -1,9 +1,10 @@
-import { put, take, fork } from 'redux-saga/effects'
+import { put, take, fork, select, call } from 'redux-saga/effects'
 import TYPES from 'constants/action-types'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 export default function* appSaga() {
   yield fork(monitorLocationChanged)
+  yield fork(updateTimeTask)
 }
 
 function* monitorLocationChanged() {
@@ -18,3 +19,12 @@ function* monitorLocationChanged() {
     yield put({ type: TYPES.LOCATION_CHANGE })
   }
 }
+
+function* updateTimeTask() {
+  while(true) {
+    yield call(delay, 1000 * 60)
+    yield put({ type: TYPES.APP_UPDATE_TIME, currentTime: Date.now().valueOf() })
+  }
+}
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
