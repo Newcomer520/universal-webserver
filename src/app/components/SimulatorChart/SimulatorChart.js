@@ -202,7 +202,7 @@ export default class SimulatorChart extends Component {
     // Layout Configuration and Layout Constants Values
     //-------------------------------------------------------------------------
     const X_LABEL_FONT_HEIGHT = 16
-    const MARGIN = { TOP: 20, RIGHT: 10, BOTTOM: X_LABEL_FONT_HEIGHT, LEFT: 60 }
+    const MARGIN = { TOP: 20, RIGHT: 0, BOTTOM: X_LABEL_FONT_HEIGHT, LEFT: 40 }
 
     const PERIOD_300_MINS = 320 * 60 * 1000
 
