@@ -29,7 +29,7 @@ global.__CLIENT__ = false
 global.__DEV__ = process.env.NODE_ENV === 'development/server'
 global.__HOST__ = global.config.host
 global.__PORT__ = global.config.port
-
+global.__API_VERSION__ = global.config.apiVersion
 
 var app = module.exports = require('./server')
 

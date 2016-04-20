@@ -22,5 +22,6 @@ module.exports = {
   recaptchaSecret: '6LcSzRQTAAAAAOMCnSZ_xx41-nCUBS2eLHQ7ga6x',
   mongo: 'mongodb://210.200.13.224:5505/universal',
   slackWebHook: 'https://hooks.slack.com/services/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',
-  apiServer: process.env.apiServer || 'http://210.200.13.224:10080'
+  apiServer: process.env.apiServer || 'http://210.200.13.224:10080',
+  apiVersion: 'v1alpha', // needs to restart dev server if this value changed during development, i.e. shutdown npm run dev and re-run this command.
 }

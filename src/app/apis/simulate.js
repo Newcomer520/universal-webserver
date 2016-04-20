@@ -7,7 +7,7 @@ import Protos from 'common/protos'
 const { SimulateActual: actualProto, SimulatePredict: predictProto } = Protos
 
 export function apiActual() {
-  return fetchObject('/api/simulate/actual', {
+  return fetchObject('/api/v0/simulate/actual', {
     headers: {
       'Content-Type': 'application/octet-stream'
     },
@@ -31,7 +31,7 @@ export function apiPredict(data) {
   //   temperature: 36.5,
   // }
 
-  const url = '/api/simulate/predict'
+  const url = '/api/v0/simulate/predict'
   const options = {
     headers: {
       'Content-Type': 'application/octet-stream'
