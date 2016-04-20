@@ -7,18 +7,17 @@ babelrc.plugins[0][1] = babelrc.plugins[0][1].map(a => {
     a.src = path.join(ROOT, a.src)
     return a
 })
-require('babel-core/register')({
+require('babel-register')({
 	"plugins": [
 		["babel-plugin-webpack-loaders",
 			{ "config": config, "verbose": false }
 		],
-        babelrc.plugins[0],
-        babelrc.plugins[1],
-        babelrc.plugins[2],
+    babelrc.plugins[0],
+    babelrc.plugins[1],
+    babelrc.plugins[2],
 	]
 })
 require("babel-polyfill")
-var path = require('path')
 
 global.config = require(path.join(ROOT, './config'))
 
