@@ -14,24 +14,31 @@ export default class DatePicker extends Component {
 
   constructor(props) {
     super(props)
-    if ('date' in props && props.date.length > 0) {
+    this.dateUpdate(props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.dateUpdate(nextProps)
+  }
+
+  dateUpdate = (props) => {
+    if (props && props.date && props.date.length && props.date.length > 0) {
       this.state = {
-        currentTime: { value: this.props.date[0] },
-        dateCount: this.props.date.length,
-        dateArray: this.props.date.map((date) => (
+        currentTime: { value: props.date[0] },
+        dateCount: props.date.length,
+        dateArray: props.date.map((date) => (
           { value: date, label: moment(date, 'x').format('YYYY-MM-DD') }
         ))
       }
     } else {
       console.warn('No date has been provided to the DatePicker component')
-      const date = moment()
       this.state = {
-        currentTime: { value: date.valueOf() },
-        dateCount: 1,
-        dateArray: [{ value: date.valueOf(), label: date.format('YYYY-MM-DD') }]
+        currentTime: { value: undefined },
+        dateCount: 0,
+        dateArray: []
       }
     }
-  }
+  };
 
   //-------------------------------------------------------------------------
   // arrow of both side for change to previous and next date
@@ -92,6 +99,8 @@ export default class DatePicker extends Component {
             className="selectBody"
             clearable={false}
             searchable={false}
+            disabled={!!!this.state.currentTime.value}
+            placeholder={''}
             value={this.state.currentTime.value}
             options={this.state.dateArray}
             onChange={this.dateChange} />
