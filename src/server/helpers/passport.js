@@ -110,5 +110,18 @@ export default class Passport {
     }).call(this, next)
 
   };
+
+  /**
+   * the relative permissions foe a specific page, if null => no permission, everyone could visit
+   * @param  {[type]} path [description]
+   * @return {[type]}      [description]
+   */
+  static getPagePermissions(path) {
+    let permissions = null
+    if (/^\/admin/i.test(path)) {
+      permissions = ['admin']
+    }
+    return permissions
+  }
 }
 

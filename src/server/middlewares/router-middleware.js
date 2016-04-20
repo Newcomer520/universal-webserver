@@ -17,6 +17,7 @@ import router from 'koa-router'
 import { fromJS } from 'immutable'
 import path from 'path'
 import { initState as appInitState } from 'reducers/app-reducer'
+import PassportHelper from '../helpers/passport'
 
 const assets = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../build/assets.json'), 'utf-8'))
 const loginUrl = '/login'
@@ -50,10 +51,12 @@ function* authenticate(next) {
       this.throw(err)
       return
     }
-
+    let permissions = PassportHelper.getPagePermissions(ctx.originalUrl)
     if (/^\/login/.test(ctx.originalUrl)) {
       yield next
     } else if (user === false) {
+      ctx.redirect(`${loginUrl}?to=${ctx.originalUrl}`)
+    } else if (permissions && !permissions.filter(p => user.scope.indexOf(p) >= 0).length > 0) {
       ctx.redirect(`${loginUrl}?to=${ctx.originalUrl}`)
     } else {
       ctx.state.user = user
