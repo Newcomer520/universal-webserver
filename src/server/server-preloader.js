@@ -4,6 +4,9 @@ var ROOT = process.env.ROOT || path.join(__dirname, '../../')
 var config = path.join(ROOT, "./tools/webpack.config.universal.js")
 var babelrc = JSON.parse(fs.readFileSync(path.join(ROOT, './.babelrc'), 'utf8'))
 babelrc.plugins[0][1] = babelrc.plugins[0][1].map(a => {
+    if (process.env.NODE_ENV === 'production') {
+      a.src =  a.src.replace(/^\.\/src/, './build')
+    }
     a.src = path.join(ROOT, a.src)
     return a
 })

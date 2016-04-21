@@ -11,8 +11,6 @@ const VERBOSE = false
 // const VERBOSE = process.argv.includes('--verbose')
 const WATCH = DEBUG //global.WATCH === undefined ? false : global.WATCH
 
-
-
 const GLOBALS = {
   'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
   'process.env.port': process.env.port,
@@ -32,7 +30,12 @@ fs.readdirSync('node_modules')
   })
 
 const babelrc = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'))
-const alias = babelrc.plugins[0][1].map(a => ({ [a.expose]: path.join(__dirname, '..', a.src) }))
+let alias = babelrc.plugins[0][1].map(a => {
+  const p = DEBUG
+  ? path.join(__dirname, '..', a.src)
+  : path.join(__dirname, '..', a.src.replace(/^\.\/src/, './build'))
+  return {[a.expose]:  p}
+})
 
 //
 // Common configuration chunk to be used for both
@@ -91,19 +94,28 @@ const defaultConfig = {
         ]
       }, {
         test: /\.css$/,
-        loaders: [
+        loaders: DEBUG
+        ? [
           'style-loader',
           'css-loader?importLoaders=1' + (DEBUG ? '&' : '&minimize&') + 'modules&localIdentName=[local]_[hash:base64:3]-[name]', //(DEBUG ? 'sourceMap&' : 'minimize&') +
-          'postcss-loader'
-        ],
+          'postcss-loader',
+        ]
+        : null,
+        loader: DEBUG
+        ? null
+        : ExtractTextPlugin.extract('style-loader', 'css-loader?importLoaders=1&modules&localIdentName=[local]_[hash:base64:3]-[name]!postcss-loader'),
         exclude: /node_modules/
       }, {
         test: /\.css$/,
-        loaders: [
+        loaders: DEBUG
+        ? [
           'style-loader',
           'css-loader?&importLoaders=1' + (DEBUG ? '' : '&minimize'), //(DEBUG ? 'sourceMap&' : 'minimize&') +
-          'postcss-loader'
-        ],
+        ]
+        : null,
+        loader: DEBUG
+        ? null
+        : ExtractTextPlugin.extract('style-loader', 'css-loader?minimize'),
         include: /node_modules/
       }, {
         test: /\.json$/,
@@ -137,7 +149,7 @@ const appConfig = merge({}, defaultConfig, {
     main: [
       ...(WATCH ? ['webpack/hot/dev-server', 'webpack-hot-middleware/client'] : []),
       'babel-polyfill',
-      './src/app/main.js',
+      DEBUG? './src/app/main.js': './build/app/main.js',
     ],
   },
   output: {
@@ -173,15 +185,15 @@ const appConfig = merge({}, defaultConfig, {
   ]
 })
 
-if (!DEBUG) {
-  appConfig.module.loaders =
-    appConfig.module.loaders.map(x => {
-      if (x.test.test('.less') !== true && x.test.test('.css') !== true) {
-        return x
-      }
-      return { test: x.test, loader: ExtractTextPlugin.extract(x.loaders[0], x.loaders.slice(1).join('!')) }
-    })
-}
+// if (!DEBUG) {
+//   appConfig.module.loaders =
+//     appConfig.module.loaders.map(x => {
+//       if (x.test.test('.less') !== true && x.test.test('.css') !== true) {
+//         return x
+//       }
+//       return { test: x.test, loader: ExtractTextPlugin.extract(x.loaders[0], x.loaders.slice(1).join('!')) }
+//     })
+// }
 //
 // Configuration for the server-side bundle (server.js)
 // -----------------------------------------------------------------------------
