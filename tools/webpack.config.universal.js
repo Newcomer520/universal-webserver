@@ -54,7 +54,6 @@ module.exports = {
 		return [
 			require('postcss-import')({ path: [
 				path.join(__dirname, '../src'),
-				path.join(__dirname, '../node_modules')
 			] }), //addDependencyTo: bundler,
 			require('precss'),
 			require("postcss-cssnext")(),

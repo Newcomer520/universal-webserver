@@ -7,6 +7,7 @@ import { Router, browserHistory } from 'react-router'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import { renderRouterContext } from './utils/universal'
+import "react-select/dist/react-select.css"
 //Needed for onTouchTap
 //Can go away when react 1.0 release
 //Check this repo:

@@ -1,6 +1,6 @@
 {
   "name": "wiprognosis-web-portal",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Wiprognosis web portal v2, made of universal architecutre",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,9 @@
     "clean": "rm -rf build",
     "copy": "better-npm-run copy",
     "bundle": "better-npm-run bundle",
-    "client-build": "npm run clean && npm run copy && npm run bundle",
-    "server-build": "better-npm-run server-build",
-    "build": "npm run client-build && npm run server-build",
+    "client-build": "npm run bundle",
+    "server-build": "npm run clean && npm run copy && better-npm-run server-build",
+    "build": "npm run server-build && npm run client-build",
     "deploy": "pm2 start tools/server-preloader.js --no-daemon",
     "start-server": "better-npm-run start-server",
     "eslint": "better-npm-run eslint",
