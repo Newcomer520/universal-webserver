@@ -17,7 +17,7 @@ const NavItem = (props) => (
 )
 
 @connect(
-  state => ({
+  (state, ownProps) => ({
     username: state.auth.get('username'),
     currentTime: moment(state.app.get('currentTime')).format('YYYY-MM-DD HH:mm a'),
   })
