@@ -1,5 +1,5 @@
 {
-  "name": "wiprognosis-web-portal",
+  "name": "universal-webserver",
   "version": "0.4.2",
   "description": "Wiprognosis web portal v2, made of universal architecutre",
   "main": "index.js",
