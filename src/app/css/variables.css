@@ -1,6 +1,8 @@
-$appWidth: 1200px;
+$appWidth: 1280px;
 $datePickerWidth: 200px;
 $fontFamily: Verdana, Ms Gothic, Ms PGothic, Arial, sans-serif;
+
+$header-height: 90px;
 
 $primary-green: #50b4aa;
 $primary-green--hover: #3CA096;
@@ -11,7 +13,7 @@ $lightgray-color: rgba(100, 100, 100, 1);
 $whiteBorderColor: silver;
 $background-primary-color: #dbdcdd;
 
-$normal-border-radius: 5px;
+$normal-border-radius: 8px;
 $componentSingleLineHeight: 3em;
 $table-row-height: 2.0em;
 $default-boder-color: rgba(182, 182, 182, 1);

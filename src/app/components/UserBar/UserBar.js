@@ -9,15 +9,17 @@ export default class UserBar extends Component {
   clickTimeCallback = (d, i) => {
     console.log(d, i)
   }
+
 	render() {
+    const d = 1461199531501
     const date = [
-      moment().valueOf(),
-      moment().add(1, 'd').valueOf(),
-      moment().add(2, 'd').valueOf(),
-      moment().add(3, 'd').valueOf(),
-      moment().add(4, 'd').valueOf(),
-      moment().add(5, 'd').valueOf(),
-      moment().add(6, 'd').valueOf(),
+      d,
+      moment(d).add(1, 'd').valueOf(),
+      moment(d).add(2, 'd').valueOf(),
+      moment(d).add(3, 'd').valueOf(),
+      moment(d).add(4, 'd').valueOf(),
+      moment(d).add(5, 'd').valueOf(),
+      moment(d).add(6, 'd').valueOf(),
     ]
 		return (
 			<div styleName="user-bar">

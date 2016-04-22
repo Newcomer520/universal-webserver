@@ -140,7 +140,7 @@ export default class extends Component {
   defaultContent = () => {
     const { actual, predict, simulate, obRawTime } = this.props
     const { actions: { setObTime } } = this.props
-    const svgHeight = 400
+    const svgHeight = 300
     const svgWidth = 750
     return (
       <div styleName="content">

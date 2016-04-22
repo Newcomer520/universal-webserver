@@ -1,10 +1,11 @@
+@import "app/css/variables.css";
 @import "app/css/mixins.css";
 
 html, body {
 	font-size: 14px;
 	margin: 0px;
 	display: block;
-	@media (max-width: 1199px) {
+	@media (max-width: ($appWidth - 1px)) {
 		overflow-x: auto !important;
 	}
 }

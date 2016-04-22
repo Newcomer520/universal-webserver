@@ -3,8 +3,8 @@
 
 .user-bar {
 	@mixin flex-box row, flex-end;
-	padding-top: 2em;
-	padding-bottom: 2em;
+	padding-top: 20px;
+	padding-bottom: 20px;
 }
 
 .user-info-container {

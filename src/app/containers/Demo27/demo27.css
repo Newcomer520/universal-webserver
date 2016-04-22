@@ -15,18 +15,19 @@ $right-column-width: 400px;
 
 .main {
   width: 100%;
-  max-width: $appWidth;
+  height: 536px;
+  /* max-width: $appWidth; */
   margin-left: auto;
   margin-right: auto;
   display: flex;
-  flex: 1;
+  /* flex: 1; */
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   /* background-color: rgba(219, 220, 221, 0.7); */
   background-color: rgba(255, 255, 255, 0.8);
   overflow: hidden;
-  border-radius: 5px;
+  border-radius: $normal-border-radius;
   @media (max-width: 992px) {
     justify-content: flex-start;
   }
@@ -91,7 +92,7 @@ $right-column-width: 400px;
 
 .chart-container {
   /* flex: 1; */
-  min-height: 400px;
+  min-height: 300px;
   @mixin flex-box column center, center;
 }
 
@@ -155,8 +156,9 @@ $right-column-width: 400px;
   border-radius: 5px;
   flex: 1;
   border: 1px solid black;
-  padding: 2rem;
+  padding: 0.5rem;
   background: #ffffff;
+  overflow: auto;
 }
 
 .legend-container {
